@@ -2,32 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OMR GENERATOR PRO | Mobile Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMR Architect | Professional Industrial Sheet Generator</title>
     
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta name="description" content="Free Online Industrial OMR Sheet Generator. Create, customize, and download high-precision A4 OMR sheets with barcodes, QR codes, and variable data fields. Cloudflare ready.">
+    <meta name="keywords" content="OMR Generator, Optical Mark Recognition, Bubble Sheet Creator, Exam Answer Sheet, HTML5 OMR, JavaScript OMR">
+    <meta name="author" content="OMR Architect">
     
-    <script src="https://cdn.tailwindcss.com" data-cfasync="false"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" data-cfasync="false"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" data-cfasync="false"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js" data-cfasync="false"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" data-cfasync="false"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <script data-cfasync="false">
+    <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        dark: '#050505',
-                        panel: '#121212',
-                        neon: '#00f2ea',
-                        neonh: '#00c2bb',
-                        pink: '#ff0055',
-                        grid: '#1a1a1a'
+                        cyber: {
+                            bg: '#050505',
+                            panel: '#0a0a0f',
+                            cyan: '#00f0ff',
+                            purple: '#7000ff',
+                            text: '#e0e0e0',
+                            dim: '#4a4a4a'
+                        },
+                        omr: {
+                            dropout: '#ff003c', // Standard hardware dropout color (Pink/Red)
+                            black: '#000000'
+                        }
                     },
                     fontFamily: {
-                        mono: ['Courier New', 'monospace'],
-                        sans: ['Arial', 'sans-serif']
+                        header: ['Rajdhani', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
                     }
                 }
             }
@@ -35,438 +48,562 @@
     </script>
 
     <style>
-        /* --- CORE OMR STYLES (Print Safe) --- */
-        :root { --dropout: #ec4899; }
-        
-        body { background: #050505; color: #fff; touch-action: manipulation; }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #121212; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-
-        /* OMR Sheet Physics */
-        #sheet-viewport {
-            transform-origin: top center;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: white;
-            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        /* --- Global Styles --- */
+        body {
+            background-color: #050505;
+            color: #e0e0e0;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
         }
 
-        .omr-sheet {
+        /* --- Scrollbar --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0f; }
+        ::-webkit-scrollbar-thumb { background: #7000ff; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00f0ff; }
+
+        /* --- Cyber Inputs --- */
+        .cyber-input {
+            background: #0a0a0f;
+            border: 1px solid #333;
+            color: #00f0ff;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 0.5rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .cyber-input:focus {
+            outline: none;
+            border-color: #00f0ff;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        /* --- Buttons --- */
+        .btn-cyber {
+            background: linear-gradient(45deg, #7000ff, #00f0ff);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .btn-cyber:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+
+        /* --- OMR Sheet Physics (A4) --- */
+        #omr-preview-container {
+            perspective: 1000px;
+            padding: 2rem;
+            background-image: radial-gradient(#1a1a1a 1px, transparent 1px);
+            background-size: 20px 20px;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        #omr-sheet {
             width: 210mm;
-            height: 297mm;
+            min-height: 297mm;
             background: white;
             color: black;
             position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            /* Standard OMR Styles */
+            font-family: 'Arial', sans-serif; /* Best for OCR */
             padding: 10mm;
             box-sizing: border-box;
-            font-family: sans-serif;
-            overflow: hidden;
+            transform-origin: top center;
+        }
+
+        /* --- OMR Specific Elements (Dropout Color) --- */
+        .omr-border { border: 2px solid #ff003c; }
+        .omr-text { color: #ff003c; font-weight: bold; }
+        .omr-bubble {
+            width: 14px;
+            height: 14px;
+            border: 1px solid #ff003c;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: #ff003c;
+            margin: 1px;
+        }
+        .omr-bubble-fill {
+            width: 32px;
+            height: 16px;
+            border: 1px solid #ff003c;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        /* Fiducials & Timing Tracks (Strictly Black for Scanners) */
+        .fiducial {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: black;
+            border-style: solid;
+            z-index: 100;
+        }
+        .fid-tl { top: 5mm; left: 5mm; border-width: 4px 0 0 4px; }
+        .fid-tr { top: 5mm; right: 5mm; border-width: 4px 4px 0 0; }
+        .fid-bl { bottom: 5mm; left: 5mm; border-width: 0 0 4px 4px; }
+        .fid-br { bottom: 5mm; right: 5mm; border-width: 0 4px 4px 0; }
+
+        .timing-track {
+            position: absolute;
+            left: 5mm;
+            top: 25mm;
+            bottom: 25mm;
+            width: 10px;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
+        }
+        .timing-dash {
+            width: 100%;
+            height: 4px;
+            background: black;
         }
 
-        /* OMR Components */
-        .bubble {
-            width: 14px; height: 14px;
-            border: 1.5px solid var(--dropout);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 9px; font-weight: bold; color: var(--dropout);
-            font-family: monospace;
-        }
-        .write-box {
-            width: 16px; height: 20px;
-            border: 1.5px solid var(--dropout);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 12px; color: black; font-family: monospace;
-            margin-bottom: 2px;
-        }
-        
-        /* Fiducials (Scantron Markers) */
-        .fid { position: absolute; background: black; z-index: 50; }
-        .fid-tl { top: 6mm; left: 6mm; width: 20px; height: 6px; }
-        .fid-tl-v { top: 6mm; left: 6mm; width: 6px; height: 20px; }
-        .fid-tr { top: 6mm; right: 6mm; width: 20px; height: 6px; }
-        .fid-bl { bottom: 6mm; left: 6mm; width: 20px; height: 6px; }
-        .fid-br { bottom: 6mm; right: 6mm; width: 20px; height: 6px; }
-        
-        /* Timing Track */
-        .track { 
-            position: absolute; left: 5mm; top: 40mm; bottom: 20mm; 
-            width: 4px; display: flex; flex-direction: column; justify-content: space-evenly; 
-        }
-        .track-mark { width: 100%; height: 3px; background: black; }
-
-        /* Input Styling */
-        .cyber-input {
-            background: #1a1a1a; border: 1px solid #333;
-            color: #00f2ea; padding: 10px; width: 100%;
-            border-radius: 4px; font-family: monospace;
-            outline: none;
-        }
-        .cyber-input:focus { border-color: #00f2ea; box-shadow: 0 0 10px rgba(0,242,234,0.2); }
-        
-        /* Tab System */
-        .tab-btn {
-            flex: 1; padding: 15px; text-align: center;
-            background: #121212; border-bottom: 2px solid #333;
-            color: #666; font-weight: bold; cursor: pointer;
-            transition: all 0.2s;
-        }
-        .tab-btn.active {
-            border-bottom: 2px solid #00f2ea;
-            color: #00f2ea; background: #0a0a0a;
-        }
-
-        /* Print Hiding */
+        /* --- Print Media Query --- */
         @media print {
             body * { visibility: hidden; }
-            #sheet-viewport, #sheet-viewport * { visibility: visible; }
-            #sheet-viewport { 
-                position: absolute; left: 0; top: 0; 
-                width: 210mm !important; height: 297mm !important; 
-                transform: none !important; margin: 0 !important;
+            #omr-sheet, #omr-sheet * { visibility: visible; }
+            #omr-sheet {
+                position: absolute;
+                left: 0;
+                top: 0;
+                margin: 0;
+                padding: 10mm;
+                transform: none !important;
+                box-shadow: none;
+                width: 210mm;
+                height: 297mm;
+            }
+            @page {
+                size: A4;
+                margin: 0;
             }
         }
     </style>
 </head>
-<body class="h-screen flex flex-col lg:flex-row overflow-hidden">
+<body class="flex flex-col h-screen">
 
-    <div class="flex lg:hidden z-50 sticky top-0 bg-dark shadow-lg">
-        <div onclick="switchTab('config')" id="tab-config" class="tab-btn active"><i class="fa-solid fa-sliders"></i> CONFIG</div>
-        <div onclick="switchTab('preview')" id="tab-preview" class="tab-btn"><i class="fa-solid fa-eye"></i> PREVIEW</div>
-    </div>
-
-    <aside id="panel-config" class="w-full lg:w-[400px] bg-panel border-r border-[#222] flex flex-col h-full overflow-y-auto pb-20 lg:pb-0">
-        <div class="p-6 space-y-6">
-            <div class="flex items-center gap-3 mb-4">
-                <i class="fa-solid fa-cube text-neon text-2xl animate-pulse"></i>
-                <h1 class="text-xl font-bold tracking-wider">OMR <span class="text-neon">GEN</span> v4</h1>
-            </div>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Institute Name</label>
-                    <input type="text" id="inp-institute" class="cyber-input" value="SKYNET UNIVERSITY">
-                </div>
-                <div>
-                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Exam Name</label>
-                    <input type="text" id="inp-exam" class="cyber-input" value="ENTRANCE EXAM 2026">
-                </div>
-                
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-xs text-gray-500 uppercase font-bold ml-1">Total Qs</label>
-                        <input type="number" id="inp-total" class="cyber-input text-center" value="50">
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-500 uppercase font-bold ml-1">Columns</label>
-                        <select id="inp-cols" class="cyber-input text-center">
-                            <option value="2">2 Columns</option>
-                            <option value="3">3 Columns</option>
-                            <option value="4" selected>4 Columns</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-xs text-gray-500 uppercase font-bold ml-1">Options</label>
-                        <select id="inp-opts" class="cyber-input text-center">
-                            <option value="4">A B C D</option>
-                            <option value="5">A B C D E</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-500 uppercase font-bold ml-1">Roll Digits</label>
-                        <input type="number" id="inp-roll" class="cyber-input text-center" value="8">
-                    </div>
-                </div>
-
-                <div class="border border-dashed border-[#444] rounded p-4 text-center cursor-pointer hover:border-neon transition bg-[#0f0f0f] relative group">
-                    <input type="file" id="inp-logo" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                    <i class="fa-solid fa-cloud-arrow-up text-gray-500 text-xl mb-2 group-hover:text-neon"></i>
-                    <p class="text-xs text-gray-400">Tap to Upload Logo</p>
-                </div>
-            </div>
-
-            <div class="pt-6 border-t border-[#222]">
-                <button onclick="downloadPDF()" id="btn-dl" class="w-full bg-gradient-to-r from-neon to-blue-500 text-black font-bold py-4 rounded shadow-[0_0_15px_rgba(0,242,234,0.3)] active:scale-95 transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-file-pdf text-lg"></i> DOWNLOAD PDF
-                </button>
-                <p class="text-[10px] text-gray-600 text-center mt-2">100% Client-Side. No Data Uploaded.</p>
-            </div>
+    <header class="h-16 bg-cyber-panel border-b border-gray-800 flex items-center justify-between px-6 z-50">
+        <div class="flex items-center gap-3">
+            <i class="fa-solid fa-file-contract text-cyber-cyan text-2xl"></i>
+            <h1 class="text-2xl font-header font-bold text-white tracking-wider">OMR <span class="text-cyber-purple">ARCHITECT</span></h1>
         </div>
-    </aside>
+        <div class="flex gap-4">
+            <button onclick="app.printSheet()" class="btn-cyber flex items-center gap-2">
+                <i class="fa-solid fa-print"></i> Print
+            </button>
+            <button onclick="app.downloadPDF()" class="btn-cyber flex items-center gap-2 filter hue-rotate-60">
+                <i class="fa-solid fa-file-pdf"></i> Save PDF
+            </button>
+        </div>
+    </header>
 
-    <main id="panel-preview" class="flex-grow bg-[#080808] relative hidden lg:flex items-center justify-center overflow-hidden">
+    <main class="flex-1 flex overflow-hidden">
         
-        <div class="absolute top-4 right-4 bg-panel px-3 py-1 rounded border border-[#333] text-xs font-mono text-neon z-20 pointer-events-none">
-            Scale: <span id="scale-indicator">100%</span>
-        </div>
+        <aside class="w-full md:w-96 bg-cyber-panel border-r border-gray-800 overflow-y-auto flex flex-col z-40">
+            <div class="p-4 border-b border-gray-800">
+                <h2 class="text-cyber-cyan font-mono text-sm uppercase mb-2"><i class="fa-solid fa-sliders"></i> Configuration</h2>
+                <p class="text-xs text-gray-500">Modify parameters to regenerate the sheet instantly.</p>
+            </div>
 
-        <div class="w-full h-full overflow-auto flex items-start justify-center p-4 lg:p-10" id="scroll-container">
-            
-            <div id="sheet-viewport">
+            <div class="flex-1 p-4 space-y-6">
                 
-                <div class="omr-sheet" id="omr-content">
-                    <div class="fid fid-tl"></div><div class="fid fid-tl-v"></div>
-                    <div class="fid fid-tr"></div>
-                    <div class="fid fid-bl"></div>
-                    <div class="fid fid-br"></div>
-                    
-                    <div class="track" id="track-container"></div>
+                <div class="space-y-3">
+                    <h3 class="text-white font-header font-bold border-l-4 border-cyber-purple pl-2">1. Exam Metadata</h3>
+                    <input type="text" id="instituteName" class="cyber-input" placeholder="Institute Name" value="INDIAN INSTITUTE OF TECHNOLOGY">
+                    <input type="text" id="examName" class="cyber-input" placeholder="Exam Name" value="JOINT ENTRANCE EXAMINATION 2026">
+                </div>
 
-                    <header class="flex gap-4 border-b-2 border-pink-500 pb-3 mb-3 h-[30mm]">
-                        <div class="w-[25mm] border border-gray-300 flex items-center justify-center p-1 bg-white">
-                            <img id="img-logo-preview" class="max-w-full max-h-full object-contain hidden">
-                            <span id="logo-placeholder" class="text-[8px] text-gray-300 text-center">LOGO</span>
-                        </div>
-                        <div class="flex-grow flex flex-col justify-center">
-                            <h1 id="out-institute" class="text-2xl font-black text-pink-600 uppercase leading-none">INSTITUTE</h1>
-                            <h2 id="out-exam" class="text-sm font-bold text-gray-700 mt-1 uppercase tracking-widest">EXAM NAME</h2>
-                        </div>
-                        <div class="flex flex-col items-end justify-center">
-                             <div id="qr-code"></div>
-                        </div>
-                    </header>
-
-                    <section class="flex gap-4 mb-4">
-                        <div class="flex flex-col">
-                            <div class="bg-pink-600 text-white text-[8px] font-bold text-center py-0.5 w-full">ROLL NO.</div>
-                            <div class="border border-pink-600 border-t-0 p-1 flex gap-[2px]" id="roll-grid"></div>
-                        </div>
-                        
-                        <div class="flex-grow border border-gray-300 p-2 relative">
-                            <span class="absolute -top-2 left-2 bg-white px-1 text-[8px] font-bold text-gray-500">CANDIDATE NAME (BLOCK LETTERS)</span>
-                            <div class="grid grid-cols-10 gap-1 mt-2">
-                                <div class="h-6 border border-gray-300 bg-gray-50"></div>
-                                <div class="h-6 border border-gray-300 bg-gray-50"></div>
-                                <div class="h-6 border border-gray-300 bg-gray-50"></div>
-                                <div class="h-6 border border-gray-300 bg-gray-50"></div>
-                                <div class="h-6 border border-gray-300 bg-gray-50"></div>
-                                <div class="h-6 border border-gray-300 bg-gray-50"></div>
-                                <div class="h-6 border border-gray-300 bg-gray-50"></div>
-                                <div class="h-6 border border-gray-300 bg-gray-50"></div>
-                                <div class="h-6 border border-gray-300 bg-gray-50"></div>
-                                <div class="h-6 border border-gray-300 bg-gray-50"></div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <div class="flex-grow border-t border-pink-300 pt-2 relative">
-                        <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-2 text-[10px] text-pink-500 font-bold">ANSWERS</div>
-                        <div id="q-grid" class="grid h-full content-start gap-x-6"></div>
+                <div class="space-y-3">
+                    <h3 class="text-white font-header font-bold border-l-4 border-cyber-cyan pl-2">2. Candidate Data</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center gap-2 text-sm text-gray-400">
+                            <input type="checkbox" id="showRoll" checked class="accent-cyber-purple"> Roll No
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-gray-400">
+                            <input type="checkbox" id="showMobile" checked class="accent-cyber-purple"> Mobile
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-gray-400">
+                            <input type="checkbox" id="showGender" checked class="accent-cyber-purple"> Gender
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-gray-400">
+                            <input type="checkbox" id="showCategory" checked class="accent-cyber-purple"> Category
+                        </label>
                     </div>
+                </div>
 
-                    <footer class="h-[20mm] border-t border-black mt-2 flex items-end justify-between pt-2">
-                        <div class="flex gap-4 w-2/3">
-                            <div class="border border-gray-400 h-10 w-1/2 relative">
-                                <span class="absolute top-0 left-1 text-[6px] text-gray-500 uppercase">Signature of Candidate</span>
-                            </div>
-                            <div class="border border-gray-400 h-10 w-1/2 relative">
-                                <span class="absolute top-0 left-1 text-[6px] text-gray-500 uppercase">Signature of Invigilator</span>
-                            </div>
+                <div class="space-y-3">
+                    <h3 class="text-white font-header font-bold border-l-4 border-pink-500 pl-2">3. OMR Grid Engine</h3>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-xs text-gray-500 block mb-1">Total Questions</label>
+                            <input type="number" id="totalQuestions" class="cyber-input" value="100" min="10" max="200">
                         </div>
-                        <div class="text-right">
-                             <svg id="barcode"></svg>
+                        <div>
+                            <label class="text-xs text-gray-500 block mb-1">Columns</label>
+                            <select id="gridColumns" class="cyber-input">
+                                <option value="3">3 Cols</option>
+                                <option value="4" selected>4 Cols</option>
+                                <option value="5">5 Cols</option>
+                            </select>
                         </div>
-                    </footer>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500 block mb-1">Options per Q</label>
+                        <select id="optionCount" class="cyber-input">
+                            <option value="4">A, B, C, D</option>
+                            <option value="5">A, B, C, D, E</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <h3 class="text-white font-header font-bold border-l-4 border-green-500 pl-2">4. Machine Codes</h3>
+                    <input type="text" id="qrData" class="cyber-input" placeholder="QR Content" value="OMR-2026-X89">
+                    <input type="text" id="barcodeData" class="cyber-input" placeholder="Barcode ID" value="8932001">
+                </div>
+
+                 <div class="space-y-3">
+                    <h3 class="text-white font-header font-bold border-l-4 border-yellow-500 pl-2">5. Footer</h3>
+                    <div class="grid grid-cols-3 gap-2">
+                        <input type="text" id="scorePos" class="cyber-input text-xs" placeholder="+ Score" value="+4">
+                        <input type="text" id="scoreNeg" class="cyber-input text-xs" placeholder="- Score" value="-1">
+                        <input type="text" id="scoreTot" class="cyber-input text-xs" placeholder="Total" value="360">
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button onclick="app.render()" class="w-full btn-cyber bg-gray-800 border border-gray-600 hover:bg-gray-700">
+                        <i class="fa-solid fa-rotate"></i> Refresh Preview
+                    </button>
                 </div>
             </div>
-        </div>
+        </aside>
+
+        <section class="flex-1 bg-gray-900 relative" id="preview-wrapper">
+            <div class="absolute top-4 right-8 z-50 bg-black/50 backdrop-blur rounded-lg p-2 flex gap-2">
+                <button onclick="app.zoom(-0.1)" class="text-white hover:text-cyber-cyan p-1"><i class="fa-solid fa-minus"></i></button>
+                <span id="zoom-level" class="text-mono text-sm text-white pt-1">100%</span>
+                <button onclick="app.zoom(0.1)" class="text-white hover:text-cyber-cyan p-1"><i class="fa-solid fa-plus"></i></button>
+            </div>
+
+            <div id="omr-preview-container">
+                <div id="omr-sheet">
+                    <div class="fiducial fid-tl"></div>
+                    <div class="fiducial fid-tr"></div>
+                    <div class="fiducial fid-bl"></div>
+                    <div class="fiducial fid-br"></div>
+
+                    <div class="timing-track" id="timing-track"></div>
+
+                    <div class="flex justify-between items-center mb-4 border-b-2 border-[#ff003c] pb-2">
+                        <div class="w-24 h-24 border border-gray-300 flex items-center justify-center text-xs text-gray-400">LOGO</div>
+                        <div class="text-center flex-1">
+                            <h1 class="text-2xl font-bold uppercase tracking-wide" id="disp-institute">INSTITUTE NAME</h1>
+                            <h2 class="text-lg font-semibold text-[#ff003c]" id="disp-exam">EXAM NAME</h2>
+                            <p class="text-xs mt-1">Fill the bubbles completely with Blue/Black Ball Point Pen.</p>
+                        </div>
+                        <div id="qrcode-container"></div>
+                    </div>
+
+                    <div class="grid grid-cols-12 gap-4 mb-4">
+                        
+                        <div class="col-span-8 space-y-3">
+                            <div class="flex border border-[#ff003c]">
+                                <div class="bg-[#ff003c] text-white px-2 py-1 text-xs font-bold w-32 flex items-center">CANDIDATE NAME</div>
+                                <div class="flex-1 p-1"><div class="border-b border-dotted border-gray-400 h-full w-full"></div></div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-2" id="dynamic-fields-container">
+                                </div>
+
+                            <div class="border border-gray-400 p-2 text-[10px] leading-tight mt-2">
+                                <strong>INSTRUCTIONS:</strong>
+                                <ul class="list-disc pl-4 mt-1 space-y-0.5">
+                                    <li>Use Blue/Black Ball Point Pen only.</li>
+                                    <li>Darken the bubbles completely. Do not use Gel Pen or Ink Pen.</li>
+                                    <li>Do not fold, tear or crumple this sheet.</li>
+                                    <li>There is only one correct answer for each question.</li>
+                                </ul>
+                                <div class="flex gap-4 mt-2 items-center">
+                                    <span>Correct: <span class="omr-bubble bg-black border-black"></span></span>
+                                    <span>Wrong: <span class="omr-bubble"><i class="fa-solid fa-check text-[8px]"></i></span> <span class="omr-bubble"><i class="fa-solid fa-xmark text-[8px]"></i></span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-span-4" id="roll-no-container">
+                            </div>
+                    </div>
+
+                    <div class="flex justify-between items-end mb-4 px-2">
+                         <div class="border border-[#ff003c] p-2 w-1/3">
+                            <div class="text-xs font-bold text-[#ff003c] mb-1">BOOKLET SERIES</div>
+                            <div class="flex gap-4">
+                                <div><span class="omr-bubble">A</span></div>
+                                <div><span class="omr-bubble">B</span></div>
+                                <div><span class="omr-bubble">C</span></div>
+                                <div><span class="omr-bubble">D</span></div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <svg id="barcode"></svg>
+                        </div>
+                    </div>
+
+                    <div class="border-t-2 border-b-2 border-[#ff003c] py-2 mb-2 flex justify-between gap-4" id="questions-container">
+                        </div>
+
+                    <div class="mt-auto pt-2">
+                        <div class="flex justify-between text-xs border-b border-gray-300 pb-2 mb-2">
+                             <div>Correct: <span id="disp-pos" class="font-bold">+4</span></div>
+                             <div>Incorrect: <span id="disp-neg" class="font-bold">-1</span></div>
+                             <div>Max Marks: <span id="disp-tot" class="font-bold">360</span></div>
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-4 text-center">
+                            <div class="border border-gray-400 h-16 flex flex-col justify-end p-1">
+                                <span class="text-[9px] uppercase border-t border-gray-300 pt-1">Candidate Sign</span>
+                            </div>
+                             <div class="border border-gray-400 h-16 flex flex-col justify-end p-1">
+                                <span class="text-[9px] uppercase border-t border-gray-300 pt-1">Invigilator Sign</span>
+                            </div>
+                             <div class="border border-gray-400 h-16 flex flex-col justify-end p-1">
+                                <span class="text-[9px] uppercase border-t border-gray-300 pt-1">Thumb Impression</span>
+                            </div>
+                             <div class="border border-gray-400 h-16 flex items-center justify-center">
+                                <span class="text-[10px] text-gray-400">INSTITUTE STAMP</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
     </main>
 
-    <script data-cfasync="false">
-        const App = {
-            state: { scale: 1 },
+    <section class="bg-black py-10 px-8 border-t border-gray-800">
+        <div class="max-w-4xl mx-auto text-gray-400 text-sm">
+            <h2 class="text-cyber-cyan font-header text-xl mb-4">Industrial OMR Specifications & Knowledge Base</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-white font-bold mb-2">Fiducials (Anchors)</h3>
+                    <p class="mb-4">The four 'L' shaped markers at the corners are crucial for the optical scanner to detect the orientation and scale of the sheet. They act as the coordinate origin (0,0) for image processing algorithms.</p>
+                    
+                    <h3 class="text-white font-bold mb-2">Dropout Colors</h3>
+                    <p>We use <span class="text-[#ff003c]">#ff003c</span> (Pantone 192 C). High-end OMR scanners use red light to drop out this specific color, leaving only the black marks (pencil/pen) visible to the sensor. This dramatically improves reading accuracy.</p>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-2">Timing Tracks</h3>
+                    <p class="mb-4">The vertical ladder on the left edge synchronizes the scanner's reading speed with the row position. Without this, a paper feed error could offset the reading of an entire column.</p>
+                    
+                    <h3 class="text-white font-bold mb-2">Paper Physics</h3>
+                    <p>This generator simulates standard A4 (210mm x 297mm) GSM 100 paper. For best results, print at 100% scale without margins. The layout automatically adjusts grid density to fit the page without overcrowding.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-            init() {
-                // Event Listeners
-                ['inp-institute', 'inp-exam', 'inp-total', 'inp-cols', 'inp-opts', 'inp-roll'].forEach(id => {
-                    document.getElementById(id).addEventListener('input', () => this.render());
-                });
-
-                document.getElementById('inp-logo').addEventListener('change', (e) => this.handleLogo(e));
-                window.addEventListener('resize', () => this.fitPaper());
-                
-                // Init Calls
-                this.render();
-                // Delay fitPaper to allow DOM to settle
-                setTimeout(() => this.fitPaper(), 100);
+    <script>
+        const app = {
+            state: {
+                scale: 1,
+                elements: {}
             },
 
-            // --- RENDER ENGINE ---
-            render() {
-                // 1. Text
-                document.getElementById('out-institute').innerText = document.getElementById('inp-institute').value || "INSTITUTE";
-                document.getElementById('out-exam').innerText = document.getElementById('inp-exam').value || "EXAM";
-
-                // 2. Roll Number
-                const rollDigits = parseInt(document.getElementById('inp-roll').value);
-                const rollGrid = document.getElementById('roll-grid');
-                rollGrid.innerHTML = '';
-                for(let i=0; i<rollDigits; i++) {
-                    const col = document.createElement('div');
-                    col.className = 'flex flex-col items-center gap-[1px]';
-                    col.style.width = '14px';
-                    // Write box
-                    col.innerHTML = `<div class="write-box"></div>`;
-                    // Bubbles 0-9
-                    for(let d=0; d<=9; d++) {
-                        col.innerHTML += `<div class="bubble text-[6px] w-[11px] h-[11px]">${d}</div>`;
+            init: function() {
+                // Cache DOM elements
+                const ids = ['instituteName', 'examName', 'totalQuestions', 'gridColumns', 'optionCount', 'qrData', 'barcodeData', 'scorePos', 'scoreNeg', 'scoreTot', 'showRoll', 'showMobile', 'showGender', 'showCategory'];
+                ids.forEach(id => {
+                    this.state.elements[id] = document.getElementById(id);
+                    // Attach listeners
+                    this.state.elements[id].addEventListener('input', () => this.render());
+                    if(this.state.elements[id].type === 'checkbox') {
+                         this.state.elements[id].addEventListener('change', () => this.render());
                     }
-                    rollGrid.appendChild(col);
+                });
+
+                this.render();
+            },
+
+            zoom: function(amount) {
+                this.state.scale += amount;
+                if(this.state.scale < 0.5) this.state.scale = 0.5;
+                if(this.state.scale > 2.0) this.state.scale = 2.0;
+                document.getElementById('zoom-level').innerText = Math.round(this.state.scale * 100) + '%';
+                document.getElementById('omr-sheet').style.transform = `scale(${this.state.scale})`;
+            },
+
+            render: function() {
+                // 1. Update Header Info
+                document.getElementById('disp-institute').innerText = this.state.elements.instituteName.value;
+                document.getElementById('disp-exam').innerText = this.state.elements.examName.value;
+                document.getElementById('disp-pos').innerText = this.state.elements.scorePos.value;
+                document.getElementById('disp-neg').innerText = this.state.elements.scoreNeg.value;
+                document.getElementById('disp-tot').innerText = this.state.elements.scoreTot.value;
+
+                // 2. Generate Codes
+                document.getElementById('qrcode-container').innerHTML = '';
+                new QRCode(document.getElementById('qrcode-container'), {
+                    text: this.state.elements.qrData.value,
+                    width: 64,
+                    height: 64,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+                
+                JsBarcode("#barcode", this.state.elements.barcodeData.value, {
+                    format: "CODE128",
+                    lineColor: "#000",
+                    width: 1.5,
+                    height: 30,
+                    displayValue: true
+                });
+
+                // 3. Render Roll No Block (If enabled)
+                const rollContainer = document.getElementById('roll-no-container');
+                if(this.state.elements.showRoll.checked) {
+                    rollContainer.style.display = 'block';
+                    rollContainer.innerHTML = this.generateNumberGrid('ROLL NO.', 7); // 7 digits standard
+                } else {
+                    rollContainer.style.display = 'none';
                 }
 
-                // 3. Questions Grid
-                const total = parseInt(document.getElementById('inp-total').value);
-                const cols = parseInt(document.getElementById('inp-cols').value);
-                const opts = parseInt(document.getElementById('inp-opts').value);
-                const qContainer = document.getElementById('q-grid');
+                // 4. Render Dynamic Candidate Fields
+                const fieldsContainer = document.getElementById('dynamic-fields-container');
+                fieldsContainer.innerHTML = '';
                 
-                qContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-                qContainer.innerHTML = '';
+                const addField = (label) => {
+                    fieldsContainer.innerHTML += `
+                        <div class="flex border border-[#ff003c]">
+                            <div class="bg-[#ff003c] text-white px-2 py-1 text-[10px] font-bold w-24 flex items-center">${label}</div>
+                            <div class="flex-1 p-1"><div class="border-b border-dotted border-gray-400 h-full w-full"></div></div>
+                        </div>
+                    `;
+                };
 
-                const perCol = Math.ceil(total / cols);
-                const letters = ['A','B','C','D','E'];
+                if(this.state.elements.showMobile.checked) addField('MOBILE NO.');
+                if(this.state.elements.showGender.checked) addField('GENDER');
+                if(this.state.elements.showCategory.checked) addField('CATEGORY');
+                addField('FATHER NAME'); // Always there by default
+                
+                // 5. Render Question Grid
+                this.renderQuestions();
+
+                // 6. Update Timing Track height based on content
+                this.renderTimingTrack();
+            },
+
+            generateNumberGrid: function(title, cols) {
+                let html = `<div class="border border-[#ff003c] p-1">
+                            <div class="text-center font-bold text-[#ff003c] text-xs mb-1">${title}</div>
+                            <div class="flex justify-center gap-1">`;
+                
+                for(let c=0; c<cols; c++) {
+                    html += `<div class="flex flex-col gap-[2px]">
+                                <div class="w-4 h-6 border border-gray-400 mb-1"></div>`; // Write box
+                    for(let r=0; r<=9; r++) {
+                        html += `<div class="omr-bubble">${r}</div>`;
+                    }
+                    html += `</div>`;
+                }
+                html += `</div></div>`;
+                return html;
+            },
+
+            renderQuestions: function() {
+                const totalQ = parseInt(this.state.elements.totalQuestions.value);
+                const cols = parseInt(this.state.elements.gridColumns.value);
+                const options = parseInt(this.state.elements.optionCount.value);
+                const container = document.getElementById('questions-container');
+                
+                const qPerCol = Math.ceil(totalQ / cols);
+                const optionsArr = ['A','B','C','D','E'].slice(0, options);
+
+                let html = '';
 
                 for(let c=0; c<cols; c++) {
-                    const colDiv = document.createElement('div');
-                    if(c < cols-1) {
-                        colDiv.style.borderRight = '1px dashed #ddd';
-                        colDiv.style.paddingRight = '8px';
-                    }
+                    html += `<div class="flex-1 border-r last:border-r-0 border-gray-300 pr-2">`;
+                    html += `<div class="flex text-[10px] font-bold border-b border-gray-400 mb-1 pb-1">
+                                <span class="w-6">Q.No</span>
+                                <span class="flex-1 text-center">Response</span>
+                             </div>`;
                     
-                    for(let r=0; r<perCol; r++) {
-                        const qNum = (c * perCol) + r + 1;
-                        if(qNum > total) break;
+                    for(let i=0; i<qPerCol; i++) {
+                        const qNum = (c * qPerCol) + i + 1;
+                        if(qNum > totalQ) break;
 
-                        const row = document.createElement('div');
-                        row.className = 'flex items-center justify-between mb-1';
+                        html += `<div class="flex items-center mb-[3px]">
+                                    <span class="w-6 text-[10px] font-bold text-center">${qNum}</span>
+                                    <div class="flex gap-2 justify-center flex-1">`;
                         
-                        let bHtml = '';
-                        for(let o=0; o<opts; o++) {
-                            bHtml += `<div class="bubble">${letters[o]}</div>`;
-                        }
+                        optionsArr.forEach(opt => {
+                            html += `<span class="omr-bubble">${opt}</span>`;
+                        });
 
-                        row.innerHTML = `<span class="text-[9px] font-bold w-5 text-right mr-1">${qNum}</span>
-                                         <div class="flex gap-1">${bHtml}</div>`;
-                        
-                        if(r>0 && r%5===0) row.style.marginTop = '6px'; // Visual break
-                        colDiv.appendChild(row);
+                        html += `</div></div>`;
                     }
-                    qContainer.appendChild(colDiv);
+                    html += `</div>`;
                 }
-
-                // 4. Timing Track
-                const track = document.getElementById('track-container');
-                track.innerHTML = '';
-                for(let i=0; i<40; i++) track.innerHTML += `<div class="track-mark"></div>`;
-
-                // 5. Codes
-                document.getElementById('qr-code').innerHTML = '';
-                new QRCode(document.getElementById("qr-code"), {
-                    text: "OMR-" + Date.now(),
-                    width: 50, height: 50
-                });
-                JsBarcode("#barcode", "BATCH-" + new Date().getFullYear(), {
-                    format: "CODE128", height: 20, displayValue: false, margin: 0
-                });
+                container.innerHTML = html;
             },
 
-            // --- MOBILE SCALING ENGINE ---
-            fitPaper() {
-                const viewport = document.getElementById('sheet-viewport');
-                const container = document.getElementById('scroll-container');
-                
-                // Get available width (minus padding)
-                const availW = container.clientWidth - 20; 
-                const sheetW = 794; // 210mm in px at roughly 96dpi logic
-                
-                let scale = availW / sheetW;
-                if(scale > 1.2) scale = 1.2; // Max zoom cap
-                
-                this.state.scale = scale;
-                viewport.style.transform = `scale(${scale})`;
-                // Adjust margin bottom to prevent large empty space due to scaling
-                viewport.style.marginBottom = `-${(1-scale)*100}%`;
-                viewport.style.marginRight = `-${(1-scale)*100}%`; 
-                
-                document.getElementById('scale-indicator').innerText = Math.round(scale*100) + '%';
+            renderTimingTrack: function() {
+                const track = document.getElementById('timing-track');
+                const sheetHeight = document.getElementById('omr-sheet').clientHeight;
+                // Generate roughly 1 dash per cm
+                const count = Math.floor(sheetHeight / 15); 
+                let html = '';
+                for(let i=0; i<count; i++) html += `<div class="timing-dash"></div>`;
+                track.innerHTML = html;
             },
 
-            handleLogo(e) {
-                const file = e.target.files[0];
-                if(file) {
-                    const reader = new FileReader();
-                    reader.onload = (res) => {
-                        const img = document.getElementById('img-logo-preview');
-                        img.src = res.target.result;
-                        img.classList.remove('hidden');
-                        document.getElementById('logo-placeholder').classList.add('hidden');
-                    };
-                    reader.readAsDataURL(file);
-                }
+            printSheet: function() {
+                window.print();
+            },
+
+            downloadPDF: function() {
+                const element = document.getElementById('omr-sheet');
+                // Temporarily reset scale for PDF generation
+                const originalTransform = element.style.transform;
+                element.style.transform = 'scale(1)';
+                
+                const opt = {
+                    margin: 0,
+                    filename: `OMR_${this.state.elements.examName.value.replace(/\s+/g, '_')}.pdf`,
+                    image: { type: 'jpeg', quality: 1.0 },
+                    html2canvas: { scale: 2, useCORS: true }, // High res
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                html2pdf().set(opt).from(element).save().then(() => {
+                    // Restore preview scale
+                    element.style.transform = originalTransform;
+                });
             }
         };
 
-        // --- MOBILE TAB LOGIC ---
-        function switchTab(tab) {
-            const configPanel = document.getElementById('panel-config');
-            const previewPanel = document.getElementById('panel-preview');
-            const tabConfig = document.getElementById('tab-config');
-            const tabPreview = document.getElementById('tab-preview');
-
-            if(tab === 'config') {
-                configPanel.classList.remove('hidden');
-                previewPanel.classList.add('hidden');
-                previewPanel.classList.remove('flex');
-                tabConfig.classList.add('active');
-                tabPreview.classList.remove('active');
-            } else {
-                configPanel.classList.add('hidden');
-                previewPanel.classList.remove('hidden');
-                previewPanel.classList.add('flex');
-                tabConfig.classList.remove('active');
-                tabPreview.classList.add('active');
-                App.fitPaper(); // Recalculate size when showing
-            }
-        }
-
-        // --- PDF DOWNLOAD ---
-        function downloadPDF() {
-            const btn = document.getElementById('btn-dl');
-            const oldText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> GENERATING...';
-            btn.disabled = true;
-
-            const element = document.getElementById('omr-content');
-            // Clone the element to render it clean (without scaling transforms)
-            const opt = {
-                margin: 0,
-                filename: `OMR_Sheet.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            // Temporarily reset transform for the capture
-            const vp = document.getElementById('sheet-viewport');
-            const oldTrans = vp.style.transform;
-            vp.style.transform = 'scale(1)';
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                vp.style.transform = oldTrans;
-                btn.innerHTML = oldText;
-                btn.disabled = false;
-            });
-        }
-
-        // Boot
-        window.addEventListener('DOMContentLoaded', () => App.init());
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => app.init());
 
     </script>
 </body>
