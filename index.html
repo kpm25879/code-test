@@ -1,40 +1,45 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Next-Gen Industrial OMR Sheet Generator. Cyber-secure, high-precision Optical Mark Recognition generation for enterprise and education.">
-    <title>OMR FORGE | Industrial Grade Sheet Generator</title>
+    <title>OMR CYBER ARCHITECT | Industrial Generator</title>
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://*.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com;">
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
 
-    <script>
+    <script src="https://cdn.tailwindcss.com" data-cfasync="false"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer" data-cfasync="false"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js" data-cfasync="false"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer" data-cfasync="false"></script>
+
+    <script data-cfasync="false">
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
+                    colors: {
+                        cyber: {
+                            black: '#050505',
+                            dark: '#0a0a0a',
+                            panel: '#111111',
+                            border: '#333333',
+                            primary: '#00f0ff', /* Cyan Neon */
+                            secondary: '#7000ff', /* Purple Neon */
+                            accent: '#ff003c', /* Red Neon */
+                            text: '#e0e0e0'
+                        }
+                    },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace'],
+                        display: ['Orbitron', 'sans-serif'],
                     },
-                    colors: {
-                        cyber: {
-                            950: '#020617', // Deep Space
-                            900: '#0f172a',
-                            800: '#1e293b',
-                            cyan: '#06b6d4', // Neon Cyan
-                            pink: '#ec4899', // Scanner Dropout
-                            green: '#10b981'
-                        }
-                    },
-                    backgroundImage: {
-                        'grid-pattern': "linear-gradient(rgba(6,182,212,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.05) 1px, transparent 1px)"
+                    boxShadow: {
+                        'neon': '0 0 10px rgba(0, 240, 255, 0.3), 0 0 20px rgba(0, 240, 255, 0.1)',
+                        'neon-red': '0 0 10px rgba(255, 0, 60, 0.3)',
                     }
                 }
             }
@@ -42,631 +47,591 @@
     </script>
 
     <style>
-        /* --- CORE PHYSICS --- */
         :root {
-            --dropout-color: #db2777; /* Pink-600: Scanners ignore this */
-            --scan-black: #000000;    /* Scanners read this */
+            --omr-dropout: #ec4899; /* Pink is standard dropout color for scanners */
+            --omr-black: #000000;
         }
 
         body {
-            background-color: #020617;
+            background-color: #050505;
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
             background-size: 40px 40px;
-            color: #cbd5e1;
+            color: #e0e0e0;
         }
 
-        /* Paper Simulation - Strict A4 */
-        .paper-viewport {
-            transform-origin: top center;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            padding-bottom: 50px;
+        /* --- INPUT STYLING --- */
+        input, select {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            color: #00f0ff;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
         }
-
-        .sheet-base {
+        input:focus, select:focus {
+            border-color: #00f0ff;
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
+            outline: none;
+        }
+        
+        /* --- OMR SHEET CSS (PHYSICS) --- */
+        .sheet-container {
             width: 210mm;
-            height: 297mm;
+            height: 297mm; /* A4 */
             background: white;
             position: relative;
-            box-shadow: 0 0 60px rgba(6, 182, 212, 0.15);
             padding: 10mm;
+            box-sizing: border-box;
             color: black;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            font-family: 'Inter', sans-serif;
             overflow: hidden;
-            /* Anti-aliasing for barcode precision */
-            text-rendering: optimizeLegibility; 
+            display: flex;
+            flex-direction: column;
+            transform-origin: top center;
         }
 
-        /* --- OMR COMPONENTS --- */
-        .omr-bubble {
-            width: 12px;
-            height: 12px;
-            border: 1px solid var(--dropout-color);
+        /* Machine Readable Elements */
+        .fiducial { position: absolute; background: black; z-index: 50; }
+        .fid-tl { top: 5mm; left: 5mm; width: 20px; height: 5px; } 
+        .fid-tl-v { top: 5mm; left: 5mm; width: 5px; height: 20px; }
+        .fid-tr { top: 5mm; right: 5mm; width: 20px; height: 5px; } 
+        .fid-tr-v { top: 5mm; right: 5mm; width: 5px; height: 20px; }
+        .fid-bl { bottom: 5mm; left: 5mm; width: 20px; height: 5px; } 
+        .fid-bl-v { bottom: 5mm; left: 5mm; width: 5px; height: 20px; }
+        .fid-br { bottom: 5mm; right: 5mm; width: 20px; height: 5px; } 
+        .fid-br-v { bottom: 5mm; right: 5mm; width: 5px; height: 20px; }
+
+        /* Timing Track (Critical for scanners) */
+        .timing-track-container {
+            position: absolute;
+            left: 2mm;
+            top: 30mm;
+            bottom: 20mm;
+            width: 6mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .track-mark {
+            width: 100%;
+            height: 3px;
+            background: black;
+            margin-bottom: 5px; 
+        }
+
+        /* Bubbles */
+        .bubble {
+            width: 13px;
+            height: 13px;
+            border: 1.2px solid var(--omr-dropout);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 7.5px;
-            color: var(--dropout-color);
+            font-size: 8px;
+            color: var(--omr-dropout);
             font-weight: 700;
-            line-height: 1;
         }
-
-        .omr-box {
+        
+        .write-box {
             width: 14px;
             height: 18px;
-            border: 1.5px solid var(--dropout-color);
+            border: 1.5px solid var(--omr-dropout);
+            border-radius: 2px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: 'JetBrains Mono', monospace;
             font-size: 11px;
-            color: var(--scan-black);
-            font-weight: 600;
+            color: black;
+            margin-bottom: 2px;
         }
 
-        /* Scanner Tracks (Machine Vision) */
-        .timing-track-v {
-            position: absolute; left: 5mm; top: 40mm; bottom: 15mm;
-            width: 6px; display: flex; flex-direction: column; justify-content: space-between; z-index: 50;
+        /* Question Grid System */
+        .q-grid {
+            display: grid;
+            height: 100%;
+            align-content: start;
+            column-gap: 15px; 
         }
-        .timing-track-h {
-            position: absolute; left: 15mm; bottom: 5mm; right: 15mm;
-            height: 6px; display: flex; justify-content: space-between; z-index: 50;
+        .q-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px; 
         }
-        .track-mark { background: black; }
-        .track-mark-v { width: 100%; height: 4px; }
-        .track-mark-h { height: 100%; width: 4px; }
-
-        /* Fiducials (Corner Markers) */
-        .fiducial { position: absolute; border: 4px solid black; width: 25px; height: 25px; z-index: 60; }
-        .fid-tl { top: 10mm; left: 10mm; border-right: none; border-bottom: none; } 
-        .fid-tr { top: 10mm; right: 10mm; border-left: none; border-bottom: none; } 
-        .fid-bl { bottom: 10mm; left: 10mm; border-right: none; border-top: none; } 
-        .fid-br { bottom: 10mm; right: 10mm; border-left: none; border-top: none; }
-
-        /* Custom UI Inputs */
-        .cyber-input {
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            width: 100%;
-            transition: all 0.2s;
-        }
-        .cyber-input:focus {
-            border-color: #06b6d4;
-            box-shadow: 0 0 10px rgba(6,182,212,0.2);
-            outline: none;
-        }
-        .cyber-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #94a3b8;
-            margin-bottom: 4px;
-            display: block;
+        .q-num {
+            font-size: 9px;
+            font-weight: 700;
+            width: 20px;
+            text-align: right;
+            margin-right: 6px;
         }
 
-        /* Print Hiding */
+        /* Printing Hider */
         @media print {
             body * { visibility: hidden; }
-            .sheet-base, .sheet-base * { visibility: visible; }
-            .sheet-base {
-                position: absolute; left: 0; top: 0; margin: 0;
-                box-shadow: none; width: 210mm; height: 297mm;
+            #omrSheet, #omrSheet * { visibility: visible; }
+            #paperWrapper { 
+                position: absolute; 
+                left: 0; top: 0; 
+                margin: 0; 
+                padding: 0;
+                transform: none !important; 
+                width: 210mm;
+                height: 297mm;
             }
             .no-print { display: none !important; }
         }
     </style>
 </head>
-<body class="flex flex-col h-screen overflow-hidden bg-grid-pattern">
+<body class="h-screen flex flex-col overflow-hidden">
 
-    <nav class="h-16 border-b border-cyber-800 bg-cyber-950/90 backdrop-blur z-50 flex items-center justify-between px-6 no-print shrink-0">
+    <nav class="h-14 bg-cyber-panel border-b border-cyber-border flex items-center justify-between px-6 z-50 no-print">
         <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-cyber-cyan text-black flex items-center justify-center font-bold rounded shadow-[0_0_15px_#06b6d4]">OMR</div>
-            <h1 class="font-mono font-bold text-white tracking-tighter text-lg">FORGE <span class="text-cyber-cyan text-xs">v4.0.IND</span></h1>
+            <i class="fa-solid fa-microchip text-cyber-primary text-xl animate-pulse"></i>
+            <h1 class="font-display font-bold text-lg tracking-wider text-white">OMR <span class="text-cyber-primary">CYBER</span> ARCHITECT</h1>
         </div>
-        <div class="flex gap-4 text-xs font-mono text-cyber-cyan">
-            <span class="flex items-center gap-2"><div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div> ENGINE ACTIVE</span>
+        <div class="text-xs font-mono text-gray-500">
+            <span id="statusIndicator" class="text-green-500">● SYSTEM ONLINE</span>
         </div>
     </nav>
 
-    <div class="flex flex-grow overflow-hidden">
+    <div class="flex-grow flex overflow-hidden">
         
-        <aside class="w-[360px] bg-cyber-900 border-r border-cyber-800 flex flex-col no-print overflow-y-auto shrink-0 z-40 shadow-2xl">
-            <div class="p-5 space-y-6">
+        <aside class="w-[400px] bg-cyber-panel border-r border-cyber-border flex flex-col overflow-y-auto no-print scrollbar-thin">
+            
+            <div class="p-5 space-y-8">
                 
-                <div class="space-y-3 border-b border-cyber-800 pb-5">
-                    <h2 class="text-cyber-cyan text-xs font-bold uppercase flex items-center gap-2">
-                        <i class="fa-solid fa-database"></i> Examination Metadata
-                    </h2>
-                    <div>
-                        <label class="cyber-label">Institute Name</label>
-                        <input type="text" id="inpInst" class="cyber-input" value="CYBERDYNE INSTITUTE OF TECH">
-                    </div>
-                    <div>
-                        <label class="cyber-label">Exam Name</label>
-                        <input type="text" id="inpExam" class="cyber-input" value="ENTRANCE EXAM 2026 - SET A">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="cyber-label">Date</label>
-                            <input type="date" id="inpDate" class="cyber-input">
-                        </div>
-                        <div class="flex items-end">
-                            <label class="flex items-center gap-2 cursor-pointer w-full bg-cyber-800 border border-cyber-700 hover:border-cyber-cyan p-2 rounded transition">
-                                <input type="checkbox" id="toggleLogo" class="accent-cyber-cyan" checked>
-                                <span class="text-[10px] text-white">SHOW LOGO</span>
+                <div class="space-y-3 relative group">
+                    <div class="absolute -left-5 top-0 w-1 h-full bg-cyber-primary opacity-0 group-hover:opacity-100 transition"></div>
+                    <h3 class="text-xs font-bold text-cyber-primary uppercase tracking-widest font-display"><i class="fa-solid fa-database mr-2"></i>Header Data</h3>
+                    <div class="grid gap-3">
+                        <input type="text" id="instName" class="w-full px-3 py-2 text-xs rounded" placeholder="Institute Name" value="CYBERDYNE SYSTEMS ACADEMY">
+                        <input type="text" id="examName" class="w-full px-3 py-2 text-xs rounded" placeholder="Exam Name" value="APTITUDE TEST SERIES-A">
+                        <div class="flex items-center justify-between bg-cyber-dark p-2 border border-cyber-border rounded">
+                            <span class="text-xs text-gray-400">Show Logo</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="showLogo" class="sr-only peer" checked>
+                                <div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyber-primary"></div>
                             </label>
                         </div>
+                        <input type="file" id="logoInput" accept="image/*" class="text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-cyber-border file:text-cyber-primary hover:file:bg-gray-700">
                     </div>
                 </div>
 
-                <div class="space-y-3 border-b border-cyber-800 pb-5">
-                    <h2 class="text-cyber-pink text-xs font-bold uppercase flex items-center gap-2">
-                        <i class="fa-solid fa-border-all"></i> Grid Engine Logic
-                    </h2>
-                    <div class="grid grid-cols-3 gap-2">
+                <div class="space-y-3 relative group">
+                    <div class="absolute -left-5 top-0 w-1 h-full bg-cyber-secondary opacity-0 group-hover:opacity-100 transition"></div>
+                    <h3 class="text-xs font-bold text-cyber-secondary uppercase tracking-widest font-display"><i class="fa-solid fa-layer-group mr-2"></i>Grid Engine</h3>
+                    
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="cyber-label">Total Qs</label>
-                            <input type="number" id="inpTotalQ" class="cyber-input text-center" value="100" min="10" max="200">
+                            <label class="text-[10px] text-gray-500 uppercase">Total Questions</label>
+                            <input type="number" id="totalQs" value="100" min="10" max="200" class="w-full px-2 py-1 text-center rounded">
                         </div>
                         <div>
-                            <label class="cyber-label">Columns</label>
-                            <select id="inpCols" class="cyber-input">
-                                <option value="3">3 Cols</option>
-                                <option value="4" selected>4 Cols</option>
-                                <option value="5">5 Cols</option>
+                            <label class="text-[10px] text-gray-500 uppercase">Columns</label>
+                            <select id="colCount" class="w-full px-2 py-1 text-center rounded">
+                                <option value="4">4 Columns</option>
+                                <option value="3">3 Columns</option>
+                                <option value="5">5 Columns</option>
                             </select>
                         </div>
                         <div>
-                            <label class="cyber-label">Options</label>
-                            <select id="inpOpts" class="cyber-input">
-                                <option value="4">A-D</option>
-                                <option value="5">A-E</option>
+                            <label class="text-[10px] text-gray-500 uppercase">Options (A-E)</label>
+                            <select id="optCount" class="w-full px-2 py-1 text-center rounded">
+                                <option value="4">4 (A-D)</option>
+                                <option value="5">5 (A-E)</option>
                             </select>
                         </div>
+                        <div>
+                            <label class="text-[10px] text-gray-500 uppercase">Roll No Digits</label>
+                            <input type="number" id="rollDigits" value="10" min="5" max="12" class="w-full px-2 py-1 text-center rounded">
+                        </div>
                     </div>
-                    <div class="text-[10px] text-slate-500 font-mono mt-1">
-                        * Auto-calculates rows per column based on Total Qs / Columns.
+                    
+                    <div class="pt-2">
+                        <label class="text-[10px] text-gray-500 uppercase">Booklet No. Digits</label>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="hasBooklet" checked class="accent-cyber-secondary">
+                            <input type="number" id="bookletDigits" value="7" min="4" max="10" class="w-full px-2 py-1 text-center rounded">
+                        </div>
                     </div>
                 </div>
 
-                <div class="space-y-3 border-b border-cyber-800 pb-5">
-                    <h2 class="text-green-400 text-xs font-bold uppercase flex items-center gap-2">
-                        <i class="fa-solid fa-microchip"></i> Machine Data
-                    </h2>
-                    <div class="grid grid-cols-2 gap-2">
+                <div class="space-y-3 relative group">
+                    <div class="absolute -left-5 top-0 w-1 h-full bg-cyber-accent opacity-0 group-hover:opacity-100 transition"></div>
+                    <h3 class="text-xs font-bold text-cyber-accent uppercase tracking-widest font-display"><i class="fa-solid fa-barcode mr-2"></i>Machine Codes</h3>
+                    
+                    <div class="grid gap-2">
                         <div>
-                            <label class="cyber-label">Roll No Digits</label>
-                            <input type="number" id="inpRoll" class="cyber-input text-center" value="7" min="4" max="10">
+                            <label class="text-[10px] text-gray-500 uppercase">QR Code Content</label>
+                            <input type="text" id="qrText" value="OMR-SECURE-V4" class="w-full px-2 py-1 text-xs rounded text-cyber-accent border-cyber-border focus:border-cyber-accent">
                         </div>
                         <div>
-                            <label class="cyber-label">Booklet No Digits</label>
-                            <input type="number" id="inpBooklet" class="cyber-input text-center" value="6" min="4" max="8">
+                            <label class="text-[10px] text-gray-500 uppercase">Barcode Content</label>
+                            <input type="text" id="barText" value="BATCH-2026" class="w-full px-2 py-1 text-xs rounded text-cyber-accent border-cyber-border focus:border-cyber-accent">
                         </div>
                     </div>
-                    <div>
-                        <label class="cyber-label">Barcode Data</label>
-                        <input type="text" id="inpBarcode" class="cyber-input" value="OMR-BATCH-2026-X9">
-                    </div>
-                    <label class="flex items-center gap-2 cursor-pointer mt-2">
-                        <input type="checkbox" id="toggleBooklet" class="accent-cyber-cyan" checked>
-                        <span class="text-xs text-slate-400">Enable Booklet No. Block</span>
-                    </label>
                 </div>
 
-                <div class="pt-2">
-                    <button onclick="downloadPDF()" class="w-full bg-gradient-to-r from-cyber-cyan to-blue-600 text-black font-bold font-mono py-3 rounded hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] transition transform hover:-translate-y-1">
-                        <i class="fa-solid fa-file-pdf mr-2"></i> EXPORT INDUSTRIAL PDF
+                <div class="sticky bottom-0 bg-cyber-panel pt-4 pb-10 border-t border-cyber-border">
+                    <button onclick="downloadPDF()" id="dlBtn" class="w-full py-3 bg-gradient-to-r from-cyber-primary to-blue-600 text-black font-display font-bold text-sm tracking-wider hover:shadow-neon transition-all transform hover:-translate-y-1 rounded">
+                        <i class="fa-solid fa-print mr-2"></i> EXPORT HIGH-RES PDF
                     </button>
-                    <p class="text-[9px] text-center mt-2 text-slate-500">Rendered client-side. No data transmitted.</p>
+                    <div class="text-center mt-2 text-[10px] text-gray-600 font-mono">
+                        Secure Client-Side Generation
+                    </div>
                 </div>
             </div>
         </aside>
 
-        <main class="flex-grow relative bg-[#0b101b] flex flex-col items-center overflow-hidden">
+        <main class="flex-grow bg-[#000000] relative flex flex-col items-center justify-center p-8 overflow-auto">
             
-            <div class="absolute top-4 z-30 bg-cyber-800/80 backdrop-blur rounded-full px-4 py-1 border border-cyber-700 flex items-center gap-3 no-print shadow-lg">
-                <button onclick="adjustZoom(-0.1)" class="text-slate-300 hover:text-white"><i class="fa-solid fa-minus"></i></button>
-                <span id="zoomDisplay" class="text-xs font-mono text-cyber-cyan w-12 text-center">Fit</span>
-                <button onclick="adjustZoom(0.1)" class="text-slate-300 hover:text-white"><i class="fa-solid fa-plus"></i></button>
+            <div class="absolute top-4 right-4 flex gap-2 z-40 bg-cyber-panel border border-cyber-border rounded px-2 py-1 no-print">
+                <button onclick="changeZoom(-0.1)" class="text-gray-400 hover:text-white"><i class="fa-solid fa-minus"></i></button>
+                <span id="zoomDisplay" class="text-xs font-mono text-cyber-primary w-12 text-center pt-0.5">100%</span>
+                <button onclick="changeZoom(0.1)" class="text-gray-400 hover:text-white"><i class="fa-solid fa-plus"></i></button>
             </div>
 
-            <div id="scrollContainer" class="flex-grow w-full overflow-auto p-10 flex justify-center custom-scrollbar">
-                <div id="paperViewport" class="paper-viewport">
+            <div id="paperWrapper" class="transition-transform duration-200 origin-top">
+                
+                <div id="omrSheet" class="sheet-container">
                     
-                    <div id="omrSheet" class="sheet-base">
-                        
-                        <div class="fiducial fid-tl"></div>
-                        <div class="fiducial fid-tr"></div>
-                        <div class="fiducial fid-bl"></div>
-                        <div class="fiducial fid-br"></div>
+                    <div class="fiducial fid-tl"></div><div class="fiducial fid-tl-v"></div>
+                    <div class="fiducial fid-tr"></div><div class="fiducial fid-tr-v"></div>
+                    <div class="fiducial fid-bl"></div><div class="fiducial fid-bl-v"></div>
+                    <div class="fiducial fid-br"></div><div class="fiducial fid-br-v"></div>
+                    
+                    <div id="timingTrack" class="timing-track-container"></div>
 
-                        <div class="timing-track-v" id="trackV"></div>
-                        <div class="timing-track-h" id="trackH"></div>
+                    <header class="h-[35mm] flex border-b-2 border-pink-500 pb-2 mb-2 gap-4">
+                        <div id="logoContainer" class="w-[25mm] h-[25mm] border border-gray-300 rounded flex items-center justify-center bg-gray-50 overflow-hidden">
+                            <span class="text-[8px] text-gray-400 text-center">INSTITUTE<br>LOGO</span>
+                            <img id="logoDisplay" class="hidden w-full h-full object-contain" crossorigin="anonymous">
+                        </div>
 
-                        <header class="flex border-b-2 border-pink-500 pb-2 mb-3 h-[25mm] gap-4 pl-4 pr-4">
-                            <div id="logoArea" class="w-[20mm] h-[20mm] flex items-center justify-center border border-slate-200">
-                                <i class="fa-solid fa-university text-3xl text-slate-200"></i>
+                        <div class="flex-grow flex flex-col justify-center">
+                            <h1 id="dispInstName" class="text-2xl font-black text-pink-700 uppercase leading-none tracking-tight">INSTITUTE NAME</h1>
+                            <h2 id="dispExamName" class="text-lg font-bold text-gray-800 uppercase tracking-widest mt-1">EXAM NAME</h2>
+                            <div class="text-[9px] mt-2 font-mono bg-gray-100 inline-block px-2 py-0.5 rounded border border-gray-300 w-fit">
+                                FILL BUBBLES COMPLETELY: <span class="bubble inline-flex w-3 h-3 text-[6px] bg-pink-600 text-white border-none ml-1"><i class="fa-solid fa-check"></i></span>
                             </div>
-                            
-                            <div class="flex-grow flex flex-col justify-center text-center">
-                                <h1 id="outInst" class="text-2xl font-black text-pink-700 uppercase leading-none tracking-tight">INSTITUTE NAME</h1>
-                                <h2 id="outExam" class="text-sm font-bold text-slate-700 uppercase tracking-widest mt-1">EXAM NAME</h2>
-                            </div>
+                        </div>
 
-                            <div class="w-[45mm] flex flex-col items-end justify-center">
-                                <svg id="barcodeRender"></svg>
+                        <div id="bookletArea" class="flex flex-col items-end">
+                            <div class="text-[9px] font-bold text-pink-700 uppercase mb-1">Booklet No.</div>
+                            <div class="flex flex-col items-center border border-pink-300 p-1 rounded bg-pink-50">
+                                <div id="bookletInputs" class="flex gap-[2px] mb-1"></div>
+                                <div id="bookletBubbles" class="flex gap-[2px]"></div>
                             </div>
-                        </header>
+                        </div>
+                    </header>
 
-                        <section class="flex gap-4 h-[55mm] mb-4 pl-4 pr-4">
-                            
-                            <div class="w-1/4 bg-pink-50/50 border border-pink-200 p-2 rounded flex flex-col justify-between">
-                                <div>
-                                    <h4 class="font-bold text-pink-800 text-[9px] mb-1 border-b border-pink-300">INSTRUCTIONS</h4>
-                                    <ul class="text-[7px] space-y-1 text-slate-800 list-disc pl-3 font-medium">
-                                        <li>Use <b>HB Pencil</b> or <b>Blue/Black Pen</b>.</li>
-                                        <li>Darken bubbles completely.</li>
-                                        <li>Avoid stray marks on timing tracks.</li>
-                                    </ul>
-                                </div>
-                                <div class="text-center mb-1">
-                                    <div class="text-[6px] text-slate-400 mb-0.5 uppercase">Marking Method</div>
-                                    <div class="flex justify-center gap-1">
-                                        <div class="omr-bubble bg-pink-600 text-white border-pink-600"><i class="fa-solid fa-check"></i></div>
-                                        <div class="omr-bubble"><i class="fa-solid fa-xmark text-red-500"></i></div>
-                                        <div class="omr-bubble text-pink-300">/</div>
+                    <section class="flex gap-4 h-[40mm] mb-4">
+                        <div class="flex flex-col">
+                            <div class="bg-pink-600 text-white text-[9px] font-bold text-center py-0.5 rounded-t w-full">ROLL NO.</div>
+                            <div class="border border-pink-600 border-t-0 rounded-b p-1 flex-grow flex flex-col items-center justify-between">
+                                <div id="rollInputs" class="flex gap-[1px] mb-1"></div>
+                                <div id="rollBubbles" class="flex gap-[1px]"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex-grow flex flex-col gap-2">
+                            <div class="flex gap-2 h-full">
+                                <div class="flex-grow border border-gray-300 rounded p-2 grid grid-cols-1 gap-2 relative">
+                                    <span class="absolute -top-2 left-2 bg-white px-1 text-[8px] font-bold text-gray-500">CANDIDATE DETAILS</span>
+                                    <div class="mt-1">
+                                        <div class="text-[8px] text-gray-500 uppercase">Name (Block Letters)</div>
+                                        <div class="border-b border-dashed border-gray-400 h-4"></div>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div class="flex-grow flex gap-3">
-                                
-                                <div class="flex flex-col">
-                                    <div class="bg-pink-700 text-white text-[8px] font-bold text-center py-0.5 w-full">ROLL NUMBER</div>
-                                    <div class="border border-pink-700 p-1 flex-grow flex flex-col items-center justify-between">
-                                        <div id="rollInputs" class="flex gap-[1px] mb-1"></div>
-                                        <div id="rollBubbles" class="flex gap-[2px]"></div>
+                                    <div>
+                                        <div class="text-[8px] text-gray-500 uppercase">Center Code / Name</div>
+                                        <div class="border-b border-dashed border-gray-400 h-4"></div>
                                     </div>
-                                </div>
-
-                                <div id="bookletSection" class="flex flex-col">
-                                    <div class="bg-slate-700 text-white text-[8px] font-bold text-center py-0.5 w-full">BOOKLET NO.</div>
-                                    <div class="border border-slate-700 p-1 flex-grow flex flex-col items-center justify-between">
-                                        <div id="bookInputs" class="flex gap-[1px] mb-1"></div>
-                                        <div id="bookBubbles" class="flex gap-[2px]"></div>
+                                    <div>
+                                        <div class="text-[8px] text-gray-500 uppercase">Subject</div>
+                                        <div class="border-b border-dashed border-gray-400 h-4"></div>
                                     </div>
                                 </div>
 
-                                <div class="flex-grow flex flex-col gap-2">
-                                    <div class="border border-slate-300 p-1 rounded relative h-1/2">
-                                        <span class="absolute top-[-6px] left-2 bg-white px-1 text-[7px] font-bold text-pink-600 uppercase">Candidate Name</span>
-                                        <div id="nameGrid" class="flex flex-wrap gap-[2px] mt-2 content-start"></div>
-                                    </div>
-                                    <div class="h-1/2 flex gap-2">
-                                        <div class="border border-slate-300 w-1/2 p-1 relative rounded">
-                                            <span class="absolute top-[-6px] left-2 bg-white px-1 text-[7px] font-bold text-slate-500 uppercase">Subject</span>
-                                        </div>
-                                        <div class="border border-slate-300 w-1/2 p-1 relative rounded">
-                                            <span class="absolute top-[-6px] left-2 bg-white px-1 text-[7px] font-bold text-slate-500 uppercase">Date</span>
-                                            <div id="outDateText" class="mt-2 text-sm font-mono text-center"></div>
-                                        </div>
-                                    </div>
+                                <div class="w-[30mm] flex flex-col justify-between items-end">
+                                    <div id="qrPlace" class="border border-gray-200 p-1"></div>
+                                    <svg id="barcodePlace" class="w-full"></svg>
                                 </div>
                             </div>
-                        </section>
+                        </div>
+                    </section>
 
-                        <section class="border-t-2 border-pink-600 relative pt-4 pl-6 pr-6 flex-grow">
-                            <div class="absolute top-[-10px] left-1/2 transform -translate-x-1/2 bg-pink-700 text-white text-[9px] font-bold px-6 py-0.5 rounded-b shadow-sm">
-                                ANSWERS
-                            </div>
-                            
-                            <div id="questionGrid" class="grid w-full h-full align-start gap-x-6 gap-y-1">
-                                </div>
-                        </section>
-
-                        <footer class="h-[30mm] border-t-2 border-slate-800 mt-2 flex gap-4 items-end pl-6 pr-6 pb-4">
-                            <div class="w-[20mm] h-[20mm] bg-white flex items-center justify-center">
-                                <div id="qrRender"></div>
-                            </div>
-                            
-                            <div class="flex-grow grid grid-cols-3 gap-3 h-full pb-1">
-                                <div class="border border-slate-400 relative rounded h-[15mm] self-end">
-                                    <span class="absolute top-1 left-2 text-[6px] uppercase text-slate-500">Candidate Signature</span>
-                                </div>
-                                <div class="border border-slate-400 relative rounded h-[15mm] self-end">
-                                    <span class="absolute top-1 left-2 text-[6px] uppercase text-slate-500">Invigilator Signature</span>
-                                </div>
-                                <div class="border-2 border-dotted border-slate-300 relative rounded h-[20mm] bg-pink-50/30 flex items-center justify-center">
-                                    <span class="text-[8px] uppercase text-pink-300 font-bold rotate-[-15deg]">Center Stamp</span>
-                                </div>
-                            </div>
-                        </footer>
+                    <div class="h-[5mm] w-full flex items-center justify-center mb-2">
+                        <div class="h-[1px] w-full bg-gray-200"></div>
+                        <span class="bg-white px-2 text-[8px] font-bold text-gray-400 tracking-[3px] uppercase">Answers</span>
+                        <div class="h-[1px] w-full bg-gray-200"></div>
                     </div>
+
+                    <div id="questionsContainer" class="flex-grow border-t-2 border-pink-500 pt-2 relative">
+                        <div id="qGrid" class="q-grid">
+                            </div>
+                    </div>
+
+                    <footer class="h-[25mm] mt-2 border-t border-black pt-2 flex items-end gap-4">
+                        <div class="flex-grow grid grid-cols-3 gap-4 h-full">
+                            <div class="border border-gray-400 rounded relative h-full">
+                                <span class="absolute top-1 left-2 text-[7px] uppercase text-gray-500">Candidate Signature</span>
+                            </div>
+                            <div class="border border-gray-400 rounded relative h-full">
+                                <span class="absolute top-1 left-2 text-[7px] uppercase text-gray-500">Invigilator Signature</span>
+                            </div>
+                            <div class="border border-gray-400 rounded relative bg-pink-50 h-full">
+                                <span class="absolute top-1 left-2 text-[7px] uppercase text-pink-600 font-bold">Center Seal</span>
+                            </div>
+                        </div>
+                        <div class="text-[7px] text-right text-gray-300 font-mono leading-tight">
+                            SYSTEM ID: <span class="text-black font-bold">OMR-CYBER-GEN</span><br>
+                            TIMESTAMP: <span id="timestamp"></span>
+                        </div>
+                    </footer>
 
                 </div>
             </div>
         </main>
-
     </div>
 
-    <article class="bg-cyber-950 border-t border-cyber-800 text-slate-400 py-16 px-6 no-print">
-        <div class="max-w-5xl mx-auto">
-            <h2 class="text-3xl font-bold text-white mb-8 font-mono">Industrial OMR Sheet Generator <span class="text-cyber-cyan">Documentation</span></h2>
-            
-            <div class="grid md:grid-cols-2 gap-12">
-                <div class="space-y-6">
-                    <h3 class="text-xl text-white font-semibold">Optical Mark Recognition (OMR) Architecture</h3>
-                    <p class="leading-relaxed">
-                        This tool generates <strong>Level 3 Industrial OMR Sheets</strong> designed for hardware scanners (Sekonic, OpScan, Scantron) and software-based vision systems (ZipGrade, OMR APIs). Unlike standard HTML forms, this generator adheres to strict physical constraints required for optical reading:
-                    </p>
-                    <ul class="list-disc pl-5 space-y-2 text-sm text-slate-300">
-                        <li><strong>Dropout Colors:</strong> The grid utilizes specific Hex codes (Pink/Red spectrum) that drop out under Infrared (IR) scanning, leaving only the carbon pencil marks visible to the sensor.</li>
-                        <li><strong>Timing Tracks:</strong> The vertical and horizontal black blocks (Timing Tracks) provide the scanner with a coordinate system to map the paper's velocity and skew.</li>
-                        <li><strong>Fiducials:</strong> Corner markers ensure image processing algorithms can rectify the perspective of the sheet if scanned via mobile cameras.</li>
-                    </ul>
-                </div>
-
-                <div class="space-y-6">
-                    <h3 class="text-xl text-white font-semibold">User Guide & Troubleshooting</h3>
-                    
-                    <div class="space-y-4">
-                        <details class="group bg-cyber-900 rounded border border-cyber-800">
-                            <summary class="p-4 cursor-pointer font-bold text-white flex justify-between">
-                                How do I configure the columns?
-                                <i class="fa-solid fa-chevron-down text-cyber-cyan transition group-open:rotate-180"></i>
-                            </summary>
-                            <div class="p-4 pt-0 text-sm">
-                                The <strong>Grid Engine</strong> automatically distributes questions. If you select 100 Questions and 4 Columns, the system calculates 25 rows per column. If the layout looks too dense, increase the number of columns to 5 or reduce the question count.
-                            </div>
-                        </details>
-
-                        <details class="group bg-cyber-900 rounded border border-cyber-800">
-                            <summary class="p-4 cursor-pointer font-bold text-white flex justify-between">
-                                Is this compatible with Python/OpenCV?
-                                <i class="fa-solid fa-chevron-down text-cyber-cyan transition group-open:rotate-180"></i>
-                            </summary>
-                            <div class="p-4 pt-0 text-sm">
-                                Yes. The sheet includes standardized Fiducials (Top-Left, Top-Right, Bottom-Left, Bottom-Right). A Python script using `cv2.findContours` can easily locate these anchors to perform a perspective transform before reading the bubble grid.
-                            </div>
-                        </details>
-
-                        <details class="group bg-cyber-900 rounded border border-cyber-800">
-                            <summary class="p-4 cursor-pointer font-bold text-white flex justify-between">
-                                Printing Instructions
-                                <i class="fa-solid fa-chevron-down text-cyber-cyan transition group-open:rotate-180"></i>
-                            </summary>
-                            <div class="p-4 pt-0 text-sm">
-                                1. Use <strong>A4 Paper</strong> (100 GSM recommended).<br>
-                                2. Set Printer Scaling to <strong>"100%" or "Actual Size"</strong>. Do NOT use "Fit to Page".<br>
-                                3. Laser printers provide better edge definition for the timing tracks than inkjet printers.
-                            </div>
-                        </details>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-12 pt-8 border-t border-cyber-800 text-center text-xs font-mono text-slate-600">
-                SYSTEM ID: OMR-FORGE-CORE | LATENCY: 0ms | RENDER: CLIENT-SIDE
-            </div>
-        </div>
-    </article>
-
-    <script>
-        // --- LOGIC ENGINE ---
-        const Engine = {
-            state: {},
+    <script data-cfasync="false">
+        // MAIN APPLICATION LOGIC
+        const App = {
+            scale: 1,
             
             init() {
-                this.cacheDOM();
-                this.bindEvents();
-                this.setDate();
-                this.render(); // Initial Render
-                this.autoScale();
-            },
-
-            cacheDOM() {
-                this.dom = {
-                    inputs: document.querySelectorAll('input, select'),
-                    sheet: document.getElementById('omrSheet'),
-                    grid: document.getElementById('questionGrid'),
-                    inst: document.getElementById('outInst'),
-                    exam: document.getElementById('outExam'),
-                    date: document.getElementById('outDateText'),
-                    // Dynamic Blocks
-                    rollInputs: document.getElementById('rollInputs'),
-                    rollBubbles: document.getElementById('rollBubbles'),
-                    bookInputs: document.getElementById('bookInputs'),
-                    bookBubbles: document.getElementById('bookBubbles'),
-                    nameGrid: document.getElementById('nameGrid'),
-                    // Tracks
-                    trackV: document.getElementById('trackV'),
-                    trackH: document.getElementById('trackH')
-                };
-            },
-
-            bindEvents() {
-                this.dom.inputs.forEach(el => el.addEventListener('input', () => this.render()));
-                window.addEventListener('resize', () => this.autoScale());
-            },
-
-            setDate() {
-                document.getElementById('inpDate').valueAsDate = new Date();
-            },
-
-            // --- MAIN RENDER LOOP ---
-            render() {
-                // 1. Text Data
-                this.dom.inst.innerText = document.getElementById('inpInst').value || "INSTITUTE";
-                this.dom.exam.innerText = document.getElementById('inpExam').value || "EXAM";
-                this.dom.date.innerText = document.getElementById('inpDate').value;
-                
-                // 2. Toggles
-                const showLogo = document.getElementById('toggleLogo').checked;
-                document.getElementById('logoArea').style.visibility = showLogo ? 'visible' : 'hidden';
-                
-                const showBooklet = document.getElementById('toggleBooklet').checked;
-                document.getElementById('bookletSection').style.display = showBooklet ? 'flex' : 'none';
-
-                // 3. Matrix Generators
-                this.generateMatrix('inpRoll', 'rollInputs', 'rollBubbles');
-                if(showBooklet) this.generateMatrix('inpBooklet', 'bookInputs', 'bookBubbles');
-
-                // 4. Name Grid (Fixed 20 chars)
-                this.dom.nameGrid.innerHTML = '';
-                for(let i=0; i<20; i++) {
-                    this.dom.nameGrid.innerHTML += `<div class="omr-box w-[15px] h-[18px] border-slate-300"></div>`;
+                // Check if libraries loaded
+                if(typeof html2pdf === 'undefined' || typeof QRCode === 'undefined') {
+                    document.getElementById('statusIndicator').innerHTML = "<span class='text-red-500'>● ERROR LOADING LIBS (Check Internet)</span>";
+                    console.error("Libraries failed to load. Check CORS/CSP.");
                 }
 
-                // 5. Question Grid Logic
-                this.generateQuestionGrid();
+                // Attach Event Listeners
+                const inputs = document.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    input.addEventListener('input', () => this.render());
+                });
 
-                // 6. Machine Codes
-                this.generateCodes();
-                this.generateTracks();
+                document.getElementById('logoInput').addEventListener('change', (e) => this.handleLogo(e));
+                
+                // Initial Render
+                this.render();
+                this.autoZoom();
+                window.addEventListener('resize', () => this.autoZoom());
+                
+                document.getElementById('timestamp').innerText = new Date().toISOString().split('T')[0];
             },
 
-            generateMatrix(inputId, inputContainerId, bubbleContainerId) {
-                const count = parseInt(document.getElementById(inputId).value);
-                const inCont = document.getElementById(inputContainerId);
-                const bubCont = document.getElementById(bubbleContainerId);
-                
-                inCont.innerHTML = '';
-                bubCont.innerHTML = '';
-
-                for(let i=0; i<count; i++) {
-                    // Box
-                    inCont.innerHTML += `<div class="omr-box"></div>`;
-                    
-                    // Bubbles Column
-                    let colHtml = `<div class="flex flex-col gap-[1px] w-[14px] items-center">`;
-                    for(let d=0; d<=9; d++) {
-                        colHtml += `<div class="omr-bubble text-[6px] w-[10px] h-[10px]">${d}</div>`;
+            handleLogo(e) {
+                const file = e.target.files[0];
+                if(file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        const img = document.getElementById('logoDisplay');
+                        img.src = ev.target.result;
+                        img.classList.remove('hidden');
+                        document.getElementById('logoContainer').classList.add('border-none');
                     }
-                    colHtml += `</div>`;
-                    bubCont.innerHTML += colHtml;
+                    reader.readAsDataURL(file);
                 }
             },
 
-            generateQuestionGrid() {
-                const total = parseInt(document.getElementById('inpTotalQ').value);
-                const cols = parseInt(document.getElementById('inpCols').value);
-                const optCount = parseInt(document.getElementById('inpOpts').value);
-                const options = ['A','B','C','D','E'].slice(0, optCount);
+            generateBubbleColumn(digits, containerId, inputsId) {
+                const bubbleCont = document.getElementById(containerId);
+                const inputCont = document.getElementById(inputsId);
                 
-                const grid = this.dom.grid;
-                grid.innerHTML = '';
-                grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+                bubbleCont.innerHTML = '';
+                inputCont.innerHTML = '';
 
-                const rowsPerCol = Math.ceil(total / cols);
+                for(let i=0; i<digits; i++) {
+                    const box = document.createElement('div');
+                    box.className = 'write-box';
+                    inputCont.appendChild(box);
+
+                    const col = document.createElement('div');
+                    col.className = 'flex flex-col gap-[1px] items-center';
+                    col.style.width = '14px';
+                    
+                    let html = '';
+                    for(let d=0; d<=9; d++) {
+                        html += `<div class="bubble text-[6px] w-[11px] h-[11px]">${d}</div>`;
+                    }
+                    col.innerHTML = html;
+                    bubbleCont.appendChild(col);
+                }
+            },
+
+            render() {
+                // Text Data
+                document.getElementById('dispInstName').innerText = document.getElementById('instName').value;
+                document.getElementById('dispExamName').innerText = document.getElementById('examName').value;
+
+                // Logo Toggle
+                const showLogo = document.getElementById('showLogo').checked;
+                document.getElementById('logoContainer').style.visibility = showLogo ? 'visible' : 'hidden';
+
+                // Roll Number
+                const rollDigits = parseInt(document.getElementById('rollDigits').value);
+                this.generateBubbleColumn(rollDigits, 'rollBubbles', 'rollInputs');
+
+                // Booklet Number
+                const hasBooklet = document.getElementById('hasBooklet').checked;
+                const bookletArea = document.getElementById('bookletArea');
+                if(hasBooklet) {
+                    bookletArea.classList.remove('hidden');
+                    const bookletDigits = parseInt(document.getElementById('bookletDigits').value);
+                    this.generateBubbleColumn(bookletDigits, 'bookletBubbles', 'bookletInputs');
+                } else {
+                    bookletArea.classList.add('hidden');
+                }
+
+                // QR Code
+                const qrText = document.getElementById('qrText').value || "OMR-GEN";
+                const qrDiv = document.getElementById("qrPlace");
+                qrDiv.innerHTML = '';
+                try {
+                    new QRCode(qrDiv, {
+                        text: qrText,
+                        width: 50, height: 50,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.M
+                    });
+                } catch(e) { console.warn("QR Error:", e); }
+
+                // Barcode
+                try {
+                    JsBarcode("#barcodePlace", document.getElementById('barText').value || "12345", {
+                        format: "CODE128", height: 25, displayValue: false, margin: 0, width: 1.5
+                    });
+                } catch(e) { console.warn("Barcode error (input too short or invalid chars)"); }
+
+                // Questions Grid
+                const totalQs = parseInt(document.getElementById('totalQs').value);
+                const cols = parseInt(document.getElementById('colCount').value);
+                const opts = parseInt(document.getElementById('optCount').value);
+                
+                const qGrid = document.getElementById('qGrid');
+                qGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+                qGrid.innerHTML = '';
+
+                const qPerCol = Math.ceil(totalQs / cols);
+                const letters = ['A','B','C','D','E'];
 
                 for(let c=0; c<cols; c++) {
                     const colDiv = document.createElement('div');
-                    colDiv.className = 'border-r border-slate-300 pr-2 last:border-0';
-                    
-                    let html = '';
-                    for(let r=0; r<rowsPerCol; r++) {
-                        const qNum = (c * rowsPerCol) + r + 1;
-                        if(qNum > total) break;
-
-                        let bubbles = '';
-                        options.forEach(opt => {
-                            bubbles += `<div class="omr-bubble">${opt}</div>`;
-                        });
-
-                        html += `
-                        <div class="flex items-center justify-between mb-[3px]">
-                            <span class="text-[9px] font-bold w-[15px] text-right mr-2 text-slate-700">${qNum}</span>
-                            <div class="flex gap-[3px]">${bubbles}</div>
-                        </div>`;
+                    colDiv.className = 'q-col';
+                    if(c < cols-1) {
+                        colDiv.style.borderRight = '1px dashed #cbd5e1';
+                        colDiv.style.paddingRight = '10px';
                     }
-                    colDiv.innerHTML = html;
-                    grid.appendChild(colDiv);
+                    
+                    for(let i=0; i<qPerCol; i++) {
+                        const qNum = (c * qPerCol) + i + 1;
+                        if(qNum > totalQs) break;
+
+                        const row = document.createElement('div');
+                        row.className = 'q-row';
+                        
+                        let bubblesHtml = '';
+                        for(let o=0; o<opts; o++) {
+                            bubblesHtml += `<div class="bubble">${letters[o]}</div>`;
+                        }
+                        
+                        if(i > 0 && i % 5 === 0) row.style.marginTop = '6px';
+                        row.innerHTML = `<div class="q-num">${qNum}</div><div class="flex gap-[3px]">${bubblesHtml}</div>`;
+                        colDiv.appendChild(row);
+                    }
+                    qGrid.appendChild(colDiv);
+                }
+
+                // Timing Tracks
+                const trackContainer = document.getElementById('timingTrack');
+                trackContainer.innerHTML = '';
+                for(let i=0; i<45; i++) {
+                    const mark = document.createElement('div');
+                    mark.className = 'track-mark';
+                    trackContainer.appendChild(mark);
                 }
             },
 
-            generateCodes() {
-                const val = document.getElementById('inpBarcode').value;
-                JsBarcode("#barcodeRender", val, {
-                    format: "CODE128", width: 1.2, height: 30, displayValue: true, fontSize: 9
-                });
+            autoZoom() {
+                const wrapper = document.getElementById('paperWrapper');
+                if(!wrapper || !wrapper.parentElement) return;
+                
+                const availableHeight = wrapper.parentElement.offsetHeight - 60;
+                const scale = availableHeight / wrapper.offsetHeight;
+                const availableWidth = wrapper.parentElement.offsetWidth - 60;
+                const scaleW = availableWidth / wrapper.offsetWidth;
 
-                document.getElementById('qrRender').innerHTML = '';
-                new QRCode(document.getElementById("qrRender"), {
-                    text: val, width: 60, height: 60
-                });
+                this.scale = Math.min(scale, scaleW, 1.2); 
+                this.applyZoom();
             },
 
-            generateTracks() {
-                // Approximate track generation for visuals
-                let vHtml = '';
-                for(let i=0; i<30; i++) vHtml += `<div class="track-mark track-mark-v"></div>`;
-                this.dom.trackV.innerHTML = vHtml;
-
-                let hHtml = '';
-                for(let i=0; i<20; i++) hHtml += `<div class="track-mark track-mark-h"></div>`;
-                this.dom.trackH.innerHTML = hHtml;
-            },
-
-            autoScale() {
-                const viewport = document.getElementById('paperViewport');
-                const container = document.getElementById('scrollContainer');
-                // Standard A4 width in PX at 96dpi is approx 794px. 
-                // We add padding.
-                const availableWidth = container.offsetWidth - 80; 
-                const sheetWidth = 794; // approx width of 210mm
-                
-                let scale = availableWidth / sheetWidth;
-                if(scale > 1.2) scale = 1.2;
-                if(scale < 0.4) scale = 0.4;
-                
-                viewport.style.transform = `scale(${scale})`;
-                document.getElementById('zoomDisplay').innerText = Math.round(scale*100) + '%';
-                
-                // Adjust margin to pull up footer when scaled down
-                viewport.style.marginBottom = `-${(1-scale)*300}px`;
+            applyZoom() {
+                const wrapper = document.getElementById('paperWrapper');
+                wrapper.style.transform = `scale(${this.scale})`;
+                document.getElementById('zoomDisplay').innerText = Math.round(this.scale * 100) + '%';
             }
         };
 
-        // --- GLOBAL ACTIONS ---
-        let currentZoom = 1;
-        function adjustZoom(delta) {
-            // Simple manual override of the auto-scaler logic would go here
-            // For now, re-trigger autoscale or simple implementation:
-             // (In a full app, we'd update a state variable and apply it)
-             Engine.autoScale(); 
-        }
+        window.changeZoom = (delta) => {
+            App.scale += delta;
+            App.applyZoom();
+        };
 
-        function downloadPDF() {
-            const btn = document.querySelector('button[onclick="downloadPDF()"]');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> PROCESSING MATRIX...';
-            
+        window.downloadPDF = () => {
             const element = document.getElementById('omrSheet');
+            const wrapper = document.getElementById('paperWrapper');
+            const oldTransform = wrapper.style.transform;
+            const btn = document.getElementById('dlBtn');
+            const originalText = btn.innerHTML;
+
+            // 1. Reset scale for PDF generation
+            wrapper.style.transform = 'scale(1)';
+            
+            // 2. Loading State
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> PROCESSING...';
+            btn.disabled = true;
+
             const opt = {
                 margin: 0,
-                filename: `OMR_${document.getElementById('inpExam').value}.pdf`,
-                image: { type: 'jpeg', quality: 1 },
-                html2canvas: { scale: 3, useCORS: true, logging: false }, // High Scale for crisp text
+                filename: `OMR_${document.getElementById('examName').value.replace(/\s+/g,'_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 3, // Lower scale slightly for stability
+                    useCORS: true, 
+                    logging: false,
+                    backgroundColor: '#ffffff' // Force white background
+                },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // Temporarily unscale for print capture
-            const vp = document.getElementById('paperViewport');
-            const oldTransform = vp.style.transform;
-            vp.style.transform = 'scale(1)';
-
+            // 3. Generate
             html2pdf().set(opt).from(element).save().then(() => {
-                vp.style.transform = oldTransform;
-                btn.innerHTML = '<i class="fa-solid fa-file-pdf mr-2"></i> EXPORT INDUSTRIAL PDF';
+                wrapper.style.transform = oldTransform;
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }).catch(err => {
+                console.error("PDF Error:", err);
+                alert("Error generating PDF. Please ensure all images are valid.");
+                wrapper.style.transform = oldTransform;
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             });
-        }
+        };
 
-        // Init
-        document.addEventListener('DOMContentLoaded', () => Engine.init());
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            App.init();
+        });
     </script>
 </body>
 </html>
