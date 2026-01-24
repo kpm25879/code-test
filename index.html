@@ -3,25 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMR Architect | Professional Industrial Sheet Generator</title>
+    <title>OMR Command Center | Industrial OMR Sheet Generator</title>
     
-    <meta name="description" content="Free Online Industrial OMR Sheet Generator. Create, customize, and download high-precision A4 OMR sheets with barcodes, QR codes, and variable data fields. Cloudflare ready.">
-    <meta name="keywords" content="OMR Generator, Optical Mark Recognition, Bubble Sheet Creator, Exam Answer Sheet, HTML5 OMR, JavaScript OMR">
-    <meta name="author" content="OMR Architect">
+    <meta name="description" content="Free industrial-grade OMR Sheet Generator. Create customizable, scanner-readable Optical Mark Recognition sheets with barcode, QR code, and variable data fields.">
+    <meta name="keywords" content="OMR Generator, Optical Mark Recognition, Bubble Sheet Creator, Exam Sheet Maker, Cloudflare OMR">
+    <meta name="author" content="OMR Command Center">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -30,16 +29,15 @@
                             panel: '#0a0a0f',
                             cyan: '#00f0ff',
                             purple: '#7000ff',
-                            text: '#e0e0e0',
-                            dim: '#4a4a4a'
+                            text: '#e2e8f0'
                         },
                         omr: {
-                            dropout: '#ff003c', // Standard hardware dropout color (Pink/Red)
+                            red: '#ff003c', // Dropout color
                             black: '#000000'
                         }
                     },
                     fontFamily: {
-                        header: ['Rajdhani', 'sans-serif'],
+                        display: ['Rajdhani', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace'],
                     }
                 }
@@ -48,563 +46,533 @@
     </script>
 
     <style>
-        /* --- Global Styles --- */
-        body {
-            background-color: #050505;
-            color: #e0e0e0;
-            font-family: 'Rajdhani', sans-serif;
-            overflow-x: hidden;
-        }
-
-        /* --- Scrollbar --- */
+        /* Custom Scrollbar for Cyber Look */
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0a0a0f; }
-        ::-webkit-scrollbar-thumb { background: #7000ff; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #00f0ff; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #00f0ff; border-radius: 4px; }
 
-        /* --- Cyber Inputs --- */
-        .cyber-input {
-            background: #0a0a0f;
-            border: 1px solid #333;
-            color: #00f0ff;
-            font-family: 'JetBrains Mono', monospace;
-            padding: 0.5rem;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-        .cyber-input:focus {
-            outline: none;
-            border-color: #00f0ff;
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
-        }
-
-        /* --- Buttons --- */
-        .btn-cyber {
-            background: linear-gradient(45deg, #7000ff, #00f0ff);
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-        }
-        .btn-cyber:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-        }
-
-        /* --- OMR Sheet Physics (A4) --- */
-        #omr-preview-container {
-            perspective: 1000px;
-            padding: 2rem;
-            background-image: radial-gradient(#1a1a1a 1px, transparent 1px);
-            background-size: 20px 20px;
-            overflow: auto;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-
-        #omr-sheet {
+        /* A4 Paper Physics */
+        .a4-sheet {
             width: 210mm;
-            min-height: 297mm;
+            min-height: 297mm; /* Allow expansion if content is huge, but standard is 297 */
             background: white;
-            color: black;
+            color: #ff003c; /* Default Dropout Color */
             position: relative;
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            /* Standard OMR Styles */
-            font-family: 'Arial', sans-serif; /* Best for OCR */
-            padding: 10mm;
+            font-family: 'Arial', sans-serif; /* Standard readable font for paper */
+            overflow: hidden;
             box-sizing: border-box;
             transform-origin: top center;
         }
 
-        /* --- OMR Specific Elements (Dropout Color) --- */
-        .omr-border { border: 2px solid #ff003c; }
-        .omr-text { color: #ff003c; font-weight: bold; }
-        .omr-bubble {
-            width: 14px;
-            height: 14px;
-            border: 1px solid #ff003c;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 9px;
-            color: #ff003c;
-            margin: 1px;
-        }
-        .omr-bubble-fill {
-            width: 32px;
-            height: 16px;
-            border: 1px solid #ff003c;
-            border-radius: 10px;
-            display: inline-block;
-        }
-
-        /* Fiducials & Timing Tracks (Strictly Black for Scanners) */
+        /* OMR Specific Elements */
         .fiducial {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 40px;
+            height: 40px;
             border-color: black;
             border-style: solid;
-            z-index: 100;
+            z-index: 50;
         }
-        .fid-tl { top: 5mm; left: 5mm; border-width: 4px 0 0 4px; }
-        .fid-tr { top: 5mm; right: 5mm; border-width: 4px 4px 0 0; }
-        .fid-bl { bottom: 5mm; left: 5mm; border-width: 0 0 4px 4px; }
-        .fid-br { bottom: 5mm; right: 5mm; border-width: 0 4px 4px 0; }
+        .fiducial-tl { top: 10mm; left: 10mm; border-width: 5px 0 0 5px; }
+        .fiducial-tr { top: 10mm; right: 10mm; border-width: 5px 5px 0 0; }
+        .fiducial-bl { bottom: 10mm; left: 10mm; border-width: 0 0 5px 5px; }
+        .fiducial-br { bottom: 10mm; right: 10mm; border-width: 0 5px 5px 0; }
 
         .timing-track {
             position: absolute;
-            left: 5mm;
-            top: 25mm;
-            bottom: 25mm;
+            left: 15mm;
+            top: 50mm;
+            bottom: 50mm;
             width: 10px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
-        .timing-dash {
+        .track-mark {
             width: 100%;
             height: 4px;
             background: black;
         }
 
-        /* --- Print Media Query --- */
+        .bubble {
+            width: 18px;
+            height: 18px;
+            border: 1px solid #ff003c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #ff003c;
+        }
+
+        .box-input {
+            width: 20px;
+            height: 25px;
+            border: 1px solid #ff003c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: black;
+        }
+
+        /* Print Override */
         @media print {
             body * { visibility: hidden; }
-            #omr-sheet, #omr-sheet * { visibility: visible; }
-            #omr-sheet {
-                position: absolute;
-                left: 0;
-                top: 0;
-                margin: 0;
-                padding: 10mm;
-                transform: none !important;
-                box-shadow: none;
-                width: 210mm;
-                height: 297mm;
+            #preview-container, #preview-container * { visibility: visible; }
+            #preview-container { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%; 
+                margin: 0; 
+                padding: 0;
             }
-            @page {
-                size: A4;
+            .a4-sheet { 
+                transform: none !important; 
+                box-shadow: none; 
                 margin: 0;
             }
         }
     </style>
 </head>
-<body class="flex flex-col h-screen">
+<body class="bg-cyber-bg text-cyber-text font-mono h-screen flex flex-col overflow-hidden">
 
-    <header class="h-16 bg-cyber-panel border-b border-gray-800 flex items-center justify-between px-6 z-50">
+    <header class="h-16 border-b border-cyber-cyan/30 bg-cyber-panel flex items-center justify-between px-6 shadow-[0_0_15px_rgba(0,240,255,0.2)] z-10">
         <div class="flex items-center gap-3">
-            <i class="fa-solid fa-file-contract text-cyber-cyan text-2xl"></i>
-            <h1 class="text-2xl font-header font-bold text-white tracking-wider">OMR <span class="text-cyber-purple">ARCHITECT</span></h1>
+            <i class="fa-solid fa-microchip text-cyber-purple text-2xl"></i>
+            <h1 class="font-display text-2xl tracking-wider font-bold text-white">OMR <span class="text-cyber-cyan">COMMAND CENTER</span></h1>
         </div>
         <div class="flex gap-4">
-            <button onclick="app.printSheet()" class="btn-cyber flex items-center gap-2">
-                <i class="fa-solid fa-print"></i> Print
+            <button onclick="generateOMR()" class="px-4 py-2 bg-transparent border border-cyber-cyan text-cyber-cyan hover:bg-cyber-cyan hover:text-black transition-all font-bold text-sm tracking-widest uppercase rounded-sm">
+                <i class="fa-solid fa-rotate-right mr-2"></i>Generate
             </button>
-            <button onclick="app.downloadPDF()" class="btn-cyber flex items-center gap-2 filter hue-rotate-60">
-                <i class="fa-solid fa-file-pdf"></i> Save PDF
+            <button onclick="downloadPDF()" class="px-6 py-2 bg-gradient-to-r from-cyber-purple to-cyber-cyan text-black font-bold text-sm tracking-widest uppercase rounded-sm hover:shadow-[0_0_20px_rgba(0,240,255,0.6)] transition-all">
+                <i class="fa-solid fa-file-pdf mr-2"></i>Download PDF
             </button>
         </div>
     </header>
 
     <main class="flex-1 flex overflow-hidden">
         
-        <aside class="w-full md:w-96 bg-cyber-panel border-r border-gray-800 overflow-y-auto flex flex-col z-40">
-            <div class="p-4 border-b border-gray-800">
-                <h2 class="text-cyber-cyan font-mono text-sm uppercase mb-2"><i class="fa-solid fa-sliders"></i> Configuration</h2>
-                <p class="text-xs text-gray-500">Modify parameters to regenerate the sheet instantly.</p>
-            </div>
-
-            <div class="flex-1 p-4 space-y-6">
+        <aside class="w-full md:w-96 bg-cyber-panel border-r border-cyber-cyan/20 flex flex-col overflow-y-auto">
+            <div class="p-6 space-y-8">
                 
                 <div class="space-y-3">
-                    <h3 class="text-white font-header font-bold border-l-4 border-cyber-purple pl-2">1. Exam Metadata</h3>
-                    <input type="text" id="instituteName" class="cyber-input" placeholder="Institute Name" value="INDIAN INSTITUTE OF TECHNOLOGY">
-                    <input type="text" id="examName" class="cyber-input" placeholder="Exam Name" value="JOINT ENTRANCE EXAMINATION 2026">
+                    <h2 class="font-display text-cyber-purple text-lg border-b border-cyber-purple/30 pb-1">
+                        <i class="fa-solid fa-building mr-2"></i>Institute Identity
+                    </h2>
+                    <div class="grid gap-3">
+                        <label class="text-xs text-gray-400">Institute Name</label>
+                        <input type="text" id="instName" value="CYBER INSTITUTE OF TECHNOLOGY" class="w-full bg-black border border-gray-700 p-2 text-sm focus:border-cyber-cyan outline-none text-white rounded">
+                        
+                        <label class="text-xs text-gray-400">Exam Name</label>
+                        <input type="text" id="examName" value="NATIONAL ENTRANCE EXAM 2026" class="w-full bg-black border border-gray-700 p-2 text-sm focus:border-cyber-cyan outline-none text-white rounded">
+                        
+                        <label class="text-xs text-gray-400">Logo URL (Optional)</label>
+                        <input type="text" id="logoUrl" placeholder="https://..." class="w-full bg-black border border-gray-700 p-2 text-sm focus:border-cyber-cyan outline-none text-white rounded">
+                    </div>
                 </div>
 
                 <div class="space-y-3">
-                    <h3 class="text-white font-header font-bold border-l-4 border-cyber-cyan pl-2">2. Candidate Data</h3>
-                    <div class="grid grid-cols-2 gap-2">
-                        <label class="flex items-center gap-2 text-sm text-gray-400">
-                            <input type="checkbox" id="showRoll" checked class="accent-cyber-purple"> Roll No
+                    <h2 class="font-display text-cyber-purple text-lg border-b border-cyber-purple/30 pb-1">
+                        <i class="fa-solid fa-id-card mr-2"></i>Data Matrix
+                    </h2>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="fieldRoll" checked class="accent-cyber-cyan"> <span>Roll No (Grid)</span>
                         </label>
-                        <label class="flex items-center gap-2 text-sm text-gray-400">
-                            <input type="checkbox" id="showMobile" checked class="accent-cyber-purple"> Mobile
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="fieldMobile" checked class="accent-cyber-cyan"> <span>Mobile No</span>
                         </label>
-                        <label class="flex items-center gap-2 text-sm text-gray-400">
-                            <input type="checkbox" id="showGender" checked class="accent-cyber-purple"> Gender
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="fieldGender" checked class="accent-cyber-cyan"> <span>Gender</span>
                         </label>
-                        <label class="flex items-center gap-2 text-sm text-gray-400">
-                            <input type="checkbox" id="showCategory" checked class="accent-cyber-purple"> Category
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="fieldSet" checked class="accent-cyber-cyan"> <span>Set Code</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="fieldBooklet" checked class="accent-cyber-cyan"> <span>Booklet No</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="fieldFather" class="accent-cyber-cyan"> <span>Father's Name</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="fieldStamp" checked class="accent-cyber-cyan"> <span>Stamp Box</span>
+                        </label>
+                         <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="fieldThumb" checked class="accent-cyber-cyan"> <span>Thumb Imp.</span>
                         </label>
                     </div>
                 </div>
 
                 <div class="space-y-3">
-                    <h3 class="text-white font-header font-bold border-l-4 border-pink-500 pl-2">3. OMR Grid Engine</h3>
-                    
-                    <div class="grid grid-cols-2 gap-3">
+                    <h2 class="font-display text-cyber-cyan text-lg border-b border-cyber-cyan/30 pb-1">
+                        <i class="fa-solid fa-list-ol mr-2"></i>Layout Engine
+                    </h2>
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="text-xs text-gray-500 block mb-1">Total Questions</label>
-                            <input type="number" id="totalQuestions" class="cyber-input" value="100" min="10" max="200">
+                            <label class="text-xs text-gray-400">Total Questions</label>
+                            <input type="number" id="totalQuestions" value="100" min="10" max="200" class="w-full bg-black border border-gray-700 p-2 text-sm focus:border-cyber-cyan outline-none text-white rounded">
                         </div>
                         <div>
-                            <label class="text-xs text-gray-500 block mb-1">Columns</label>
-                            <select id="gridColumns" class="cyber-input">
-                                <option value="3">3 Cols</option>
-                                <option value="4" selected>4 Cols</option>
-                                <option value="5">5 Cols</option>
+                            <label class="text-xs text-gray-400">Columns</label>
+                            <select id="layoutCols" class="w-full bg-black border border-gray-700 p-2 text-sm focus:border-cyber-cyan outline-none text-white rounded">
+                                <option value="3">3 Columns</option>
+                                <option value="4" selected>4 Columns</option>
+                                <option value="5">5 Columns</option>
                             </select>
                         </div>
                     </div>
                     <div>
-                        <label class="text-xs text-gray-500 block mb-1">Options per Q</label>
-                        <select id="optionCount" class="cyber-input">
-                            <option value="4">A, B, C, D</option>
-                            <option value="5">A, B, C, D, E</option>
-                        </select>
+                        <label class="text-xs text-gray-400">Options per Question</label>
+                        <div class="flex gap-4 mt-1">
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" name="opts" value="4" checked class="accent-cyber-cyan"> <span class="text-sm">ABCD (4)</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" name="opts" value="5" class="accent-cyber-cyan"> <span class="text-sm">ABCDE (5)</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
                 <div class="space-y-3">
-                    <h3 class="text-white font-header font-bold border-l-4 border-green-500 pl-2">4. Machine Codes</h3>
-                    <input type="text" id="qrData" class="cyber-input" placeholder="QR Content" value="OMR-2026-X89">
-                    <input type="text" id="barcodeData" class="cyber-input" placeholder="Barcode ID" value="8932001">
-                </div>
-
-                 <div class="space-y-3">
-                    <h3 class="text-white font-header font-bold border-l-4 border-yellow-500 pl-2">5. Footer</h3>
-                    <div class="grid grid-cols-3 gap-2">
-                        <input type="text" id="scorePos" class="cyber-input text-xs" placeholder="+ Score" value="+4">
-                        <input type="text" id="scoreNeg" class="cyber-input text-xs" placeholder="- Score" value="-1">
-                        <input type="text" id="scoreTot" class="cyber-input text-xs" placeholder="Total" value="360">
+                    <h2 class="font-display text-cyber-purple text-lg border-b border-cyber-purple/30 pb-1">
+                        <i class="fa-solid fa-qrcode mr-2"></i>Machine Codes
+                    </h2>
+                    <div class="grid gap-3">
+                        <label class="text-xs text-gray-400">QR Code Value</label>
+                        <input type="text" id="qrValue" value="OMR-2026-X89" class="w-full bg-black border border-gray-700 p-2 text-sm focus:border-cyber-cyan outline-none text-white rounded">
+                        <label class="text-xs text-gray-400">Barcode Value</label>
+                        <input type="text" id="barValue" value="EXAM-BATCH-A" class="w-full bg-black border border-gray-700 p-2 text-sm focus:border-cyber-cyan outline-none text-white rounded">
                     </div>
                 </div>
 
-                <div class="pt-4">
-                    <button onclick="app.render()" class="w-full btn-cyber bg-gray-800 border border-gray-600 hover:bg-gray-700">
-                        <i class="fa-solid fa-rotate"></i> Refresh Preview
-                    </button>
-                </div>
+            </div>
+            
+            <div class="mt-auto p-6 border-t border-cyber-cyan/20 text-xs text-gray-500">
+                <h3 class="font-bold text-gray-300 mb-2">Technical Specs</h3>
+                <ul class="list-disc pl-4 space-y-1">
+                    <li><strong>Fiducials:</strong> Corner anchors for skew correction.</li>
+                    <li><strong>Dropout Color:</strong> #FF003C (Scanner ignores this).</li>
+                    <li><strong>Timing Track:</strong> Left-side ladder for row sync.</li>
+                </ul>
             </div>
         </aside>
 
-        <section class="flex-1 bg-gray-900 relative" id="preview-wrapper">
-            <div class="absolute top-4 right-8 z-50 bg-black/50 backdrop-blur rounded-lg p-2 flex gap-2">
-                <button onclick="app.zoom(-0.1)" class="text-white hover:text-cyber-cyan p-1"><i class="fa-solid fa-minus"></i></button>
-                <span id="zoom-level" class="text-mono text-sm text-white pt-1">100%</span>
-                <button onclick="app.zoom(0.1)" class="text-white hover:text-cyber-cyan p-1"><i class="fa-solid fa-plus"></i></button>
-            </div>
-
-            <div id="omr-preview-container">
-                <div id="omr-sheet">
-                    <div class="fiducial fid-tl"></div>
-                    <div class="fiducial fid-tr"></div>
-                    <div class="fiducial fid-bl"></div>
-                    <div class="fiducial fid-br"></div>
-
-                    <div class="timing-track" id="timing-track"></div>
-
-                    <div class="flex justify-between items-center mb-4 border-b-2 border-[#ff003c] pb-2">
-                        <div class="w-24 h-24 border border-gray-300 flex items-center justify-center text-xs text-gray-400">LOGO</div>
-                        <div class="text-center flex-1">
-                            <h1 class="text-2xl font-bold uppercase tracking-wide" id="disp-institute">INSTITUTE NAME</h1>
-                            <h2 class="text-lg font-semibold text-[#ff003c]" id="disp-exam">EXAM NAME</h2>
-                            <p class="text-xs mt-1">Fill the bubbles completely with Blue/Black Ball Point Pen.</p>
+        <section class="flex-1 bg-neutral-900 relative flex items-center justify-center p-10 overflow-auto">
+            <div id="scale-wrapper" class="transition-transform duration-300">
+                <div id="omr-sheet" class="a4-sheet p-8">
+                    
+                    <div class="fiducial fiducial-tl"></div>
+                    <div class="fiducial fiducial-tr"></div>
+                    <div class="fiducial fiducial-bl"></div>
+                    <div class="fiducial fiducial-br"></div>
+                    
+                    <div class="flex justify-between items-start border-b-2 border-omr-red pb-2 mb-4" style="margin-top: 10mm; margin-left: 10mm; margin-right: 10mm;">
+                        <div class="flex items-center gap-4">
+                            <img id="printLogo" src="" alt="Logo" class="h-16 w-16 object-contain hidden">
+                            <div>
+                                <h1 id="printInstName" class="text-2xl font-black text-black uppercase tracking-wide">INSTITUTE NAME</h1>
+                                <h2 id="printExamName" class="text-lg font-bold text-omr-red">EXAM NAME</h2>
+                            </div>
                         </div>
-                        <div id="qrcode-container"></div>
+                        <div class="flex flex-col items-end">
+                            <div id="qrcode-container"></div>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-12 gap-4 mb-4">
+                    <div class="grid grid-cols-12 gap-4 mb-4" style="padding: 0 10mm;">
                         
-                        <div class="col-span-8 space-y-3">
-                            <div class="flex border border-[#ff003c]">
-                                <div class="bg-[#ff003c] text-white px-2 py-1 text-xs font-bold w-32 flex items-center">CANDIDATE NAME</div>
-                                <div class="flex-1 p-1"><div class="border-b border-dotted border-gray-400 h-full w-full"></div></div>
-                            </div>
-                            
-                            <div class="grid grid-cols-2 gap-2" id="dynamic-fields-container">
+                        <div class="col-span-5 text-black text-[10px] leading-tight border border-omr-red p-2">
+                            <h3 class="font-bold text-omr-red mb-1">INSTRUCTIONS</h3>
+                            <ul class="list-disc pl-3 space-y-1">
+                                <li>Use only Blue/Black Ball Point Pen.</li>
+                                <li>Darken the bubbles completely.</li>
+                                <li>Do not use Whitener or Eraser.</li>
+                                <li>Example: <span class="inline-block w-3 h-3 rounded-full bg-black align-middle"></span> Correct <span class="inline-block w-3 h-3 rounded-full border border-omr-red align-middle text-[8px] flex items-center justify-center text-omr-red">X</span> Wrong.</li>
+                            </ul>
+                            <div class="mt-2 pt-2 border-t border-omr-red flex justify-between">
+                                <div>
+                                    <span class="block font-bold">Total Score</span>
+                                    <div class="border border-omr-red h-6 w-16"></div>
                                 </div>
-
-                            <div class="border border-gray-400 p-2 text-[10px] leading-tight mt-2">
-                                <strong>INSTRUCTIONS:</strong>
-                                <ul class="list-disc pl-4 mt-1 space-y-0.5">
-                                    <li>Use Blue/Black Ball Point Pen only.</li>
-                                    <li>Darken the bubbles completely. Do not use Gel Pen or Ink Pen.</li>
-                                    <li>Do not fold, tear or crumple this sheet.</li>
-                                    <li>There is only one correct answer for each question.</li>
-                                </ul>
-                                <div class="flex gap-4 mt-2 items-center">
-                                    <span>Correct: <span class="omr-bubble bg-black border-black"></span></span>
-                                    <span>Wrong: <span class="omr-bubble"><i class="fa-solid fa-check text-[8px]"></i></span> <span class="omr-bubble"><i class="fa-solid fa-xmark text-[8px]"></i></span></span>
+                                <div>
+                                    <span class="block font-bold">Negative</span>
+                                    <div class="border border-omr-red h-6 w-16"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-span-4" id="roll-no-container">
+                        <div class="col-span-7 grid grid-cols-2 gap-2">
+                            <div class="col-span-2 border border-omr-red p-1 h-12">
+                                <span class="text-[9px] uppercase text-black font-bold block">Candidate Name (In Capital Letters)</span>
+                                <div class="w-full h-full"></div> </div>
+                            
+                            <div id="printFather" class="col-span-2 border border-omr-red p-1 h-12 hidden">
+                                <span class="text-[9px] uppercase text-black font-bold block">Father's Name</span>
+                                <div class="w-full h-full"></div>
                             </div>
+
+                            <div id="printMobile" class="border border-omr-red p-1 h-12">
+                                <span class="text-[9px] uppercase text-black font-bold block">Mobile No.</span>
+                            </div>
+
+                            <div class="border border-omr-red p-1 h-12">
+                                <span class="text-[9px] uppercase text-black font-bold block">Date of Exam</span>
+                                <div class="flex gap-2 mt-1">
+                                    <div class="w-6 h-4 border border-omr-red"></div>
+                                    <div class="w-6 h-4 border border-omr-red"></div>
+                                    <div class="w-10 h-4 border border-omr-red"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="flex justify-between items-end mb-4 px-2">
-                         <div class="border border-[#ff003c] p-2 w-1/3">
-                            <div class="text-xs font-bold text-[#ff003c] mb-1">BOOKLET SERIES</div>
-                            <div class="flex gap-4">
-                                <div><span class="omr-bubble">A</span></div>
-                                <div><span class="omr-bubble">B</span></div>
-                                <div><span class="omr-bubble">C</span></div>
-                                <div><span class="omr-bubble">D</span></div>
+                    <div class="flex gap-4 mb-4" style="padding: 0 10mm;">
+                        
+                        <div id="printRoll" class="border border-omr-red p-2 flex flex-col items-center">
+                            <span class="text-[10px] font-bold text-black mb-1">ROLL NO.</span>
+                            <div class="flex gap-1 mb-1">
+                                <div class="box-input"></div><div class="box-input"></div><div class="box-input"></div><div class="box-input"></div><div class="box-input"></div><div class="box-input"></div><div class="box-input"></div>
+                            </div>
+                            <div class="flex gap-1">
+                                <div id="roll-bubbles" class="flex gap-1"></div>
                             </div>
                         </div>
-                        <div class="text-center">
+
+                        <div class="flex flex-col gap-2">
+                             <div id="printSet" class="border border-omr-red p-2">
+                                <span class="text-[10px] font-bold text-black mb-1 block">SET CODE</span>
+                                <div class="flex gap-2">
+                                    <div class="flex flex-col items-center"><div class="bubble">A</div></div>
+                                    <div class="flex flex-col items-center"><div class="bubble">B</div></div>
+                                    <div class="flex flex-col items-center"><div class="bubble">C</div></div>
+                                    <div class="flex flex-col items-center"><div class="bubble">D</div></div>
+                                </div>
+                            </div>
+                            <div id="printBooklet" class="border border-omr-red p-2 hidden">
+                                <span class="text-[10px] font-bold text-black mb-1 block">BOOKLET NO</span>
+                                <div class="flex gap-1">
+                                    <div class="box-input w-6"></div><div class="box-input w-6"></div><div class="box-input w-6"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 flex items-center justify-center border border-omr-red bg-white">
                             <svg id="barcode"></svg>
                         </div>
                     </div>
 
-                    <div class="border-t-2 border-b-2 border-[#ff003c] py-2 mb-2 flex justify-between gap-4" id="questions-container">
-                        </div>
+                    <div class="relative" style="padding: 0 10mm;">
+                        <div class="absolute left-2 top-0 bottom-0 w-2 flex flex-col justify-between py-2">
+                            </div>
 
-                    <div class="mt-auto pt-2">
-                        <div class="flex justify-between text-xs border-b border-gray-300 pb-2 mb-2">
-                             <div>Correct: <span id="disp-pos" class="font-bold">+4</span></div>
-                             <div>Incorrect: <span id="disp-neg" class="font-bold">-1</span></div>
-                             <div>Max Marks: <span id="disp-tot" class="font-bold">360</span></div>
-                        </div>
+                        <div id="questions-container" class="grid w-full h-full border-t border-l border-omr-red">
+                            </div>
+                    </div>
 
-                        <div class="grid grid-cols-4 gap-4 text-center">
-                            <div class="border border-gray-400 h-16 flex flex-col justify-end p-1">
-                                <span class="text-[9px] uppercase border-t border-gray-300 pt-1">Candidate Sign</span>
-                            </div>
-                             <div class="border border-gray-400 h-16 flex flex-col justify-end p-1">
-                                <span class="text-[9px] uppercase border-t border-gray-300 pt-1">Invigilator Sign</span>
-                            </div>
-                             <div class="border border-gray-400 h-16 flex flex-col justify-end p-1">
-                                <span class="text-[9px] uppercase border-t border-gray-300 pt-1">Thumb Impression</span>
-                            </div>
-                             <div class="border border-gray-400 h-16 flex items-center justify-center">
-                                <span class="text-[10px] text-gray-400">INSTITUTE STAMP</span>
-                            </div>
+                    <div class="absolute bottom-12 left-0 w-full px-12 grid grid-cols-4 gap-4">
+                        <div class="border-b border-omr-red h-10 flex items-end justify-center pb-1">
+                            <span class="text-[10px] text-black">Candidate Sign</span>
+                        </div>
+                        <div class="border-b border-omr-red h-10 flex items-end justify-center pb-1">
+                            <span class="text-[10px] text-black">Invigilator Sign</span>
+                        </div>
+                        <div id="printStamp" class="border border-omr-red h-16 flex items-center justify-center text-center opacity-50">
+                            <span class="text-[10px] text-omr-red">STAMP</span>
+                        </div>
+                         <div id="printThumb" class="border border-omr-red h-16 flex items-center justify-center text-center opacity-50">
+                            <span class="text-[10px] text-omr-red">LEFT THUMB</span>
                         </div>
                     </div>
 
                 </div>
             </div>
         </section>
-
     </main>
 
-    <section class="bg-black py-10 px-8 border-t border-gray-800">
-        <div class="max-w-4xl mx-auto text-gray-400 text-sm">
-            <h2 class="text-cyber-cyan font-header text-xl mb-4">Industrial OMR Specifications & Knowledge Base</h2>
-            <div class="grid md:grid-cols-2 gap-8">
-                <div>
-                    <h3 class="text-white font-bold mb-2">Fiducials (Anchors)</h3>
-                    <p class="mb-4">The four 'L' shaped markers at the corners are crucial for the optical scanner to detect the orientation and scale of the sheet. They act as the coordinate origin (0,0) for image processing algorithms.</p>
-                    
-                    <h3 class="text-white font-bold mb-2">Dropout Colors</h3>
-                    <p>We use <span class="text-[#ff003c]">#ff003c</span> (Pantone 192 C). High-end OMR scanners use red light to drop out this specific color, leaving only the black marks (pencil/pen) visible to the sensor. This dramatically improves reading accuracy.</p>
-                </div>
-                <div>
-                    <h3 class="text-white font-bold mb-2">Timing Tracks</h3>
-                    <p class="mb-4">The vertical ladder on the left edge synchronizes the scanner's reading speed with the row position. Without this, a paper feed error could offset the reading of an entire column.</p>
-                    
-                    <h3 class="text-white font-bold mb-2">Paper Physics</h3>
-                    <p>This generator simulates standard A4 (210mm x 297mm) GSM 100 paper. For best results, print at 100% scale without margins. The layout automatically adjusts grid density to fit the page without overcrowding.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <script>
-        const app = {
-            state: {
-                scale: 1,
-                elements: {}
-            },
+        // --- Core Logic ---
 
-            init: function() {
-                // Cache DOM elements
-                const ids = ['instituteName', 'examName', 'totalQuestions', 'gridColumns', 'optionCount', 'qrData', 'barcodeData', 'scorePos', 'scoreNeg', 'scoreTot', 'showRoll', 'showMobile', 'showGender', 'showCategory'];
-                ids.forEach(id => {
-                    this.state.elements[id] = document.getElementById(id);
-                    // Attach listeners
-                    this.state.elements[id].addEventListener('input', () => this.render());
-                    if(this.state.elements[id].type === 'checkbox') {
-                         this.state.elements[id].addEventListener('change', () => this.render());
-                    }
-                });
+        // Helper to create bubbles
+        function createBubble(text) {
+            return `<div class="bubble cursor-pointer hover:bg-red-100">${text}</div>`;
+        }
 
-                this.render();
-            },
-
-            zoom: function(amount) {
-                this.state.scale += amount;
-                if(this.state.scale < 0.5) this.state.scale = 0.5;
-                if(this.state.scale > 2.0) this.state.scale = 2.0;
-                document.getElementById('zoom-level').innerText = Math.round(this.state.scale * 100) + '%';
-                document.getElementById('omr-sheet').style.transform = `scale(${this.state.scale})`;
-            },
-
-            render: function() {
-                // 1. Update Header Info
-                document.getElementById('disp-institute').innerText = this.state.elements.instituteName.value;
-                document.getElementById('disp-exam').innerText = this.state.elements.examName.value;
-                document.getElementById('disp-pos').innerText = this.state.elements.scorePos.value;
-                document.getElementById('disp-neg').innerText = this.state.elements.scoreNeg.value;
-                document.getElementById('disp-tot').innerText = this.state.elements.scoreTot.value;
-
-                // 2. Generate Codes
-                document.getElementById('qrcode-container').innerHTML = '';
-                new QRCode(document.getElementById('qrcode-container'), {
-                    text: this.state.elements.qrData.value,
-                    width: 64,
-                    height: 64,
-                    colorDark : "#000000",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.H
-                });
-                
-                JsBarcode("#barcode", this.state.elements.barcodeData.value, {
-                    format: "CODE128",
-                    lineColor: "#000",
-                    width: 1.5,
-                    height: 30,
-                    displayValue: true
-                });
-
-                // 3. Render Roll No Block (If enabled)
-                const rollContainer = document.getElementById('roll-no-container');
-                if(this.state.elements.showRoll.checked) {
-                    rollContainer.style.display = 'block';
-                    rollContainer.innerHTML = this.generateNumberGrid('ROLL NO.', 7); // 7 digits standard
-                } else {
-                    rollContainer.style.display = 'none';
+        // Generate Roll Number Columns
+        function generateRollGrid() {
+            const container = document.getElementById('roll-bubbles');
+            container.innerHTML = '';
+            // 7 Columns
+            for(let col=0; col<7; col++) {
+                let html = '<div class="flex flex-col gap-1">';
+                for(let i=0; i<=9; i++) {
+                    html += createBubble(i);
                 }
+                html += '</div>';
+                container.innerHTML += html;
+            }
+        }
 
-                // 4. Render Dynamic Candidate Fields
-                const fieldsContainer = document.getElementById('dynamic-fields-container');
-                fieldsContainer.innerHTML = '';
+        // Generate Questions
+        function generateQuestions() {
+            const total = parseInt(document.getElementById('totalQuestions').value);
+            const cols = parseInt(document.getElementById('layoutCols').value);
+            const optsCount = parseInt(document.querySelector('input[name="opts"]:checked').value);
+            const container = document.getElementById('questions-container');
+            
+            // Grid Setup
+            container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            container.innerHTML = '';
+
+            const perCol = Math.ceil(total / cols);
+
+            // Generate Columns
+            for (let c = 0; c < cols; c++) {
+                const colDiv = document.createElement('div');
+                colDiv.className = 'border-r border-b border-omr-red p-2';
                 
-                const addField = (label) => {
-                    fieldsContainer.innerHTML += `
-                        <div class="flex border border-[#ff003c]">
-                            <div class="bg-[#ff003c] text-white px-2 py-1 text-[10px] font-bold w-24 flex items-center">${label}</div>
-                            <div class="flex-1 p-1"><div class="border-b border-dotted border-gray-400 h-full w-full"></div></div>
+                let start = (c * perCol) + 1;
+                let end = Math.min(start + perCol - 1, total);
+
+                for (let q = start; q <= end; q++) {
+                    let optsHtml = '';
+                    const letters = ['A', 'B', 'C', 'D', 'E'];
+                    for (let o = 0; o < optsCount; o++) {
+                        optsHtml += createBubble(letters[o]);
+                    }
+
+                    const rowHtml = `
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold w-6 text-right mr-2 text-black">${q}</span>
+                            <div class="flex gap-2">
+                                ${optsHtml}
+                            </div>
                         </div>
                     `;
-                };
-
-                if(this.state.elements.showMobile.checked) addField('MOBILE NO.');
-                if(this.state.elements.showGender.checked) addField('GENDER');
-                if(this.state.elements.showCategory.checked) addField('CATEGORY');
-                addField('FATHER NAME'); // Always there by default
-                
-                // 5. Render Question Grid
-                this.renderQuestions();
-
-                // 6. Update Timing Track height based on content
-                this.renderTimingTrack();
-            },
-
-            generateNumberGrid: function(title, cols) {
-                let html = `<div class="border border-[#ff003c] p-1">
-                            <div class="text-center font-bold text-[#ff003c] text-xs mb-1">${title}</div>
-                            <div class="flex justify-center gap-1">`;
-                
-                for(let c=0; c<cols; c++) {
-                    html += `<div class="flex flex-col gap-[2px]">
-                                <div class="w-4 h-6 border border-gray-400 mb-1"></div>`; // Write box
-                    for(let r=0; r<=9; r++) {
-                        html += `<div class="omr-bubble">${r}</div>`;
-                    }
-                    html += `</div>`;
+                    colDiv.innerHTML += rowHtml;
                 }
-                html += `</div></div>`;
-                return html;
-            },
-
-            renderQuestions: function() {
-                const totalQ = parseInt(this.state.elements.totalQuestions.value);
-                const cols = parseInt(this.state.elements.gridColumns.value);
-                const options = parseInt(this.state.elements.optionCount.value);
-                const container = document.getElementById('questions-container');
-                
-                const qPerCol = Math.ceil(totalQ / cols);
-                const optionsArr = ['A','B','C','D','E'].slice(0, options);
-
-                let html = '';
-
-                for(let c=0; c<cols; c++) {
-                    html += `<div class="flex-1 border-r last:border-r-0 border-gray-300 pr-2">`;
-                    html += `<div class="flex text-[10px] font-bold border-b border-gray-400 mb-1 pb-1">
-                                <span class="w-6">Q.No</span>
-                                <span class="flex-1 text-center">Response</span>
-                             </div>`;
-                    
-                    for(let i=0; i<qPerCol; i++) {
-                        const qNum = (c * qPerCol) + i + 1;
-                        if(qNum > totalQ) break;
-
-                        html += `<div class="flex items-center mb-[3px]">
-                                    <span class="w-6 text-[10px] font-bold text-center">${qNum}</span>
-                                    <div class="flex gap-2 justify-center flex-1">`;
-                        
-                        optionsArr.forEach(opt => {
-                            html += `<span class="omr-bubble">${opt}</span>`;
-                        });
-
-                        html += `</div></div>`;
-                    }
-                    html += `</div>`;
-                }
-                container.innerHTML = html;
-            },
-
-            renderTimingTrack: function() {
-                const track = document.getElementById('timing-track');
-                const sheetHeight = document.getElementById('omr-sheet').clientHeight;
-                // Generate roughly 1 dash per cm
-                const count = Math.floor(sheetHeight / 15); 
-                let html = '';
-                for(let i=0; i<count; i++) html += `<div class="timing-dash"></div>`;
-                track.innerHTML = html;
-            },
-
-            printSheet: function() {
-                window.print();
-            },
-
-            downloadPDF: function() {
-                const element = document.getElementById('omr-sheet');
-                // Temporarily reset scale for PDF generation
-                const originalTransform = element.style.transform;
-                element.style.transform = 'scale(1)';
-                
-                const opt = {
-                    margin: 0,
-                    filename: `OMR_${this.state.elements.examName.value.replace(/\s+/g, '_')}.pdf`,
-                    image: { type: 'jpeg', quality: 1.0 },
-                    html2canvas: { scale: 2, useCORS: true }, // High res
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
-
-                html2pdf().set(opt).from(element).save().then(() => {
-                    // Restore preview scale
-                    element.style.transform = originalTransform;
-                });
+                container.appendChild(colDiv);
             }
+        }
+
+        // UI Binding & Updates
+        function generateOMR() {
+            // Text Fields
+            document.getElementById('printInstName').innerText = document.getElementById('instName').value;
+            document.getElementById('printExamName').innerText = document.getElementById('examName').value;
+            
+            // Logo
+            const logoUrl = document.getElementById('logoUrl').value;
+            const logoImg = document.getElementById('printLogo');
+            if(logoUrl) {
+                logoImg.src = logoUrl;
+                logoImg.classList.remove('hidden');
+            } else {
+                logoImg.classList.add('hidden');
+            }
+
+            // Toggles
+            const toggle = (id, elId) => {
+                const el = document.getElementById(elId);
+                document.getElementById(id).checked ? el.classList.remove('hidden') : el.classList.add('hidden');
+            };
+
+            toggle('fieldRoll', 'printRoll');
+            toggle('fieldMobile', 'printMobile');
+            toggle('fieldSet', 'printSet');
+            toggle('fieldBooklet', 'printBooklet');
+            toggle('fieldFather', 'printFather');
+            toggle('fieldStamp', 'printStamp');
+            toggle('fieldThumb', 'printThumb');
+
+            // Barcode & QR
+            JsBarcode("#barcode", document.getElementById('barValue').value, {
+                format: "CODE128",
+                lineColor: "#000",
+                width: 1.5,
+                height: 40,
+                displayValue: true
+            });
+
+            const qrContainer = document.getElementById('qrcode-container');
+            qrContainer.innerHTML = "";
+            new QRCode(qrContainer, {
+                text: document.getElementById('qrValue').value,
+                width: 64,
+                height: 64,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            generateRollGrid();
+            generateQuestions();
+        }
+
+        // PDF Download
+        function downloadPDF() {
+            const element = document.getElementById('omr-sheet');
+            
+            // Temporary styles for clean PDF export
+            element.style.transform = "scale(1)"; 
+            element.style.margin = "0";
+
+            const opt = {
+                margin:       0,
+                filename:     'omr-sheet.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Reset visual scaling after download
+                fitToScreen();
+            });
+        }
+
+        // Fit A4 to Screen (Responsive Logic)
+        function fitToScreen() {
+            const wrapper = document.getElementById('scale-wrapper');
+            const container = wrapper.parentElement;
+            const sheetHeight = 1123; // A4 height in px at 96dpi approx
+            const sheetWidth = 794; 
+            
+            const availHeight = container.clientHeight - 80;
+            const scale = Math.min(1, availHeight / sheetHeight);
+            
+            wrapper.style.transform = `scale(${scale})`;
+            wrapper.style.transformOrigin = 'top center'; // Important
+        }
+
+        // Initialization
+        window.addEventListener('resize', fitToScreen);
+        window.onload = () => {
+            generateOMR();
+            fitToScreen();
         };
 
-        // Initialize App
-        window.addEventListener('DOMContentLoaded', () => app.init());
-
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Industrial OMR Generator",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
     </script>
 </body>
 </html>
