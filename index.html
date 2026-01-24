@@ -121,11 +121,19 @@
         .modal-close { position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; cursor: pointer; color: #94a3b8; }
         .modal-close:hover { color: white; }
 
+        /* --- MOBILE RESPONSIVE HIDING --- */
+        @media screen and (max-width: 768px) {
+            #preview-area { display: none !important; }
+            .zoom-controls { display: none !important; }
+        }
+
         /* --- PRINT MEDIA QUERY --- */
         @media print {
             @page { size: A4; margin: 0; }
             body { background: white; overflow: visible; }
             body * { visibility: hidden; }
+            /* Ensure we display the preview area container in print mode so inner content can be found */
+            #preview-area { display: block !important; margin: 0; padding: 0; background: none; } 
             #sheet-el, #sheet-el * { visibility: visible; }
             #sheet-el {
                 position: fixed; left: 0; top: 0; width: 210mm; height: 297mm;
@@ -161,7 +169,7 @@
 
     <div id="tool-anchor" class="flex flex-col md:flex-row min-h-[90vh] w-full border-b border-dark-border">
         
-        <aside class="w-full md:w-96 bg-dark-bg border-r border-dark-border flex flex-col z-50 shadow-2xl h-[50vh] md:h-[90vh] sticky top-16 no-print overflow-hidden">
+        <aside class="w-full md:w-96 bg-dark-bg border-r border-dark-border flex flex-col z-50 shadow-2xl h-[90vh] sticky top-16 no-print overflow-hidden">
             <div class="p-4 border-b border-dark-border bg-dark-surface/50 backdrop-blur flex justify-between items-center">
                 <div>
                     <h1 class="font-bold text-white text-lg leading-tight">Sheet Config</h1>
@@ -291,7 +299,7 @@ Mathematics:61</textarea>
 
         <main id="preview-area" class="flex-1 relative">
             
-            <div class="fixed top-20 right-8 z-40 bg-dark-surface/90 backdrop-blur rounded-full px-2 py-1 border border-dark-border flex items-center gap-2 shadow-xl text-white no-print">
+            <div class="fixed top-20 right-8 z-40 bg-dark-surface/90 backdrop-blur rounded-full px-2 py-1 border border-dark-border flex items-center gap-2 shadow-xl text-white no-print zoom-controls">
                 <button onclick="zoom(-0.1)" class="w-8 h-8 flex items-center justify-center hover:text-brand rounded-full"><i class="fa-solid fa-minus"></i></button>
                 <span id="zoom-disp" class="text-xs font-mono w-12 text-center select-none">100%</span>
                 <button onclick="zoom(0.1)" class="w-8 h-8 flex items-center justify-center hover:text-brand rounded-full"><i class="fa-solid fa-plus"></i></button>
