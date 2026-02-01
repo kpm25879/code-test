@@ -61,6 +61,8 @@
         background-size: 20px 20px; background-position: 0 0, 10px 10px; background-blend-mode: overlay;
         position: relative; overflow: hidden;
         border: 1px solid #aaa; border-radius: 3mm;
+        /* FORCE ROUNDED CORNERS ON PRINT */
+        clip-path: inset(0 round 3mm); 
         font-family: 'Noto Sans Devanagari', sans-serif;
         display: flex; flex-direction: column; color: #000; line-height: normal;
     }
@@ -98,13 +100,11 @@
     .h-body { flex: 1; display: flex; padding: 2mm 3mm; position: relative; background: rgba(255,255,255,0.94); }
     .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 35mm; opacity: 0.08; pointer-events: none; z-index: 0; filter: grayscale(100%); }
 
-    /* LEFT COLUMN */
-    .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+    /* LEFT COLUMN: Photo -> Signature */
+    .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%; }
     
-    /* Adjusted Photo Box Size to fit Barcode at bottom */
     .h-p-box { 
-        width: 19mm; height: 21mm; /* Reduced slightly to prevent cut-off */
-        background: #fff; 
+        width: 19mm; height: 23mm; background: #fff; 
         position: relative; border: 1.5px solid #002347; border-radius: 4px; overflow: hidden;
     }
     .h-p-img { width: 100%; height: 100%; object-fit: cover; }
@@ -114,23 +114,14 @@
         opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; 
     }
 
-    /* Signature Area */
-    .h-sign-box { width: 100%; text-align: center; margin-top: 0.5mm; margin-bottom: 0.5mm; flex-shrink: 0; }
-    .h-sign-img { height: 5mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
+    /* Signature Area (Now in Left Col) */
+    .h-sign-box { width: 100%; text-align: center; margin-top: 2mm; margin-bottom: 0; flex-shrink: 0; }
+    .h-sign-img { height: 6mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
     .h-sign-lbl { 
         font-size: 3.5pt; color: #002347; font-weight: 700; 
         border-top: 0.5px solid #000; padding-top: 0.5px; display: block; width: 100%;
     }
 
-    /* Barcode Area - CENTERED & VISIBLE */
-    .h-bar-wrap { 
-        width: 100%; height: 7.5mm; /* Fixed height for safety */
-        display: flex; align-items: center; justify-content: center; 
-        margin-top: auto; /* Pushes to bottom */
-        overflow: hidden;
-    }
-    .h-bar-wrap svg { width: 95%; height: 100%; display: block; } /* 95% width to prevent clipping */
-    
     /* RIGHT COLUMN */
     .h-right { flex: 1; padding-left: 4mm; display: flex; flex-direction: column; position: relative; }
     
@@ -143,6 +134,14 @@
     .h-grid { display: grid; grid-template-columns: 18mm 1fr; row-gap: 1mm; font-size: 6.2pt; }
     .hl { color: #002347; font-weight: 800; margin: 0; padding: 0; }
     .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; padding: 0; }
+
+    /* Barcode Area (Now in Right Col, Bottom) */
+    .h-bar-wrap { 
+        width: 100%; height: 8mm; /* Taller */
+        display: flex; align-items: flex-end; justify-content: center; 
+        padding-bottom: 0; margin-top: auto; /* Push to bottom */
+    }
+    .h-bar-wrap svg { width: 95%; height: 100%; }
 
     /* FOOTER */
     .h-footer { 
@@ -314,7 +313,6 @@
                                         <img src="${signatureUrl}" class="h-sign-img" crossorigin="anonymous"> 
                                         <span class="h-sign-lbl">(अधिकृत हस्ताक्षर)</span>
                                     </div>
-                                    <div class="h-bar-wrap"><svg id="bar-${safeId}"></svg></div>
                                 </div>
                                 <div class="h-right">
                                     <div class="h-row-id">क्रमांक: ${fullID}</div>
@@ -331,6 +329,7 @@
                                             <span style="font-size:5.5pt; color:#d62d20; font-weight:800;">रक्त समूह: <span style="color:black;">${blood}</span></span>
                                         </div>
                                     </div>
+                                    <div class="h-bar-wrap"><svg id="bar-${safeId}"></svg></div>
                                 </div>
                             </div>
                             <div class="h-footer">संपर्क सूत्र: +91 90535 75169 | info@tirangayuvasamiti.org | www.tirangayuvasamiti.org</div>
@@ -367,7 +366,7 @@
         }, 100);
     }
 
-    // === PRINT LOGIC FOR A4 EASY CUT ===
+    // === PRINT LOGIC ===
     function tysPrintNew(fid, bid) {
         const frontHTML = document.getElementById(fid).outerHTML;
         const backHTML = document.getElementById(bid).outerHTML;
@@ -390,6 +389,7 @@
                         width: 85.6mm; height: 54mm; 
                         background: white; position: relative; overflow: hidden; 
                         border: none; border-radius: 3mm; 
+                        clip-path: inset(0 round 3mm); /* ROUNDED CORNERS */
                         display: flex; flex-direction: column; line-height: normal;
                     }
 
@@ -404,12 +404,11 @@
                     .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 35mm; opacity: 0.08; z-index: 0; }
                     
                     .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
-                    .h-p-box { width: 19mm; height: 21mm; background: #fff; position: relative; border: 1.5px solid #002347; border-radius: 4px; overflow: hidden; }
+                    .h-p-box { width: 19mm; height: 23mm; background: #fff; position: relative; border: 1.5px solid #002347; border-radius: 4px; overflow: hidden; }
                     .h-p-img { width: 100%; height: 100%; object-fit: cover; }
                     .h-stamp { position: absolute; bottom: 0; right: 0; width: 14mm; opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
                     
-                    .h-bar-wrap { width: 100%; height: 8mm; display:flex; justify-content:center; margin-top:1mm; } .h-bar-wrap svg { width:100%; height:100%; }
-                    .h-sign-box { width: 100%; text-align: center; margin-top: 0.5mm; }
+                    .h-sign-box { width: 100%; text-align: center; margin-top: 2mm; flex-shrink: 0; }
                     .h-sign-img { height: 5mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
                     .h-sign-lbl { font-size: 3.5pt; color: #002347; font-weight: 700; border-top: 0.5px solid #000; padding-top: 0.5px; display: block; width: 100%; }
                     
@@ -419,6 +418,8 @@
                     .h-grid { display: grid; grid-template-columns: 18mm 1fr; row-gap: 1mm; font-size: 6.2pt; }
                     .hl { color: #002347; font-weight: 800; } .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; }
                     
+                    .h-bar-wrap { width: 100%; height: 8mm; display:flex; justify-content:center; margin-top:auto; padding-bottom:0; } .h-bar-wrap svg { width:100%; height:100%; }
+                    
                     .h-footer { height: 4mm; background: #002347; color: white; display: flex; align-items: center; justify-content: center; font-size: 3pt; font-weight: 600; text-align: center; line-height: 1.1; border-top: 1px solid #d62d20; white-space: nowrap; }
                     
                     .h-header-back-title { margin-top: 2mm; color: white; font-family: 'Noto Sans Devanagari'; font-size: 10pt; font-weight: 700; }
@@ -426,8 +427,6 @@
                     .vb-qr { width: 25mm; height: 25mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 2mm; border-radius: 4px; } .vb-qr img { width: 100%; height: 100%; }
                     .vb-t { font-size: 8pt; font-weight: 800; color: #002347; margin-bottom: 1mm; text-transform: uppercase; }
                     .vb-s { font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; }
-                    
-                    /* Back Contact Body */
                     .vb-contact { margin-bottom: 1.5mm; font-size: 4pt; color: #002347; font-weight: 800; border-bottom: 1px dashed #d62d20; padding-bottom: 1px; width: 95%; white-space: nowrap; overflow: hidden; }
                 </style>
             </head>
