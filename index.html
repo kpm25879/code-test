@@ -173,11 +173,12 @@
         text-align: left;
     }
 
+    /* ADJUSTED QR BOX SIZE for better visibility */
     .v-header-qr-box { 
-        width: 9mm; height: 9mm; 
-        background: white; padding: 1px; 
+        width: 10.5mm; height: 10.5mm; 
+        background: white; padding: 1.5px; 
         border-radius: 2px; flex-shrink: 0; 
-        margin-left: 1mm; margin-bottom: 3mm; 
+        margin-left: 1mm; margin-bottom: 3.5mm; 
         display: flex; align-items: center; justify-content: center;
         margin-right: 1mm;
     }
@@ -256,43 +257,43 @@
     
     .vb-body { 
         flex: 1; display: flex; flex-direction: column; align-items: center; 
-        padding: 3mm; text-align: center; position: relative; background: #fff; 
+        padding: 2mm 3mm; text-align: center; position: relative; background: #fff; 
     }
     
-    .vb-logo-main { width: 16mm; height: auto; margin-top: 1mm; opacity: 1.0; }
+    .vb-logo-main { width: 14mm; height: auto; margin-top: 1mm; opacity: 1.0; }
     
     .vb-ngo-title { 
         font-size: 8pt; font-weight: 900; color: #002347; 
         text-transform: uppercase; text-align: center; 
-        margin-top: 1mm; margin-bottom: 2mm; 
+        margin-top: 0.5mm; margin-bottom: 1.5mm; 
         width: 90%;
     }
 
     .vb-qr-label {
-        font-size: 5pt; font-weight: 800; color: #FF9933; 
+        font-size: 4.5pt; font-weight: 800; color: #FF9933; 
         text-transform: uppercase; letter-spacing: 0.5px;
-        margin-bottom: 1px;
+        margin-bottom: 0.5px;
     }
     .vb-qr-container {
-        width: 14mm; height: 14mm;
-        margin-bottom: 2mm;
+        width: 13mm; height: 13mm;
+        margin-bottom: 1.5mm;
         border: 1px solid #ccc; padding: 1px; background: white;
     }
     .vb-qr-container img { width: 100%; height: 100%; }
 
     .vb-info-block { width: 100%; text-align: left; margin-top: 0; }
-    .vb-row-item { display: flex; gap: 2mm; margin-bottom: 1.5mm; align-items: flex-start; }
+    .vb-row-item { display: flex; gap: 2mm; margin-bottom: 1.2mm; align-items: flex-start; }
     .vb-icon-box { color: #FF9933; width: 3mm; font-size: 6pt; margin-top: 1px; }
     .vb-text-val { font-size: 5pt; color: #444; font-weight: 600; line-height: 1.2; text-align: left; }
 
-    /* New Signature Section */
+    /* SIGNATURE SECTION */
     .vb-sign-section {
         width: 100%; display: flex; flex-direction: column; align-items: flex-end;
-        margin-top: auto; margin-bottom: 1mm; padding-right: 2mm;
+        margin-top: auto; margin-bottom: 0.5mm; padding-right: 1mm;
     }
     .vb-stamp { 
         width: 15mm; opacity: 0.8; mix-blend-mode: multiply; 
-        transform: rotate(-10deg); margin-bottom: 2px;
+        transform: rotate(-10deg); margin-bottom: 1px;
     }
     .vb-sign-label {
         font-size: 4pt; font-weight: 800; color: #002347; 
@@ -300,9 +301,10 @@
         padding-top: 1px;
     }
 
-    .vb-terms { width: 100%; margin-bottom: 1mm; }
-    .vb-terms-title { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; text-align: left; }
-    .vb-terms-text { font-size: 3.5pt; color: #666; text-align: left; line-height: 1.1; margin-top: 1px; }
+    /* Adjusted Terms for Visibility */
+    .vb-terms { width: 100%; margin-bottom: 0.5mm; margin-top: 0.5mm; }
+    .vb-terms-title { font-size: 4.5pt; font-weight: 900; color: #002347; text-transform: uppercase; text-align: left; text-decoration: underline; margin-bottom: 1px; }
+    .vb-terms-text { font-size: 4.5pt; color: #444; text-align: left; line-height: 1.2; font-weight: 500; }
 
     .vb-footer { 
         position: absolute; bottom: 0; left: 0;
@@ -348,7 +350,7 @@
 </div>
 
 <script>
-    // === CONFIGURATION (DO NOT CHANGE) ===
+    // === CONFIGURATION (PRESERVED) ===
     const EXCEL_FILE_URL = "https://docs.google.com/spreadsheets/d/1p1ynKWyRErPwczTcMkffZfQ7dhOiV9buv_gIVRK3uh0/export?format=csv&gid=85144492";
 
     const CONFIG = {
@@ -485,7 +487,7 @@
             const membershipType = row[FIELD.role] || 'Lifetime'; 
             const issueDate = formatDate(row[FIELD.issueDate]);
             const memberPhone = row[FIELD.phone] || '_______________'; 
-            const photo = row[FIELD.photo] || 'https://via.placeholder.com/150x200?text=PHOTO';
+            const photoUrl = row[FIELD.photo] || 'https://via.placeholder.com/150x200?text=PHOTO';
 
             // Slug
             let slugName = fName;
@@ -500,6 +502,7 @@
             const backQrId = `qr-back-${i}`;
             const barcodeId = `barcode-${i}`;
             const wrapperId = `wrapper-${i}`;
+            const photoImgId = `photo-${i}`;
 
             const html = `
             <div class="member-row" id="${wrapperId}">
@@ -517,8 +520,9 @@
 
                             <div class="v-body">
                                 <div class="v-photo-frame">
-                                    <img src="${photo}" class="v-user-photo">
+                                    <img id="${photoImgId}" src="" class="v-user-photo" crossorigin="anonymous">
                                 </div>
+
                                 <div class="v-name-block">
                                     <div class="v-name-text">${fullName}</div>
                                     <div class="v-role-badge">${membershipType} Member</div>
@@ -586,7 +590,7 @@
                                         <div class="vb-terms-title">Terms & Conditions:</div>
                                         <div class="vb-terms-text">
                                             1. This card is non-transferable property.<br>
-                                            2. If found, please return to the address.
+                                            2. If found, please return to the address above.
                                         </div>
                                     </div>
                                 </div>
@@ -613,20 +617,26 @@
             `;
             grid.innerHTML += html;
 
+            // Handle Image Loading (Attempt Base64 conversion to fix Download Issue)
+            const imgEl = document.getElementById(photoImgId);
+            preloadImage(photoUrl, (base64) => {
+                imgEl.src = base64 || photoUrl;
+            });
+
             setTimeout(() => { 
-                // 1. Generate Donate QR (Front Header)
+                // 1. Generate Donate QR
                 const headerQrDiv = document.getElementById(headerQrId);
                 const temp1 = document.createElement('div');
                 new QRCode(temp1, { text: CONFIG.donateUrl, width: 64, height: 64, correctLevel: QRCode.CorrectLevel.L });
                 headerQrDiv.appendChild(convertCanvasToImg(temp1));
 
-                // 2. Generate Member QR (Back Body)
+                // 2. Generate Member QR
                 const backQrDiv = document.getElementById(backQrId);
                 const temp2 = document.createElement('div');
                 new QRCode(temp2, { text: finalQrUrl, width: 128, height: 128, correctLevel: QRCode.CorrectLevel.H });
                 backQrDiv.appendChild(convertCanvasToImg(temp2));
 
-                // 3. Generate Barcode (Front Bottom)
+                // 3. Generate Barcode
                 JsBarcode("#"+barcodeId, "TYS-"+memID, {
                     format: "CODE128",
                     displayValue: false,
@@ -655,7 +665,12 @@
         const frontEl = document.querySelector(`#${frontId} .id-card`);
         const backEl = document.querySelector(`#${backId} .id-card`);
 
-        const opts = { scale: 4, useCORS: true, backgroundColor: "#ffffff" };
+        const opts = { 
+            scale: 4, 
+            useCORS: true, 
+            allowTaint: true,
+            backgroundColor: "#ffffff" 
+        };
 
         // Download Front
         html2canvas(frontEl, opts).then(canvas => {
@@ -689,32 +704,34 @@
                 @page { size: 54mm 85.6mm; margin: 0; }
                 body { margin: 0; padding: 0; background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                 
-                /* Force alignment for print pages */
+                /* Force positioning to Top-Left to avoid "Floating in center" issue on A4 */
                 .print-page { 
                     width: 54mm; height: 85.6mm; 
-                    position: relative; overflow: hidden; 
+                    position: absolute; top: 0; left: 0;
+                    overflow: hidden; 
                     font-family: 'Montserrat', sans-serif; 
                     page-break-after: always; 
-                    display: flex; justify-content: center; align-items: center;
                 }
                 
                 .id-card { 
                     width: 54mm; height: 85.6mm; 
                     position: relative; background:white; 
                     display:flex; flex-direction:column; 
-                    border: 0.5px solid #ccc; /* Thinner border for print */
+                    border: 0.5px solid #ccc;
                     box-sizing: border-box; 
                     border-radius: 3.18mm; 
                     overflow: hidden; 
                 }
                  
-                /* REPEAT CSS FROM MAIN STYLE */
+                /* REPEAT CSS FROM MAIN STYLE FOR PRINT WINDOW */
                 .v-header { height: 18%; background: #002347; width: 100%; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 5; padding: 0 2mm 0 3mm; clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%); border-bottom: 2px solid #FF9933; }
                 .v-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: #FF9933; z-index: 6; }
                 .v-header-left { display: flex; align-items: center; flex: 1; }
                 .v-header-logo { width: 8.5mm; height: auto; margin-right: 1.5mm; }
                 .v-org-name { font-size: 7.5pt; font-weight: 800; color: white; text-transform: uppercase; margin: 0; line-height: 1.1; font-family: 'Oswald', sans-serif; letter-spacing: 0.5px; text-align: left; }
-                .v-header-qr-box { width: 9mm; height: 9mm; background: white; padding: 1px; border-radius: 2px; flex-shrink: 0; margin-left: 1mm; margin-bottom: 2mm; display: flex; align-items: center; justify-content: center; margin-right: 1mm; }
+                
+                /* QR Box Adjusted */
+                .v-header-qr-box { width: 10.5mm; height: 10.5mm; background: white; padding: 1.5px; border-radius: 2px; flex-shrink: 0; margin-left: 1mm; margin-bottom: 3.5mm; display: flex; align-items: center; justify-content: center; margin-right: 1mm; }
                 .v-header-qr-box img { width: 100%; height: 100%; }
 
                 .v-body { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 2mm; background-image: linear-gradient(#f1f1f1 1px, transparent 1px), linear-gradient(90deg, #f1f1f1 1px, transparent 1px); background-size: 4mm 4mm; padding-bottom: 5mm; }
@@ -739,28 +756,28 @@
                 /* BACK */
                 .vb-container { display: flex; flex-direction: column; height: 100%; width: 100%; position: relative; }
                 .vb-header { height: 12%; background: #002347; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1px; z-index: 2; border-bottom: 2px solid #FF9933; }
-                .vb-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 4mm; text-align: center; position: relative; background: #fff; }
+                .vb-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 2mm 3mm; text-align: center; position: relative; background: #fff; }
                 
-                .vb-logo-main { width: 16mm; height: auto; margin-top: 1mm; opacity: 1.0; }
-                .vb-ngo-title { font-size: 8pt; font-weight: 900; color: #002347; text-transform: uppercase; text-align: center; margin-top: 1mm; margin-bottom: 2mm; width: 90%; }
+                .vb-logo-main { width: 14mm; height: auto; margin-top: 1mm; opacity: 1.0; }
+                .vb-ngo-title { font-size: 8pt; font-weight: 900; color: #002347; text-transform: uppercase; text-align: center; margin-top: 0.5mm; margin-bottom: 1.5mm; width: 90%; }
                 
-                .vb-qr-label { font-size: 5pt; font-weight: 800; color: #FF9933; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1px; }
-                .vb-qr-container { width: 14mm; height: 14mm; margin-bottom: 2mm; border: 1px solid #ccc; padding: 1px; background: white; }
+                .vb-qr-label { font-size: 4.5pt; font-weight: 800; color: #FF9933; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5px; }
+                .vb-qr-container { width: 13mm; height: 13mm; margin-bottom: 1.5mm; border: 1px solid #ccc; padding: 1px; background: white; }
                 .vb-qr-container img { width: 100%; height: 100%; }
 
-                .vb-info-block { width: 100%; text-align: left; margin-top: 1mm; }
-                .vb-row-item { display: flex; gap: 2mm; margin-bottom: 1.5mm; align-items: flex-start; }
+                .vb-info-block { width: 100%; text-align: left; margin-top: 0; }
+                .vb-row-item { display: flex; gap: 2mm; margin-bottom: 1.2mm; align-items: flex-start; }
                 .vb-icon-box { color: #FF9933; width: 3mm; font-size: 6pt; margin-top: 1px; }
                 .vb-text-val { font-size: 5pt; color: #444; font-weight: 600; line-height: 1.2; text-align: left; }
                 
-                /* SIGNATURE ON PRINT */
-                .vb-sign-section { width: 100%; display: flex; flex-direction: column; align-items: flex-end; margin-top: auto; margin-bottom: 1mm; padding-right: 2mm; }
-                .vb-stamp { width: 15mm; opacity: 0.8; mix-blend-mode: multiply; transform: rotate(-10deg); margin-bottom: 2px; }
+                .vb-sign-section { width: 100%; display: flex; flex-direction: column; align-items: flex-end; margin-top: auto; margin-bottom: 0.5mm; padding-right: 1mm; }
+                .vb-stamp { width: 15mm; opacity: 0.8; mix-blend-mode: multiply; transform: rotate(-10deg); margin-bottom: 1px; }
                 .vb-sign-label { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; border-top: 1px solid #333; padding-top: 1px; }
 
-                .vb-terms { width: 100%; margin-bottom: 1mm; }
-                .vb-terms-title { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; text-align: left; }
-                .vb-terms-text { font-size: 3.5pt; color: #666; text-align: left; line-height: 1.1; margin-top: 1px; }
+                /* Adjusted Terms */
+                .vb-terms { width: 100%; margin-bottom: 0.5mm; margin-top: 0.5mm; }
+                .vb-terms-title { font-size: 4.5pt; font-weight: 900; color: #002347; text-transform: uppercase; text-align: left; text-decoration: underline; margin-bottom: 1px; }
+                .vb-terms-text { font-size: 4.5pt; color: #444; text-align: left; line-height: 1.2; font-weight: 500; }
 
                 .vb-footer { position: absolute; bottom: 0; left: 0; height: 5mm; width: 100%; background: #138808; display: flex; align-items: center; justify-content: center; color: white; font-size: 4.5pt; font-weight: 600; text-transform: uppercase; }
             </style>
