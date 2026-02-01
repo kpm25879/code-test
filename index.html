@@ -122,8 +122,8 @@
         width: 54mm; height: 85.6mm; 
         position: relative; 
         box-shadow: 0 15px 35px rgba(0,0,0,0.25);
-        background: transparent; /* Wrapper is transparent, card has BG */
-        border-radius: 3.18mm; /* Standard Card Radius */
+        background: transparent; 
+        border-radius: 3.18mm; 
         transition: transform 0.3s ease;
     }
     .id-card-wrapper:hover { transform: scale(1.05); z-index: 10; }
@@ -139,7 +139,7 @@
         display: flex; flex-direction: column;
         border: 2px solid #1a2a3a; 
         box-sizing: border-box; 
-        border-radius: 3.18mm; /* ROUNDED CORNERS HERE */
+        border-radius: 3.18mm; 
     }
 
     /* === FRONT SIDE === */
@@ -149,11 +149,10 @@
         width: 100%;
         display: flex; align-items: center; justify-content: space-between;
         position: relative; z-index: 5;
-        padding: 0 2mm 0 3mm; /* Right padding slightly less */
+        padding: 0 2mm 0 3mm; 
         clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
         border-bottom: 2px solid #FF9933;
     }
-    /* Saffron accent line */
     .v-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: #FF9933; z-index: 6; }
 
     .v-header-left { display: flex; align-items: center; flex: 1; }
@@ -165,14 +164,13 @@
         text-align: left;
     }
 
-    /* Small Donate QR in Header - Positioned Safely */
     .v-header-qr-box { 
         width: 9mm; height: 9mm; 
         background: white; padding: 1px; 
         border-radius: 2px; flex-shrink: 0; 
-        margin-left: 1mm; margin-bottom: 2mm; 
+        margin-left: 1mm; margin-bottom: 3mm; /* Slight lift to stay within page */
         display: flex; align-items: center; justify-content: center;
-        margin-right: 1mm; /* Safe margin from right edge */
+        margin-right: 1mm;
     }
     .v-header-qr-box img { width: 100%; height: 100%; }
 
@@ -217,7 +215,6 @@
     .v-lbl { width: 40%; font-weight: 700; color: #666; font-size: 5pt; text-transform: uppercase; letter-spacing: 0.2px; }
     .v-val { width: 60%; font-weight: 800; color: #000; text-align: right; font-size: 6pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* BARCODE AREA */
     .v-barcode-area {
         position: absolute; bottom: 6mm; 
         z-index: 2; left: 50%; transform: translateX(-50%);
@@ -225,7 +222,6 @@
     }
     .v-barcode-area svg { width: 100%; height: 100%; }
 
-    /* ABSOLUTE FOOTER */
     .v-footer {
         position: absolute; bottom: 0; left: 0;
         height: 5mm; 
@@ -269,7 +265,6 @@
         width: 90%;
     }
 
-    /* SCAN TO VERIFY LABEL & QR */
     .vb-qr-label {
         font-size: 5pt; font-weight: 800; color: #FF9933; 
         text-transform: uppercase; letter-spacing: 0.5px;
@@ -639,9 +634,9 @@
             <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
             <style>
                 @page { size: 54mm 85.6mm; margin: 0; }
-                body { margin: 0; padding: 0; background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                .print-page { width: 54mm; height: 85.6mm; position: relative; overflow: hidden; font-family: 'Montserrat', sans-serif; page-break-after: always; }
-                .id-card { width: 100%; height: 100%; position: relative; background:white; display:flex; flex-direction:column; border: 1px solid #000; box-sizing: border-box; border-radius: 3.18mm; }
+                body { margin: 0; padding: 0; width: 54mm; height: 85.6mm; background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                .print-page { width: 54mm; height: 85.6mm; position: relative; overflow: hidden; font-family: 'Montserrat', sans-serif; page-break-after: always; display:flex; justify-content:center; align-items:center; }
+                .id-card { width: 54mm; height: 85.6mm; position: relative; background:white; display:flex; flex-direction:column; border: 1px solid #000; box-sizing: border-box; border-radius: 3.18mm; overflow: hidden; }
                  
                 /* REPEAT CSS */
                 .v-header { height: 18%; background: #002347; width: 100%; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 5; padding: 0 2mm 0 3mm; clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%); border-bottom: 2px solid #FF9933; }
