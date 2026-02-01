@@ -2,36 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TYS ID Card System - Final Ultra Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tiranga Yuva Samiti - Official Portal</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* === GLOBAL RESET & VARIABLES === */
+        /* === ULTRA MODERN THEME === */
         :root {
-            --navy: #002347;
-            --saffron: #FF9933;
-            --green: #138808;
-            --bg-color: #e8ecf1;
+            --primary: #002347;   /* Navy */
+            --accent: #FF9933;    /* Saffron */
+            --success: #138808;   /* Green */
+            --bg-grad: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --glass: rgba(255, 255, 255, 0.95);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
         }
 
         html, body { 
             margin: 0; padding: 0; 
-            background-color: var(--bg-color); 
+            min-height: 100vh;
+            background: var(--bg-grad);
             font-family: 'Segoe UI', sans-serif; 
             -webkit-print-color-adjust: exact !important; 
             print-color-adjust: exact !important; 
         }
         * { box-sizing: border-box; }
 
-        /* === MAIN LAYOUT === */
+        /* === CONTAINER === */
         #app-container { 
             max-width: 1200px; margin: 0 auto; 
             padding: 40px 20px; 
@@ -39,88 +41,97 @@
         }
 
         h2 { 
-            color: #1a2a3a; text-align: center; 
+            color: var(--primary); text-align: center; 
             font-family: 'Montserrat', sans-serif; font-weight: 900; 
             text-transform: uppercase; letter-spacing: -1px; 
-            margin-bottom: 5px; font-size: 32px; 
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+            margin-bottom: 5px; font-size: 2.5rem; 
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
         }
-        p.subtitle { color: #666; margin-bottom: 40px; font-weight: 600; text-align: center; }
+        p.subtitle { color: #555; margin-bottom: 40px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-size: 0.9rem; }
 
-        /* === SEARCH BOX STYLING === */
+        /* === SEARCH CARD === */
         .search-box {
-            background: #fff; padding: 30px; border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
-            width: 100%; max-width: 450px;
+            background: var(--glass);
+            backdrop-filter: blur(4px);
+            padding: 40px; border-radius: 20px;
+            box-shadow: var(--shadow); 
+            width: 100%; max-width: 500px;
             display: flex; flex-direction: column; gap: 20px; 
-            border-top: 5px solid var(--saffron); margin-bottom: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            margin-bottom: 50px;
+            transition: transform 0.3s ease;
         }
+        .search-box:hover { transform: translateY(-5px); }
         
         .input-wrap { position: relative; width: 100%; }
-        .input-wrap i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--navy); }
+        .input-wrap i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 1.1rem; }
         
         .inp { 
-            width: 100%; padding: 15px 15px 15px 45px; 
-            border: 2px solid #eee; border-radius: 8px; 
-            font-size: 16px; background: #f9f9f9; outline: none; transition: 0.3s; 
+            width: 100%; padding: 16px 16px 16px 50px; 
+            border: 2px solid #e0e0e0; border-radius: 12px; 
+            font-size: 16px; background: #fff; outline: none; transition: 0.3s; 
+            font-weight: 600; color: #333;
         }
-        .inp:focus { border-color: var(--saffron); background: #fff; }
+        .inp:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(255, 153, 51, 0.1); }
         
         .btn-action { 
-            background: linear-gradient(135deg, var(--navy), #00152e); 
-            color: white; border: none; padding: 15px; 
-            border-radius: 8px; font-weight: 800; 
+            background: linear-gradient(45deg, var(--primary), #004e92); 
+            color: white; border: none; padding: 18px; 
+            border-radius: 12px; font-weight: 800; font-size: 1rem;
             text-transform: uppercase; cursor: pointer; transition: 0.3s; 
+            letter-spacing: 1px; box-shadow: 0 10px 20px rgba(0, 35, 71, 0.2);
         }
-        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,35,71,0.3); }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(0, 35, 71, 0.3); }
         
-        #msg-box { text-align: center; font-weight: 700; color: #555; min-height: 20px; font-size: 14px; }
+        #msg-box { text-align: center; font-weight: 700; color: #555; min-height: 20px; font-size: 14px; margin-top: 10px; }
 
-        /* === RESULT AREA === */
-        #results-area { width: 100%; display: flex; flex-direction: column; gap: 50px; align-items: center; }
+        /* === RESULTS AREA === */
+        #results-area { width: 100%; display: flex; flex-direction: column; align-items: center; }
         
         .card-row {
-            display: flex; gap: 60px; justify-content: center; align-items: center; flex-wrap: wrap;
-            background: #fff; padding: 50px; border-radius: 20px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
-            animation: fadeIn 0.5s ease-in;
+            display: flex; gap: 40px; justify-content: center; align-items: center; flex-wrap: wrap;
+            background: white; padding: 40px; border-radius: 24px; 
+            box-shadow: var(--shadow);
+            animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+            width: 100%; max-width: 1100px;
         }
-        @keyframes fadeIn { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
+        @keyframes slideUp { from{opacity:0; transform:translateY(30px);} to{opacity:1; transform:translateY(0);} }
 
         .side-col { display: flex; flex-direction: column; align-items: center; gap: 15px; }
         .side-label { font-weight: 800; color: #aaa; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; }
 
-        /* === ID CARD WRAPPER (Visual Display Only) === */
+        /* === ID CARD CONTAINER (CR80 Standard: 54mm x 86mm) === */
         .card-wrapper {
             width: 54mm; height: 86mm; 
             position: relative;
             background: transparent; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             border-radius: 3.18mm;
+            transition: transform 0.3s ease;
         }
+        .card-wrapper:hover { transform: scale(1.02); z-index: 5; }
 
-        /* === ID CARD STRUCTURE (Used for Print & Download) === */
+        /* === ID CARD STYLING === */
         .id-card {
             width: 54mm; height: 86mm;
             background: #fff;
             position: relative; overflow: hidden;
             border-radius: 3.18mm;
             font-family: 'Montserrat', sans-serif;
-            border: 1px solid #000; /* Crisp border */
+            border: 1px solid #000; /* Crisp border for cutting */
             display: flex; flex-direction: column;
             box-sizing: border-box;
         }
 
         /* --- FRONT SIDE --- */
         .front-header {
-            height: 18%; background: var(--navy); 
+            height: 18%; background: var(--primary); 
             display: flex; align-items: center; justify-content: space-between;
             padding: 0 2mm 0 3mm; position: relative; 
-            clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
-            border-bottom: 2px solid var(--saffron); z-index: 5;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            border-bottom: 2px solid var(--accent); z-index: 5;
         }
-        /* Saffron accent line at bottom of header */
-        .front-header:after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:var(--saffron); z-index:6; }
+        .front-header:after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:var(--accent); z-index:6; }
 
         .fh-logo { width: 8.5mm; height: auto; margin-right: 1.5mm; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); }
         .fh-title { color: white; font-family: 'Oswald', sans-serif; font-size: 7.5pt; line-height: 1.1; font-weight: 700; text-transform: uppercase; text-align: left; }
@@ -137,7 +148,7 @@
             padding-top: 3mm; position: relative;
             background-image: linear-gradient(#f4f4f4 1px, transparent 1px), linear-gradient(90deg, #f4f4f4 1px, transparent 1px);
             background-size: 4mm 4mm;
-            padding-bottom: 6mm; /* Space for footer */
+            padding-bottom: 6mm; 
         }
         .fb-photo {
             width: 21mm; height: 25mm; 
@@ -146,12 +157,12 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .fb-name { 
-            font-size: 10pt; font-weight: 900; color: var(--navy); 
+            font-size: 10pt; font-weight: 900; color: var(--primary); 
             text-transform: uppercase; text-align: center; 
             line-height: 1.1; width: 95%; margin-bottom: 1px; 
         }
         .fb-role { 
-            background: var(--saffron); color: white; 
+            background: var(--accent); color: white; 
             font-size: 5pt; font-weight: 700; padding: 1.5px 8px; 
             border-radius: 0px; text-transform: uppercase; margin-bottom: 2mm;
             clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
@@ -171,19 +182,19 @@
 
         .front-footer {
             position: absolute; bottom: 0; width: 100%; height: 5mm; 
-            background: var(--navy); border-top: 1px solid var(--saffron);
+            background: var(--primary); border-top: 1px solid var(--accent);
             display: flex; align-items: center; justify-content: center; 
-            color: var(--saffron); font-size: 5pt; font-weight: 800; 
+            color: var(--accent); font-size: 5pt; font-weight: 800; 
             text-transform: uppercase; letter-spacing: 1px; z-index: 5;
         }
 
         /* --- BACK SIDE --- */
         .back-header { 
-            height: 12%; background: var(--navy); 
+            height: 12%; background: var(--primary); 
             display: flex; align-items: center; justify-content: center; 
             color: white; font-weight: 800; font-size: 7.5pt; 
             text-transform: uppercase; letter-spacing: 1px; 
-            border-bottom: 2px solid var(--saffron); 
+            border-bottom: 2px solid var(--accent); 
         }
         .back-body { 
             flex: 1; display: flex; flex-direction: column; align-items: center; 
@@ -191,26 +202,26 @@
         }
         .bb-logo { width: 16mm; margin-top: 1mm; opacity: 1; }
         .bb-title { 
-            font-size: 8pt; font-weight: 900; color: var(--navy); 
+            font-size: 8pt; font-weight: 900; color: var(--primary); 
             text-transform: uppercase; margin: 1mm 0 2mm 0; 
             width: 90%; text-align: center; 
         }
         
-        .bb-qr-label { font-size: 5pt; font-weight: 800; color: var(--saffron); margin-bottom: 1px; text-transform: uppercase; }
+        .bb-qr-label { font-size: 5pt; font-weight: 800; color: var(--accent); margin-bottom: 1px; text-transform: uppercase; }
         .bb-qr-box { 
             width: 14mm; height: 14mm; border: 1px solid #ddd; 
-            padding: 1px; margin-bottom: 2mm; background: white;
+            padding: 1px; margin-bottom: 3mm; background: white;
         }
         .bb-qr-box img { width: 100%; height: 100%; }
 
         .bb-info { width: 100%; margin-bottom: 2mm; margin-top: 1mm; }
         .bb-row { display: flex; gap: 2mm; margin-bottom: 1.5mm; align-items: flex-start; }
-        .bb-icon { color: var(--saffron); font-size: 6pt; width: 3mm; text-align: center; margin-top: 1px; }
+        .bb-icon { color: var(--accent); font-size: 6pt; width: 3mm; text-align: center; margin-top: 1px; }
         .bb-text { font-size: 5pt; font-weight: 600; color: #444; flex: 1; line-height: 1.2; text-align: left; }
 
         /* Terms & Signature Gap */
-        .bb-terms { width: 100%; margin-top: auto; margin-bottom: 12mm; /* Increased Gap */ }
-        .bb-terms h4 { margin: 0; font-size: 4pt; color: var(--navy); text-transform: uppercase; text-align: left; }
+        .bb-terms { width: 100%; margin-top: auto; margin-bottom: 12mm; }
+        .bb-terms h4 { margin: 0; font-size: 4pt; color: var(--primary); text-transform: uppercase; text-align: left; }
         .bb-terms p { margin: 0; font-size: 3.5pt; color: #666; line-height: 1.1; text-align: left; margin-top: 1px; }
 
         .bb-sign-area { 
@@ -218,7 +229,7 @@
             text-align: center; z-index: 5; 
         }
         .bb-sign-line { width: 22mm; height: 1px; background: #000; margin-bottom: 1px; }
-        .bb-sign-txt { font-size: 4pt; font-weight: 800; color: var(--navy); text-transform: uppercase; }
+        .bb-sign-txt { font-size: 4pt; font-weight: 800; color: var(--primary); text-transform: uppercase; }
         
         .bb-stamp { 
             position: absolute; bottom: 2mm; right: 0; 
@@ -228,59 +239,61 @@
 
         .back-footer { 
             position: absolute; bottom: 0; width: 100%; height: 5mm; 
-            background: var(--green); 
+            background: var(--success); 
             display: flex; align-items: center; justify-content: center; 
-            color: white; font-size: 4.5pt; font-weight: 600; text-transform: uppercase; 
+            color: white; font-size: 4.5pt; font-weight: 700; text-transform: uppercase; 
         }
 
         /* === ACTION BUTTONS === */
-        .btn-group { display: flex; gap: 20px; flex-direction: column; justify-content: center; }
+        .btn-group { display: flex; gap: 20px; flex-direction: column; justify-content: center; width: 100%; max-width: 300px; }
         .tool-btn {
-            border: none; padding: 15px 25px; border-radius: 10px; 
+            border: none; padding: 20px 25px; border-radius: 12px; 
             cursor: pointer; color: white; font-weight: 800; font-size: 14px;
-            display: flex; flex-direction: column; align-items: center; gap: 5px; 
-            min-width: 140px; transition: 0.3s;
+            display: flex; flex-direction: column; align-items: center; gap: 8px; 
+            width: 100%; transition: 0.3s;
         }
-        .btn-print { background: var(--saffron); box-shadow: 0 5px 15px rgba(255, 153, 51, 0.3); }
-        .btn-print:hover { transform: translateY(-3px); background: #e68a00; }
+        .btn-print { background: linear-gradient(135deg, #FF9933, #e67e22); box-shadow: 0 8px 15px rgba(255, 153, 51, 0.3); }
+        .btn-print:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(255, 153, 51, 0.4); }
         
-        .btn-dl { background: #2980b9; box-shadow: 0 5px 15px rgba(41, 128, 185, 0.3); }
-        .btn-dl:hover { transform: translateY(-3px); background: #2471a3; }
+        .btn-dl { background: linear-gradient(135deg, #2980b9, #2c3e50); box-shadow: 0 8px 15px rgba(41, 128, 185, 0.3); }
+        .btn-dl:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(41, 128, 185, 0.4); }
 
+        /* === MOBILE RESPONSIVENESS === */
         @media (max-width: 768px) {
-            .card-row { flex-direction: column; padding: 20px; }
-            .btn-group { flex-direction: row; }
+            h2 { font-size: 2rem; }
+            .card-row { flex-direction: column; padding: 20px; gap: 40px; }
+            .side-col { width: 100%; }
+            .btn-group { flex-direction: row; max-width: 100%; }
+            .tool-btn { font-size: 12px; padding: 15px; }
         }
     </style>
 </head>
 <body>
 
 <div id="app-container">
-    <div class="app-box">
-        <h2>ID Card Verification</h2>
-        <p class="subtitle">Official Member Database</p>
-
-        <div class="search-box">
-            <div class="input-wrap">
-                <i class="fa-solid fa-id-badge"></i>
-                <input type="text" id="inputId" class="inp" placeholder="Member ID (e.g. YM-101)">
-            </div>
-            <div class="input-wrap">
-                <i class="fa-solid fa-phone"></i>
-                <input type="text" id="inputPhone" class="inp" placeholder="Registered Phone">
-            </div>
-            <button class="btn-action" onclick="verifyAndSearch()">Verify & Generate</button>
-            <div id="msg-box"></div>
+    <div class="search-box">
+        <h2>ID Verification</h2>
+        <p class="subtitle">Official Database Access</p>
+        
+        <div class="input-wrap">
+            <i class="fa-solid fa-id-badge"></i>
+            <input type="text" id="inputId" class="inp" placeholder="Member ID (e.g. YM-101)">
         </div>
-
-        <div id="results-area"></div>
+        <div class="input-wrap">
+            <i class="fa-solid fa-phone"></i>
+            <input type="text" id="inputPhone" class="inp" placeholder="Registered Phone">
+        </div>
+        <button class="btn-action" onclick="verifyAndSearch()">Verify & Generate</button>
+        <div id="msg-box"></div>
     </div>
+
+    <div id="results-area"></div>
 </div>
 
 <script>
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/1p1ynKWyRErPwczTcMkffZfQ7dhOiV9buv_gIVRK3uh0/export?format=csv&gid=85144492";
     
-    // CONFIG
+    // CONFIG: Assets with CORS enabled
     const CFG = {
         org: "Tiranga Yuva Samiti",
         logo: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhCaJCRPLvQgi9REoAvb9b4H4Vvh6RhAmMRGwGEolXIqS2nxxCa9-jS7qexF2JL5puwPOEk-2q7ubDKeL-m-BM0_7_uHrI5EnBXue7deGtgta4UyCDnI43AkB1KBN8PV4G00fg1vW2La338AyzZkHvXpzt49papqeYLt9NDXMcTnvsceg/s1600/TYS-White.png",
@@ -300,14 +313,14 @@
 
     async function loadData() {
         const box = document.getElementById('msg-box');
-        box.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Loading Database...';
+        box.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Connecting...';
         try {
             const res = await fetch(SHEET_URL + "&t=" + Date.now());
             const buf = await res.arrayBuffer();
             const wb = XLSX.read(new Uint8Array(buf), {type:'array', cellDates:true});
             MEM_DATA = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-            box.innerHTML = MEM_DATA.length ? `<span style="color:green">✅ Database Ready (${MEM_DATA.length} members)</span>` : "Database Empty";
-        } catch(e) { box.innerHTML = `<span style="color:red">❌ Connection Failed</span>`; }
+            box.innerHTML = MEM_DATA.length ? `<span style="color:#138808">✅ Database Active (${MEM_DATA.length})</span>` : "Database Empty";
+        } catch(e) { box.innerHTML = `<span style="color:#e74c3c">❌ Connection Failed</span>`; }
     }
 
     function verifyAndSearch() {
@@ -323,9 +336,9 @@
             String(m.id).toLowerCase().includes(id) && String(m.phone).toLowerCase().includes(ph)
         );
 
-        if(!found.length) { box.innerHTML = `<span style="color:red">❌ No Match Found.</span>`; return; }
+        if(!found.length) { box.innerHTML = `<span style="color:#e74c3c">❌ No Match Found.</span>`; return; }
         
-        box.innerHTML = `<span style="color:green">✅ Verified! Generating Card...</span>`;
+        box.innerHTML = `<span style="color:#138808">✅ Verified! Generating Card...</span>`;
         renderCard(found[0]);
     }
 
@@ -416,10 +429,12 @@
 
             <div class="btn-group">
                 <button class="tool-btn btn-print" onclick="printCards('front-${uId}', 'back-${uId}')">
-                    <i class="fa-solid fa-print" style="font-size:20px;"></i> PRINT<br>CARD
+                    <i class="fa-solid fa-print"></i>
+                    <span>PRINT CARD</span>
                 </button>
                 <button class="tool-btn btn-dl" onclick="downloadImages('front-${uId}', 'back-${uId}', '${fullName}')">
-                    <i class="fa-solid fa-download" style="font-size:20px;"></i> DOWNLOAD<br>IMAGE
+                    <i class="fa-solid fa-download"></i>
+                    <span>DOWNLOAD PNG</span>
                 </button>
             </div>
         </div>`;
@@ -444,7 +459,7 @@
         return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
     }
 
-    // === PRINT FUNCTION ===
+    // === PRINT FUNCTION (CRITICAL FIX) ===
     function printCards(fid, bid) {
         const fHtml = document.getElementById(fid).innerHTML;
         const bHtml = document.getElementById(bid).innerHTML;
@@ -455,22 +470,20 @@
             <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
             <style>
-                /* ZERO MARGIN & AUTO SIZE */
                 @page { size: auto; margin: 0; }
-                body { margin: 0; padding: 0; width: 100%; height: 100%; background: white; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                body { margin: 0; padding: 0; background: white; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                 
-                /* CENTER THE CARD ON THE PAPER */
                 .print-page { 
                     width: 100vw; height: 100vh; 
                     display: flex; justify-content: center; align-items: center; 
                     page-break-after: always; 
                 }
 
-                /* REPEAT CSS CLASSES FOR PRINT WINDOW */
+                /* REPEAT CSS FROM MAIN */
                 * { box-sizing: border-box; }
                 .id-card { width: 54mm; height: 86mm; border: 1px solid #000; border-radius: 3.18mm; overflow: hidden; position: relative; background: white; display: flex; flex-direction: column; font-family: 'Montserrat', sans-serif; }
                 
-                /* Front Side */
+                /* Front */
                 .front-header { height: 18%; background: #002347; display: flex; align-items: center; justify-content: space-between; padding: 0 2mm 0 3mm; clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%); border-bottom: 2px solid #FF9933; z-index: 5; }
                 .front-header:after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:#FF9933; z-index:6; }
                 .fh-logo { width: 8.5mm; margin-right: 1.5mm; }
@@ -490,13 +503,13 @@
                 .fb-barcode svg { width: 100%; height: 100%; }
                 .front-footer { position: absolute; bottom: 0; width: 100%; height: 5mm; background: #002347; border-top: 1px solid #FF9933; display: flex; align-items: center; justify-content: center; color: #FF9933; font-size: 5pt; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; z-index: 5; }
 
-                /* Back Side */
+                /* Back */
                 .back-header { height: 12%; background: #002347; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #FF9933; }
                 .back-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 3mm; position: relative; }
                 .bb-logo { width: 16mm; margin-top: 1mm; }
                 .bb-title { font-size: 8pt; font-weight: 900; color: #002347; text-transform: uppercase; margin: 1mm 0 2mm 0; width: 90%; text-align: center; }
                 .bb-qr-label { font-size: 5pt; font-weight: 800; color: #FF9933; margin-bottom: 1px; text-transform: uppercase; }
-                .bb-qr-box { width: 14mm; height: 14mm; border: 1px solid #ddd; padding: 1px; margin-bottom: 2mm; }
+                .bb-qr-box { width: 14mm; height: 14mm; border: 1px solid #ddd; padding: 1px; margin-bottom: 3mm; }
                 .bb-qr-box img { width: 100%; height: 100%; }
                 .bb-info { width: 100%; margin-bottom: 2mm; margin-top: 1mm; }
                 .bb-row { display: flex; gap: 2mm; margin-bottom: 1.5mm; }
@@ -509,7 +522,7 @@
                 .bb-sign-line { width: 22mm; height: 1px; background: #000; margin-bottom: 1px; }
                 .bb-sign-txt { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; }
                 .bb-stamp { position: absolute; bottom: 2mm; right: 0; width: 20mm; opacity: 0.85; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
-                .back-footer { position: absolute; bottom: 0; width: 100%; height: 5mm; background: #138808; display: flex; align-items: center; justify-content: center; color: white; font-size: 4.5pt; font-weight: 600; text-transform: uppercase; }
+                .back-footer { position: absolute; bottom: 0; width: 100%; height: 5mm; background: #138808; display: flex; align-items: center; justify-content: center; color: white; font-size: 4.5pt; font-weight: 700; text-transform: uppercase; }
             </style>
             </head><body>
                 <div class="print-page">${fHtml}</div>
