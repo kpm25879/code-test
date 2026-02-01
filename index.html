@@ -56,6 +56,7 @@
     .id-card-inner {
         width: 85.6mm; height: 54mm;
         background-color: #ffffff;
+        /* Micro Pattern */
         background-image: radial-gradient(#002347 0.5px, transparent 0.5px), radial-gradient(#002347 0.5px, #ffffff 0.5px);
         background-size: 20px 20px; background-position: 0 0, 10px 10px; background-blend-mode: overlay;
         position: relative; overflow: hidden;
@@ -67,7 +68,7 @@
 
     /* HEADER */
     .h-header { 
-        height: 13.5mm; /* Saved 0.5mm */
+        height: 13.5mm; 
         background: #002347; 
         display: flex; align-items: center; justify-content: space-between; 
         padding: 0 2mm; position: relative; z-index: 5;
@@ -96,22 +97,20 @@
 
     /* BODY */
     .h-body { 
-        flex: 1; display: flex; flex-direction: column; /* Vertical Flex for Bottom Barcode */
-        padding: 1.5mm 3mm; 
+        flex: 1; display: flex; flex-direction: column; 
+        padding: 1mm 3mm; /* Reduced padding to fit bottom */
         position: relative; background: rgba(255,255,255,0.94); 
     }
     .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 35mm; opacity: 0.08; pointer-events: none; z-index: 0; filter: grayscale(100%); }
 
-    /* CONTENT ROW (Photo + Details) */
-    .h-content-row { display: flex; width: 100%; height: 29mm; /* Fixed Height Area */ }
+    /* CONTENT ROW */
+    .h-content-row { display: flex; width: 100%; height: 29mm; }
 
-    /* LEFT COLUMN: Photo + Signature */
+    /* LEFT COLUMN */
     .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
     
-    /* ENLARGED PHOTO BOX */
     .h-p-box { 
-        width: 20mm; height: 23mm; /* Increased Size */
-        background: #fff; 
+        width: 20mm; height: 23mm; background: #fff; 
         position: relative; border: 1.5px solid #002347; border-radius: 4px; overflow: hidden;
     }
     .h-p-img { width: 100%; height: 100%; object-fit: cover; }
@@ -121,7 +120,6 @@
         opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; 
     }
 
-    /* Signature Area */
     .h-sign-box { width: 100%; text-align: center; margin-top: 0.5mm; flex-shrink: 0; }
     .h-sign-img { height: 5mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
     .h-sign-lbl { 
@@ -129,7 +127,7 @@
         border-top: 0.5px solid #000; padding-top: 0.5px; display: block; width: 100%;
     }
 
-    /* RIGHT COLUMN: Details */
+    /* RIGHT COLUMN */
     .h-right { flex: 1; padding-left: 4mm; display: flex; flex-direction: column; position: relative; }
     
     .h-row-id { 
@@ -142,20 +140,20 @@
     .hl { color: #002347; font-weight: 800; margin: 0; padding: 0; }
     .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; padding: 0; }
 
-    /* BARCODE ROW - CENTERED BOTTOM */
+    /* BARCODE ROW - IMAGE FIX FOR MOBILE */
     .h-barcode-row {
         width: 100%; height: 8mm; 
         display: flex; justify-content: center; align-items: flex-end;
-        margin-top: auto; /* Push to bottom */
-        padding-bottom: 0.5mm;
+        margin-top: auto; padding-bottom: 0.5mm;
         border-top: 0.5px dotted #ccc;
     }
-    .h-bar-wrap svg { width: 100%; height: 100%; display: block; }
+    .h-bar-wrap { width: 95%; height: 100%; display: flex; justify-content: center; align-items: flex-end; }
+    /* Important: Use IMG style, not SVG */
+    .h-bar-wrap img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
     /* FOOTER */
     .h-footer { 
-        height: 3.5mm; /* Saved 0.5mm */
-        background: #002347; color: white; 
+        height: 3.5mm; background: #002347; color: white; 
         display: flex; align-items: center; justify-content: center; 
         font-size: 3pt; font-weight: 600; text-align: center; line-height: 1.1; 
         letter-spacing: 0px; border-top: 1px solid #d62d20; white-space: nowrap;
@@ -165,7 +163,6 @@
     .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 2mm 3mm; text-align: center; background: rgba(255,255,255,0.95); }
     .h-header-back-title { margin-top: 2mm; color: white; font-family: 'Noto Sans Devanagari'; font-size: 10pt; font-weight: 700; }
     
-    /* Back Contact */
     .vb-contact {
         margin-bottom: 1.5mm; font-size: 4pt; color: #002347; font-weight: 800; 
         border-bottom: 1px dashed #d62d20; padding-bottom: 1px; width: 95%; white-space: nowrap; overflow: hidden;
@@ -175,7 +172,6 @@
     .vb-qr img { width: 100%; height: 100%; display: block; }
     .vb-t { font-size: 8pt; font-weight: 800; color: #002347; margin-bottom: 1mm; text-transform: uppercase; }
     .vb-s { font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; flex: 1; }
-    
     .vb-slogan { margin-top: auto; margin-bottom: 2mm; font-weight:800; color:#d62d20; font-size: 6.5pt; white-space: nowrap; }
 </style>
 
@@ -347,7 +343,7 @@
                                 </div>
 
                                 <div class="h-barcode-row">
-                                    <div class="h-bar-wrap"><svg id="bar-${safeId}"></svg></div>
+                                    <div class="h-bar-wrap"><img id="bar-${safeId}"></div>
                                 </div>
 
                             </div>
@@ -380,7 +376,11 @@
         `;
 
         setTimeout(() => {
-            JsBarcode(`#bar-${safeId}`, fullID, { format: "CODE128", displayValue: false, height: 35, width: 1.5, margin: 0, background: "transparent" });
+            // Generate Barcode on IMG
+            JsBarcode(`#bar-${safeId}`, fullID, { 
+                format: "CODE128", displayValue: false, 
+                height: 45, width: 1.5, margin: 0, background: "white" 
+            });
             new QRCode(document.getElementById(`qr-${safeId}`), { text: qrText, width: 90, height: 90, correctLevel: QRCode.CorrectLevel.M });
         }, 100);
     }
@@ -420,7 +420,7 @@
                     .h-sub-title { font-size: 5pt; font-weight: 700; color: #ffeb3b; line-height: 1.2; margin-top: 0.5mm; }
                     .h-tag { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 3.5pt; background: #d62d20; color: white; padding: 1px 8px; border-radius: 0 0 4px 4px; text-transform: uppercase; font-weight: 800; z-index:10; }
                     
-                    .h-body { flex: 1; display: flex; flex-direction: column; padding: 2mm 3mm; position: relative; background: rgba(255,255,255,0.94); }
+                    .h-body { flex: 1; display: flex; flex-direction: column; padding: 1mm 3mm; position: relative; background: rgba(255,255,255,0.94); }
                     .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 35mm; opacity: 0.08; z-index: 0; }
                     
                     .h-content-row { display: flex; width: 100%; height: 29mm; }
@@ -439,9 +439,11 @@
                     .h-grid { display: grid; grid-template-columns: 18mm 1fr; row-gap: 1mm; font-size: 6.2pt; }
                     .hl { color: #002347; font-weight: 800; } .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; }
                     
-                    .h-barcode-row { width: 100%; height: 8mm; display: flex; justify-content: center; align-items: flex-end; margin-top: auto; padding-bottom: 0.5mm; border-top: 0.5px dotted #ccc; }
-                    .h-bar-wrap svg { width: 100%; height: 100%; }
-
+                    .h-barcode-row { width: 100%; height: 8mm; display: flex; justify-content: center; align-items: center; margin-top: 1mm; border-top: 0.5px dotted #ccc; }
+                    .h-bar-wrap { width: 95%; height: 100%; display:flex; justify-content:center; } 
+                    /* IMG STYLE FOR PRINT */
+                    .h-bar-wrap img { width:100%; height:100%; object-fit: contain; }
+                    
                     .h-footer { height: 3.5mm; background: #002347; color: white; display: flex; align-items: center; justify-content: center; font-size: 3pt; font-weight: 600; text-align: center; line-height: 1.1; border-top: 1px solid #d62d20; white-space: nowrap; }
                     
                     .h-header-back-title { margin-top: 2mm; color: white; font-family: 'Noto Sans Devanagari'; font-size: 10pt; font-weight: 700; }
@@ -463,7 +465,6 @@
         `);
         win.document.close();
         
-        // Wait for images to render
         win.onload = function() {
             setTimeout(() => {
                 win.focus();
