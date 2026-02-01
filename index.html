@@ -56,7 +56,6 @@
     .id-card-inner {
         width: 85.6mm; height: 54mm;
         background-color: #ffffff;
-        /* Micro Pattern */
         background-image: radial-gradient(#002347 0.5px, transparent 0.5px), radial-gradient(#002347 0.5px, #ffffff 0.5px);
         background-size: 20px 20px; background-position: 0 0, 10px 10px; background-blend-mode: overlay;
         position: relative; overflow: hidden;
@@ -67,7 +66,7 @@
 
     /* HEADER */
     .h-header { 
-        height: 14mm; /* Adjusted Height */
+        height: 14mm; 
         background: #002347; 
         display: flex; align-items: center; justify-content: space-between; 
         padding: 0 2mm; position: relative; z-index: 5;
@@ -76,7 +75,7 @@
     .h-logo, .h-cow { width: 9mm; height: 9mm; object-fit: contain; display: block; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); }
     .h-cow { border-radius: 50%; border: 1px solid white; background:white; }
     
-    .h-titles { flex: 1; text-align: center; padding-top: 3.5mm; /* INCREASED GAP for Tag */ } 
+    .h-titles { flex: 1; text-align: center; padding-top: 3.5mm; } 
     .h-main-title { 
         font-family: 'Rozha One', serif; font-size: 12.5pt; color: #ffffff; 
         line-height: 0.9; margin-top: 0; white-space: nowrap; 
@@ -98,7 +97,7 @@
     .h-body { flex: 1; display: flex; padding: 2mm 3mm; position: relative; background: rgba(255,255,255,0.94); }
     .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 35mm; opacity: 0.08; pointer-events: none; z-index: 0; filter: grayscale(100%); }
 
-    /* LEFT COLUMN: Photo -> Barcode -> Signature */
+    /* LEFT COLUMN */
     .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
     
     .h-p-box { 
@@ -106,8 +105,10 @@
         position: relative; border: 1.5px solid #002347; border-radius: 4px; overflow: hidden;
     }
     .h-p-img { width: 100%; height: 100%; object-fit: cover; }
+    
+    /* UPDATED STAMP CSS - Visible & Not Cut */
     .h-stamp { 
-        position: absolute; bottom: -3mm; right: -3mm; width: 14mm; 
+        position: absolute; bottom: 0; right: 0; width: 14mm; 
         opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; 
     }
 
@@ -115,7 +116,7 @@
     .h-bar-wrap { width: 100%; height: 5mm; display: flex; justify-content: center; margin-top: 1mm; }
     .h-bar-wrap svg { width: 100%; height: 100%; }
     
-    /* Signature Area - MOVED HERE */
+    /* Signature Area */
     .h-sign-box { width: 100%; text-align: center; margin-top: 0.5mm; }
     .h-sign-img { height: 6mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
     .h-sign-lbl { 
@@ -136,11 +137,10 @@
     .hl { color: #002347; font-weight: 800; margin: 0; padding: 0; }
     .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; padding: 0; }
 
-    /* FOOTER - FIT ADJUSTMENT */
+    /* FOOTER */
     .h-footer { 
         height: 4mm; background: #002347; color: white; 
         display: flex; align-items: center; justify-content: center; 
-        /* Small font to fit all contact info */
         font-size: 3pt; font-weight: 600; text-align: center; line-height: 1.1; 
         letter-spacing: 0px; border-top: 1px solid #d62d20; white-space: nowrap;
     }
@@ -337,7 +337,7 @@
                                 <div class="vb-t">सदस्यता सत्यापित करने के लिए स्कैन करें</div>
                                 <div id="qr-${safeId}" class="vb-qr"></div>
                                 <div class="vb-s">यह कार्ड तिरंगा युवा समिति की संपत्ति है।<br>गुम होने पर कृपया उपरोक्त पते पर लौटाएं।</div>
-                                <div style="margin-top:10px; font-weight:bold; color:#d62d20;">जय हिंद - जय भारत - जय गौ माता</div>
+                                <div style="margin-top:2mm; font-weight:800; color:#d62d20; font-size: 6.5pt; white-space: nowrap;">जय हिंद - जय भारत - जय गौ माता</div>
                             </div>
                             <div class="h-footer">Together We Serve • Go Raksha Dal Haryana</div>
                         </div>
@@ -392,7 +392,7 @@
                     .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
                     .h-p-box { width: 19mm; height: 23mm; background: #fff; position: relative; border: 1.5px solid #002347; border-radius: 4px; overflow: hidden; }
                     .h-p-img { width: 100%; height: 100%; object-fit: cover; }
-                    .h-stamp { position: absolute; bottom: -3mm; right: -3mm; width: 14mm; opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
+                    .h-stamp { position: absolute; bottom: 0; right: 0; width: 14mm; opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
                     
                     .h-bar-wrap { width: 100%; height: 5mm; display:flex; justify-content:center; margin-top:1mm; } .h-bar-wrap svg { width:100%; height:100%; }
                     .h-sign-box { width: 100%; text-align: center; margin-top: 0.5mm; }
@@ -407,6 +407,7 @@
                     
                     .h-footer { height: 4mm; background: #002347; color: white; display: flex; align-items: center; justify-content: center; font-size: 3pt; font-weight: 600; text-align: center; line-height: 1.1; border-top: 1px solid #d62d20; white-space: nowrap; }
                     
+                    /* Back Side */
                     .h-header-back-title { margin-top: 2mm; color: white; font-family: 'Noto Sans Devanagari'; font-size: 10pt; font-weight: 700; }
                     .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 3mm; text-align: center; }
                     .vb-qr { width: 25mm; height: 25mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 2mm; border-radius: 4px; } .vb-qr img { width: 100%; height: 100%; }
