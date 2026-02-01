@@ -73,13 +73,11 @@
 
     .id-card-inner {
         width: 85.6mm; height: 54mm;
-        /* Subtle Pattern Background to look like Plastic Card */
         background-color: #ffffff;
         background-image: radial-gradient(#002347 0.5px, transparent 0.5px), radial-gradient(#002347 0.5px, #ffffff 0.5px);
         background-size: 20px 20px;
         background-position: 0 0, 10px 10px;
         background-blend-mode: overlay;
-        opacity: 1;
         
         position: relative; overflow: hidden;
         border: 1px solid #aaa;
@@ -91,14 +89,14 @@
         -webkit-print-color-adjust: exact; print-color-adjust: exact;
     }
 
-    /* --- HEADER (Blue Top, Red Bottom Strip) --- */
+    /* HEADER */
     .h-header { 
         height: 15mm; 
-        background: #002347; /* Blue Background */
+        background: #002347; 
         display: flex; align-items: center; justify-content: space-between; 
         padding: 0 2mm; 
         position: relative; z-index: 5;
-        border-bottom: 2mm solid #d62d20; /* Red Strip */
+        border-bottom: 2mm solid #d62d20; 
     }
     
     .h-logo { width: 9mm; height: auto; display: block; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); }
@@ -108,20 +106,16 @@
     
     .h-main-title { 
         font-family: 'Rozha One', serif; 
-        font-size: 13pt; 
-        color: #ffffff; /* White Text on Blue */
-        line-height: 0.9; margin-top: 1px; 
-        white-space: nowrap; 
+        font-size: 13pt; color: #ffffff; 
+        line-height: 0.9; margin-top: 1px; white-space: nowrap; 
         text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
     }
     .h-sub-title { 
         font-family: 'Noto Sans Devanagari', sans-serif;
-        font-size: 5.5pt; font-weight: 700; 
-        color: #ffeb3b; /* Yellow/Gold for readability on Blue */
+        font-size: 5.5pt; font-weight: 700; color: #ffeb3b; 
         line-height: 1.2; margin-top: 0.5mm; 
     }
     
-    /* "Pehchan Patra" Tag */
     .h-tag { 
         position: absolute; top: 0; left: 50%; transform: translateX(-50%); 
         font-size: 3.5pt; background: #d62d20; color: white; padding: 1px 6px; 
@@ -129,68 +123,41 @@
         box-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
 
-    /* --- BODY --- */
-    .h-body { flex: 1; display: flex; padding: 2mm 3mm; position: relative; background: rgba(255,255,255,0.92); } /* Overlay to fade pattern */
-    .bg-wm { 
-        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-        width: 35mm; opacity: 0.08; pointer-events: none; z-index: 0; filter: grayscale(100%); 
-    }
+    /* BODY */
+    .h-body { flex: 1; display: flex; padding: 2mm 3mm; position: relative; background: rgba(255,255,255,0.92); }
+    .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 35mm; opacity: 0.08; pointer-events: none; z-index: 0; filter: grayscale(100%); }
 
-    /* LEFT COL: Photo & Barcode */
+    /* LEFT COL */
     .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; }
-    
     .h-p-box { 
-        width: 20mm; height: 24mm; 
-        background: #fff; 
-        margin-top: 0; 
-        position: relative; 
-        border: 1.5px solid #002347; /* Blue Border */
-        border-radius: 4px;
-        overflow: hidden;
+        width: 20mm; height: 24mm; background: #fff; 
+        margin-top: 0; position: relative; 
+        border: 1.5px solid #002347; border-radius: 4px; overflow: hidden;
         box-shadow: 0 2px 5px rgba(0,0,0,0.15);
     }
     .h-p-img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    
-    /* Stamp Position */
     .h-stamp { 
-        position: absolute; 
-        bottom: -3mm; right: -3mm; 
-        width: 15mm; 
-        opacity: 0.9; 
-        mix-blend-mode: multiply; 
-        transform: rotate(-15deg); 
-        z-index: 10; 
+        position: absolute; bottom: -3mm; right: -3mm; 
+        width: 15mm; opacity: 0.9; mix-blend-mode: multiply; 
+        transform: rotate(-15deg); z-index: 10; 
     }
-    
-    /* Barcode Position */
     .h-bar-box { 
-        margin-top: 2.5mm; 
-        width: 100%; height: 6mm; 
+        margin-top: 2.5mm; width: 100%; height: 6mm; 
         display: flex; justify-content: center; align-items: flex-start; 
     }
     .h-bar-box svg { height: 100%; width: 100%; display: block; }
 
-    /* RIGHT COL: Text Data */
+    /* RIGHT COL */
     .h-right { flex: 1; padding-left: 4mm; display: flex; flex-direction: column; }
-    
     .h-row-id { 
         font-size: 5pt; font-weight: 800; color: #d62d20; 
         border-bottom: 1px dashed #002347; 
         margin-bottom: 1.5mm; padding-bottom: 0.5mm;
         display: inline-block; width: 100%;
     }
-    
-    .h-grid { 
-        display: grid; grid-template-columns: 18mm 1fr; 
-        row-gap: 1.2mm; font-size: 6pt; /* Slightly larger text */
-    }
-    
+    .h-grid { display: grid; grid-template-columns: 18mm 1fr; row-gap: 1.2mm; font-size: 6pt; }
     .hl { color: #002347; font-weight: 800; margin: 0; padding: 0; text-transform: uppercase; }
-    .hv { 
-        color: #000; font-weight: 700; 
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-        margin: 0; padding: 0; 
-    }
+    .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; padding: 0; }
 
     .h-sign { position: absolute; bottom: 0; right: 2mm; text-align: center; }
     .h-sign img { height: 6mm; width: auto; display: block; margin: 0 auto; opacity: 0; }
@@ -199,7 +166,7 @@
         border-top: 1px solid #000; padding-top: 1px; display: block; width: 100%;
     }
 
-    /* --- FOOTER --- */
+    /* FOOTER */
     .h-footer { 
         height: 4mm; background: #002347; color: white; 
         display: flex; align-items: center; justify-content: center; 
@@ -207,7 +174,7 @@
         letter-spacing: 0.2px; border-top: 1px solid #d62d20;
     }
 
-    /* --- BACK SIDE --- */
+    /* BACK SIDE */
     .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 3mm; text-align: center; background: rgba(255,255,255,0.95); }
     .vb-qr { width: 25mm; height: 25mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 2mm; background: white; border-radius: 4px; }
     .vb-qr img { width: 100%; height: 100%; display: block; }
@@ -239,7 +206,6 @@
 </div>
 
 <script>
-    // === CONFIGURATION ===
     const EXCEL_URL = "https://docs.google.com/spreadsheets/d/1ehEiwGskDIHwUHJMSWrbjpSsaA8fTSkJ6hfuFLV3jhI/export?format=csv";
     
     const ASSETS = {
@@ -256,7 +222,6 @@
 
     let TYS_DATA = [];
 
-    // Safe load
     document.addEventListener("DOMContentLoaded", function() {
         loadTysData();
     });
@@ -274,7 +239,13 @@
         try {
             const resp = await fetch(EXCEL_URL + "&t=" + Date.now());
             const buffer = await resp.arrayBuffer();
-            const workbook = XLSX.read(new Uint8Array(buffer), {type: 'array', cellDates: true});
+            
+            // --- FIX FOR HINDI TEXT (UTF-8 DECODE) ---
+            const decoder = new TextDecoder("utf-8");
+            const csvData = decoder.decode(buffer);
+            // -----------------------------------------
+
+            const workbook = XLSX.read(csvData, {type: 'string'});
             const sheet = workbook.Sheets[workbook.SheetNames[0]];
             TYS_DATA = XLSX.utils.sheet_to_json(sheet);
             status.innerHTML = `<span style="color:green">✅ डेटाबेस कनेक्ट हो गया।</span>`;
@@ -305,7 +276,6 @@
         const found = TYS_DATA.find(m => {
             const mId = String(m[FIELDS.id]||'').trim().toLowerCase();
             const mPh = String(m[FIELDS.phone]||'').trim();
-            // Match input "1" with "TYS...-1"
             return mId.includes(inId) && mPh.includes(inPhone);
         });
 
@@ -429,35 +399,28 @@
                 body { margin: 0; padding: 0; background: white; font-family: 'Noto Sans Devanagari', sans-serif; -webkit-print-color-adjust: exact; }
                 .page-break { page-break-after: always; width: 85.6mm; height: 54mm; }
                 .id-card-inner { width: 85.6mm; height: 54mm; border: none; position: relative; overflow: hidden; display: flex; flex-direction: column; background:white; line-height: normal; }
-                
-                /* COPY STYLES FOR PRINT */
+                /* PRINT STYLES */
                 .h-header { height: 15mm; background: #002347; display: flex; align-items: center; justify-content: space-between; padding: 0 2mm; position: relative; z-index: 5; border-bottom: 2mm solid #d62d20; }
                 .h-logo { width: 9mm; } .h-cow { width: 11mm; border-radius: 50%; border:1px solid white; }
                 .h-titles { flex: 1; text-align: center; }
                 .h-main-title { font-family: 'Rozha One', serif; font-size: 13pt; color: white; line-height: 0.9; margin-top: 1px; white-space: nowrap; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
                 .h-sub-title { font-size: 5.5pt; font-weight: 700; color: #ffeb3b; line-height: 1.2; margin-top: 0.5mm; }
                 .h-tag { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 3.5pt; background: #d62d20; color: white; padding: 1px 6px; border-radius: 0 0 4px 4px; text-transform: uppercase; font-weight: 800; }
-                
                 .h-body { flex: 1; display: flex; padding: 2mm 3mm; position: relative; background: rgba(255,255,255,0.92); }
                 .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 35mm; opacity: 0.08; z-index: 0; }
-                
                 .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; }
                 .h-p-box { width: 20mm; height: 24mm; background: #fff; margin-top: 0; position: relative; border: 1.5px solid #002347; border-radius: 4px; overflow:hidden; }
                 .h-p-img { width: 100%; height: 100%; object-fit: cover; }
                 .h-stamp { position: absolute; bottom: -3mm; right: -3mm; width: 15mm; opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
                 .h-bar-box { margin-top: 2.5mm; width: 100%; height: 6mm; display:flex; justify-content:center; align-items: flex-start; }
-                
                 .h-right { flex: 1; padding-left: 4mm; display: flex; flex-direction: column; }
                 .h-row-id { font-size: 5pt; font-weight: 800; color: #d62d20; border-bottom: 1px dashed #002347; margin-bottom: 1.5mm; padding-bottom: 0.5mm; display: inline-block; width: 100%; }
                 .h-grid { display: grid; grid-template-columns: 18mm 1fr; row-gap: 1.2mm; font-size: 6pt; }
                 .hl { color: #002347; font-weight: 800; text-transform: uppercase; } 
                 .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; }
-                
                 .h-sign { position: absolute; bottom: 0; right: 2mm; text-align: center; } 
                 .h-sign span { font-size: 4pt; color: #002347; font-weight: 700; border-top: 1px solid #000; padding-top: 1px; }
-                
                 .h-footer { height: 4mm; background: #002347; color: white; display: flex; align-items: center; justify-content: center; font-size: 3.5pt; font-weight: 700; text-align: center; line-height: 1.1; border-top: 1px solid #d62d20; }
-                
                 .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 3mm; text-align: center; }
                 .vb-qr { width: 25mm; height: 25mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 2mm; border-radius: 4px; }
                 .vb-qr img { width: 100%; height: 100%; }
