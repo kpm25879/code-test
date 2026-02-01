@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiranga Yuva Samiti - ID Card Portal</title>
+    <title>TYS ID Card System - Final Ultra Pro</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -14,12 +14,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* === GLOBAL RESET === */
+        /* === GLOBAL RESET & VARIABLES === */
         :root {
             --navy: #002347;
             --saffron: #FF9933;
             --green: #138808;
-            --bg-color: #f0f2f5;
+            --bg-color: #e8ecf1;
         }
 
         html, body { 
@@ -31,22 +31,23 @@
         }
         * { box-sizing: border-box; }
 
+        /* === MAIN LAYOUT === */
         #app-container { 
             max-width: 1200px; margin: 0 auto; 
             padding: 40px 20px; 
             display: flex; flex-direction: column; align-items: center; 
         }
 
-        /* === TITLE SECTION === */
         h2 { 
             color: #1a2a3a; text-align: center; 
             font-family: 'Montserrat', sans-serif; font-weight: 900; 
             text-transform: uppercase; letter-spacing: -1px; 
             margin-bottom: 5px; font-size: 32px; 
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
         }
         p.subtitle { color: #666; margin-bottom: 40px; font-weight: 600; text-align: center; }
 
-        /* === INPUT FORM === */
+        /* === SEARCH BOX STYLING === */
         .search-box {
             background: #fff; padding: 30px; border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
@@ -75,7 +76,7 @@
         
         #msg-box { text-align: center; font-weight: 700; color: #555; min-height: 20px; font-size: 14px; }
 
-        /* === RESULTS AREA === */
+        /* === RESULT AREA === */
         #results-area { width: 100%; display: flex; flex-direction: column; gap: 50px; align-items: center; }
         
         .card-row {
@@ -89,7 +90,7 @@
         .side-col { display: flex; flex-direction: column; align-items: center; gap: 15px; }
         .side-label { font-weight: 800; color: #aaa; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; }
 
-        /* === ID CARD CONTAINER (CR80 Standard: 54mm x 86mm) === */
+        /* === ID CARD WRAPPER (Visual Display Only) === */
         .card-wrapper {
             width: 54mm; height: 86mm; 
             position: relative;
@@ -98,14 +99,14 @@
             border-radius: 3.18mm;
         }
 
-        /* === ID CARD STYLING === */
+        /* === ID CARD STRUCTURE (Used for Print & Download) === */
         .id-card {
             width: 54mm; height: 86mm;
             background: #fff;
             position: relative; overflow: hidden;
             border-radius: 3.18mm;
             font-family: 'Montserrat', sans-serif;
-            border: 1px solid #ddd; 
+            border: 1px solid #000; /* Crisp border */
             display: flex; flex-direction: column;
             box-sizing: border-box;
         }
@@ -114,17 +115,20 @@
         .front-header {
             height: 18%; background: var(--navy); 
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 3mm; position: relative; 
-            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            padding: 0 2mm 0 3mm; position: relative; 
+            clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
             border-bottom: 2px solid var(--saffron); z-index: 5;
         }
-        .fh-logo { width: 8mm; height: auto; margin-right: 2mm; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); }
-        .fh-title { color: white; font-family: 'Oswald', sans-serif; font-size: 7.5pt; line-height: 1.1; font-weight: 700; text-transform: uppercase; }
+        /* Saffron accent line at bottom of header */
+        .front-header:after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:var(--saffron); z-index:6; }
+
+        .fh-logo { width: 8.5mm; height: auto; margin-right: 1.5mm; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); }
+        .fh-title { color: white; font-family: 'Oswald', sans-serif; font-size: 7.5pt; line-height: 1.1; font-weight: 700; text-transform: uppercase; text-align: left; }
         
         .fh-qr { 
             width: 9mm; height: 9mm; background: white; padding: 1px; 
             border-radius: 2px; display: flex; align-items: center; justify-content: center; 
-            margin-bottom: 3mm; 
+            margin-bottom: 2mm; margin-right: 1mm;
         }
         .fh-qr img { width: 100%; height: 100%; }
 
@@ -133,6 +137,7 @@
             padding-top: 3mm; position: relative;
             background-image: linear-gradient(#f4f4f4 1px, transparent 1px), linear-gradient(90deg, #f4f4f4 1px, transparent 1px);
             background-size: 4mm 4mm;
+            padding-bottom: 6mm; /* Space for footer */
         }
         .fb-photo {
             width: 21mm; height: 25mm; 
@@ -143,20 +148,25 @@
         .fb-name { 
             font-size: 10pt; font-weight: 900; color: var(--navy); 
             text-transform: uppercase; text-align: center; 
-            line-height: 1.1; width: 90%; margin-bottom: 1px; 
+            line-height: 1.1; width: 95%; margin-bottom: 1px; 
         }
         .fb-role { 
             background: var(--saffron); color: white; 
-            font-size: 5pt; font-weight: 700; padding: 1px 8px; 
-            border-radius: 4px; text-transform: uppercase; margin-bottom: 2mm; 
+            font-size: 5pt; font-weight: 700; padding: 1.5px 8px; 
+            border-radius: 0px; text-transform: uppercase; margin-bottom: 2mm;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
         }
         
         .fb-table { width: 90%; display: flex; flex-direction: column; gap: 1px; margin-bottom: auto; }
-        .fb-row { display: flex; font-size: 6pt; border-bottom: 1px dashed #eee; padding-bottom: 1px; }
-        .fb-lbl { width: 45%; color: #666; font-weight: 700; text-transform: uppercase; font-size: 5pt; }
-        .fb-val { width: 55%; color: #000; font-weight: 800; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .fb-row { display: flex; font-size: 6pt; border-bottom: 1px solid #eee; padding-bottom: 1px; align-items: center; }
+        .fb-lbl { width: 40%; color: #666; font-weight: 700; text-transform: uppercase; font-size: 5pt; letter-spacing: 0.2px; }
+        .fb-val { width: 60%; color: #000; font-weight: 800; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .fb-barcode { height: 8mm; width: 90%; margin-bottom: 6mm; display: flex; justify-content: center; }
+        /* Barcode Positioning */
+        .fb-barcode { 
+            position: absolute; bottom: 6mm; left: 50%; transform: translateX(-50%);
+            height: 8mm; width: 90%; display: flex; justify-content: center; z-index: 2;
+        }
         .fb-barcode svg { width: 100%; height: 100%; }
 
         .front-footer {
@@ -164,10 +174,10 @@
             background: var(--navy); border-top: 1px solid var(--saffron);
             display: flex; align-items: center; justify-content: center; 
             color: var(--saffron); font-size: 5pt; font-weight: 800; 
-            text-transform: uppercase; letter-spacing: 1px;
+            text-transform: uppercase; letter-spacing: 1px; z-index: 5;
         }
 
-        /* --- Back --- */
+        /* --- BACK SIDE --- */
         .back-header { 
             height: 12%; background: var(--navy); 
             display: flex; align-items: center; justify-content: center; 
@@ -182,42 +192,45 @@
         .bb-logo { width: 16mm; margin-top: 1mm; opacity: 1; }
         .bb-title { 
             font-size: 8pt; font-weight: 900; color: var(--navy); 
-            text-transform: uppercase; margin: 2mm 0; 
-            border-bottom: 1px solid #eee; width: 90%; 
-            text-align: center; padding-bottom: 1mm; 
+            text-transform: uppercase; margin: 1mm 0 2mm 0; 
+            width: 90%; text-align: center; 
         }
         
-        .bb-qr-label { font-size: 5pt; font-weight: 800; color: var(--saffron); margin-bottom: 1px; }
+        .bb-qr-label { font-size: 5pt; font-weight: 800; color: var(--saffron); margin-bottom: 1px; text-transform: uppercase; }
         .bb-qr-box { 
             width: 14mm; height: 14mm; border: 1px solid #ddd; 
-            padding: 1px; margin-bottom: 3mm; 
+            padding: 1px; margin-bottom: 2mm; background: white;
         }
         .bb-qr-box img { width: 100%; height: 100%; }
 
-        .bb-info { width: 100%; margin-bottom: 2mm; }
-        .bb-row { display: flex; gap: 2mm; margin-bottom: 1.5mm; }
-        .bb-icon { color: var(--saffron); font-size: 6pt; width: 3mm; text-align: center; }
-        .bb-text { font-size: 5pt; font-weight: 600; color: #444; flex: 1; }
+        .bb-info { width: 100%; margin-bottom: 2mm; margin-top: 1mm; }
+        .bb-row { display: flex; gap: 2mm; margin-bottom: 1.5mm; align-items: flex-start; }
+        .bb-icon { color: var(--saffron); font-size: 6pt; width: 3mm; text-align: center; margin-top: 1px; }
+        .bb-text { font-size: 5pt; font-weight: 600; color: #444; flex: 1; line-height: 1.2; text-align: left; }
 
-        .bb-terms { width: 100%; margin-top: auto; margin-bottom: 10mm; /* Space for Sig */ }
-        .bb-terms h4 { margin: 0; font-size: 4.5pt; color: var(--navy); text-transform: uppercase; }
-        .bb-terms p { margin: 0; font-size: 3.5pt; color: #666; line-height: 1.2; }
+        /* Terms & Signature Gap */
+        .bb-terms { width: 100%; margin-top: auto; margin-bottom: 12mm; /* Increased Gap */ }
+        .bb-terms h4 { margin: 0; font-size: 4pt; color: var(--navy); text-transform: uppercase; text-align: left; }
+        .bb-terms p { margin: 0; font-size: 3.5pt; color: #666; line-height: 1.1; text-align: left; margin-top: 1px; }
 
-        .bb-sign-area { position: absolute; bottom: 7mm; right: 4mm; text-align: center; z-index: 5; }
+        .bb-sign-area { 
+            position: absolute; bottom: 6mm; right: 4mm; 
+            text-align: center; z-index: 5; 
+        }
         .bb-sign-line { width: 22mm; height: 1px; background: #000; margin-bottom: 1px; }
         .bb-sign-txt { font-size: 4pt; font-weight: 800; color: var(--navy); text-transform: uppercase; }
         
         .bb-stamp { 
-            position: absolute; bottom: 3mm; right: 0; 
+            position: absolute; bottom: 2mm; right: 0; 
             width: 20mm; opacity: 0.85; mix-blend-mode: multiply; 
-            transform: rotate(-15deg); pointer-events: none; 
+            transform: rotate(-15deg); pointer-events: none; z-index: 10;
         }
 
         .back-footer { 
             position: absolute; bottom: 0; width: 100%; height: 5mm; 
             background: var(--green); 
             display: flex; align-items: center; justify-content: center; 
-            color: white; font-size: 4.5pt; font-weight: 700; text-transform: uppercase; 
+            color: white; font-size: 4.5pt; font-weight: 600; text-transform: uppercase; 
         }
 
         /* === ACTION BUTTONS === */
@@ -267,7 +280,7 @@
 <script>
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/1p1ynKWyRErPwczTcMkffZfQ7dhOiV9buv_gIVRK3uh0/export?format=csv&gid=85144492";
     
-    // CONFIG: Assets with CORS enabled
+    // CONFIG
     const CFG = {
         org: "Tiranga Yuva Samiti",
         logo: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhCaJCRPLvQgi9REoAvb9b4H4Vvh6RhAmMRGwGEolXIqS2nxxCa9-jS7qexF2JL5puwPOEk-2q7ubDKeL-m-BM0_7_uHrI5EnBXue7deGtgta4UyCDnI43AkB1KBN8PV4G00fg1vW2La338AyzZkHvXpzt49papqeYLt9NDXMcTnvsceg/s1600/TYS-White.png",
@@ -327,10 +340,8 @@
         const phone = data.phone || '________';
         const role = data.membership || 'Member';
         const joined = formatDate(data.joined);
-        // Use a CORS proxy or ensure image server allows CORS
         const photoUrl = data.photo_url || 'https://via.placeholder.com/150';
         
-        // Use full name + ID for unique slug
         let slug = fName;
         if(lName) slug += " " + lName;
         slug = slug.toLowerCase().replace(/[^a-z0-9]/g, '-');
@@ -405,21 +416,20 @@
 
             <div class="btn-group">
                 <button class="tool-btn btn-print" onclick="printCards('front-${uId}', 'back-${uId}')">
-                    <i class="fa-solid fa-print" style="font-size:24px;"></i> PRINT<br>CARD
+                    <i class="fa-solid fa-print" style="font-size:20px;"></i> PRINT<br>CARD
                 </button>
                 <button class="tool-btn btn-dl" onclick="downloadImages('front-${uId}', 'back-${uId}', '${fullName}')">
-                    <i class="fa-solid fa-download" style="font-size:24px;"></i> DOWNLOAD<br>IMAGE
+                    <i class="fa-solid fa-download" style="font-size:20px;"></i> DOWNLOAD<br>IMAGE
                 </button>
             </div>
         </div>`;
 
-        // Render Codes
         setTimeout(() => {
             const q1 = document.getElementById(`qr-head-${uId}`);
-            const qCode1 = new QRCode(q1, { text: CFG.donate, width: 64, height: 64, correctLevel: QRCode.CorrectLevel.L });
+            new QRCode(q1, { text: CFG.donate, width: 64, height: 64, correctLevel: QRCode.CorrectLevel.L });
             
             const q2 = document.getElementById(`qr-back-${uId}`);
-            const qCode2 = new QRCode(q2, { text: qrUrl, width: 128, height: 128, correctLevel: QRCode.CorrectLevel.H });
+            new QRCode(q2, { text: qrUrl, width: 128, height: 128, correctLevel: QRCode.CorrectLevel.H });
 
             JsBarcode(`#bar-${uId}`, `TYS-${memId}`, {
                 format:"CODE128", displayValue:false, height:30, margin:0, background:"transparent", width:1.5
@@ -434,7 +444,7 @@
         return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
     }
 
-    // === PRINT LOGIC ===
+    // === PRINT FUNCTION ===
     function printCards(fid, bid) {
         const fHtml = document.getElementById(fid).innerHTML;
         const bHtml = document.getElementById(bid).innerHTML;
@@ -445,90 +455,92 @@
             <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
             <style>
+                /* ZERO MARGIN & AUTO SIZE */
                 @page { size: auto; margin: 0; }
-                body { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: white; }
+                body { margin: 0; padding: 0; width: 100%; height: 100%; background: white; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                 
-                .page-container {
-                    width: 100vw; height: 100vh;
-                    display: flex; justify-content: center; align-items: center;
-                    page-break-after: always;
+                /* CENTER THE CARD ON THE PAPER */
+                .print-page { 
+                    width: 100vw; height: 100vh; 
+                    display: flex; justify-content: center; align-items: center; 
+                    page-break-after: always; 
                 }
 
-                .id-card { 
-                    width: 54mm; height: 86mm; 
-                    border: 1px solid #000; border-radius: 3.18mm; overflow: hidden; 
-                    position: relative; background: white; display: flex; flex-direction: column; font-family: 'Montserrat', sans-serif;
-                }
-                
-                /* === COPY OF CARD CSS FOR PRINT WINDOW === */
+                /* REPEAT CSS CLASSES FOR PRINT WINDOW */
                 * { box-sizing: border-box; }
-                .front-header { height: 18%; background: #002347; display: flex; align-items: center; justify-content: space-between; padding: 0 3mm; clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%); border-bottom: 2px solid #FF9933; z-index: 5; }
-                .front-header:after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:#FF9933; }
-                .fh-logo { width: 8mm; margin-right: 2mm; }
-                .fh-title { color: white; font-family: 'Oswald', sans-serif; font-size: 7.5pt; line-height: 1.1; font-weight: 700; text-transform: uppercase; }
-                .fh-qr { width: 9mm; height: 9mm; background: white; padding: 1px; display: flex; align-items: center; justify-content: center; margin-bottom: 3mm; }
+                .id-card { width: 54mm; height: 86mm; border: 1px solid #000; border-radius: 3.18mm; overflow: hidden; position: relative; background: white; display: flex; flex-direction: column; font-family: 'Montserrat', sans-serif; }
+                
+                /* Front Side */
+                .front-header { height: 18%; background: #002347; display: flex; align-items: center; justify-content: space-between; padding: 0 2mm 0 3mm; clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%); border-bottom: 2px solid #FF9933; z-index: 5; }
+                .front-header:after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:#FF9933; z-index:6; }
+                .fh-logo { width: 8.5mm; margin-right: 1.5mm; }
+                .fh-title { color: white; font-family: 'Oswald', sans-serif; font-size: 7.5pt; line-height: 1.1; font-weight: 700; text-transform: uppercase; text-align: left; }
+                .fh-qr { width: 9mm; height: 9mm; background: white; padding: 1px; display: flex; align-items: center; justify-content: center; margin-bottom: 2mm; margin-right: 1mm; }
                 .fh-qr img { width: 100%; height: 100%; }
                 
-                .front-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding-top: 3mm; background-image: linear-gradient(#f4f4f4 1px, transparent 1px), linear-gradient(90deg, #f4f4f4 1px, transparent 1px); background-size: 4mm 4mm; }
+                .front-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding-top: 2mm; background-image: linear-gradient(#f4f4f4 1px, transparent 1px), linear-gradient(90deg, #f4f4f4 1px, transparent 1px); background-size: 4mm 4mm; padding-bottom: 6mm; }
                 .fb-photo { width: 21mm; height: 25mm; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 2mm; object-fit: cover; }
-                .fb-name { font-size: 10pt; font-weight: 900; color: #002347; text-transform: uppercase; text-align: center; line-height: 1.1; width: 90%; margin-bottom: 1px; }
-                .fb-role { background: #FF9933; color: white; font-size: 5pt; font-weight: 700; padding: 1px 8px; border-radius: 4px; text-transform: uppercase; margin-bottom: 2mm; }
+                .fb-name { font-size: 10pt; font-weight: 900; color: #002347; text-transform: uppercase; text-align: center; line-height: 1.1; width: 95%; margin-bottom: 1px; }
+                .fb-role { background: #FF9933; color: white; font-size: 5pt; font-weight: 700; padding: 1.5px 8px; border-radius: 0px; text-transform: uppercase; margin-bottom: 2mm; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%); }
                 .fb-table { width: 90%; display: flex; flex-direction: column; gap: 1px; margin-bottom: auto; }
-                .fb-row { display: flex; font-size: 6pt; border-bottom: 1px dashed #eee; padding-bottom: 1px; }
-                .fb-lbl { width: 45%; color: #666; font-weight: 700; text-transform: uppercase; font-size: 5pt; }
-                .fb-val { width: 55%; color: #000; font-weight: 800; text-align: right; }
-                .fb-barcode { height: 8mm; width: 90%; margin-bottom: 6mm; display: flex; justify-content: center; }
+                .fb-row { display: flex; font-size: 6pt; border-bottom: 1px solid #eee; padding-bottom: 1px; align-items: center; }
+                .fb-lbl { width: 40%; color: #666; font-weight: 700; text-transform: uppercase; font-size: 5pt; letter-spacing: 0.2px; }
+                .fb-val { width: 60%; color: #000; font-weight: 800; text-align: right; }
+                .fb-barcode { position: absolute; bottom: 6mm; left: 50%; transform: translateX(-50%); height: 8mm; width: 90%; display: flex; justify-content: center; z-index: 2; }
                 .fb-barcode svg { width: 100%; height: 100%; }
-                .front-footer { position: absolute; bottom: 0; width: 100%; height: 5mm; background: #002347; border-top: 1px solid #FF9933; display: flex; align-items: center; justify-content: center; color: #FF9933; font-size: 5pt; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+                .front-footer { position: absolute; bottom: 0; width: 100%; height: 5mm; background: #002347; border-top: 1px solid #FF9933; display: flex; align-items: center; justify-content: center; color: #FF9933; font-size: 5pt; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; z-index: 5; }
 
+                /* Back Side */
                 .back-header { height: 12%; background: #002347; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #FF9933; }
                 .back-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 3mm; position: relative; }
                 .bb-logo { width: 16mm; margin-top: 1mm; }
-                .bb-title { font-size: 8pt; font-weight: 900; color: #002347; text-transform: uppercase; margin: 2mm 0; border-bottom: 1px solid #eee; width: 90%; text-align: center; padding-bottom: 1mm; }
-                .bb-qr-label { font-size: 5pt; font-weight: 800; color: #FF9933; margin-bottom: 1px; }
-                .bb-qr-box { width: 14mm; height: 14mm; border: 1px solid #ddd; padding: 1px; margin-bottom: 3mm; }
+                .bb-title { font-size: 8pt; font-weight: 900; color: #002347; text-transform: uppercase; margin: 1mm 0 2mm 0; width: 90%; text-align: center; }
+                .bb-qr-label { font-size: 5pt; font-weight: 800; color: #FF9933; margin-bottom: 1px; text-transform: uppercase; }
+                .bb-qr-box { width: 14mm; height: 14mm; border: 1px solid #ddd; padding: 1px; margin-bottom: 2mm; }
                 .bb-qr-box img { width: 100%; height: 100%; }
-                .bb-info { width: 100%; margin-bottom: 2mm; }
+                .bb-info { width: 100%; margin-bottom: 2mm; margin-top: 1mm; }
                 .bb-row { display: flex; gap: 2mm; margin-bottom: 1.5mm; }
-                .bb-icon { color: #FF9933; font-size: 6pt; width: 3mm; text-align: center; }
-                .bb-text { font-size: 5pt; font-weight: 600; color: #444; flex: 1; }
-                .bb-terms { width: 100%; margin-top: auto; margin-bottom: 10mm; }
-                .bb-terms h4 { margin: 0; font-size: 4.5pt; color: #002347; text-transform: uppercase; }
-                .bb-terms p { margin: 0; font-size: 3.5pt; color: #666; line-height: 1.2; }
-                .bb-sign-area { position: absolute; bottom: 7mm; right: 4mm; text-align: center; z-index: 5; }
+                .bb-icon { color: #FF9933; font-size: 6pt; width: 3mm; text-align: center; margin-top: 1px; }
+                .bb-text { font-size: 5pt; font-weight: 600; color: #444; flex: 1; text-align: left; }
+                .bb-terms { width: 100%; margin-top: auto; margin-bottom: 12mm; }
+                .bb-terms h4 { margin: 0; font-size: 4pt; color: #002347; text-transform: uppercase; text-align: left; }
+                .bb-terms p { margin: 0; font-size: 3.5pt; color: #666; text-align: left; margin-top: 1px; }
+                .bb-sign-area { position: absolute; bottom: 6mm; right: 4mm; text-align: center; z-index: 5; }
                 .bb-sign-line { width: 22mm; height: 1px; background: #000; margin-bottom: 1px; }
                 .bb-sign-txt { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; }
-                .bb-stamp { position: absolute; bottom: 3mm; right: 0; width: 20mm; opacity: 0.85; mix-blend-mode: multiply; transform: rotate(-15deg); }
-                .back-footer { position: absolute; bottom: 0; width: 100%; height: 5mm; background: #138808; display: flex; align-items: center; justify-content: center; color: white; font-size: 4.5pt; font-weight: 700; text-transform: uppercase; }
+                .bb-stamp { position: absolute; bottom: 2mm; right: 0; width: 20mm; opacity: 0.85; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
+                .back-footer { position: absolute; bottom: 0; width: 100%; height: 5mm; background: #138808; display: flex; align-items: center; justify-content: center; color: white; font-size: 4.5pt; font-weight: 600; text-transform: uppercase; }
             </style>
             </head><body>
-                <div class="page-container">${fHtml}</div>
-                <div class="page-container">${bHtml}</div>
+                <div class="print-page">${fHtml}</div>
+                <div class="print-page">${bHtml}</div>
             </body></html>
         `);
         win.document.close();
         setTimeout(() => { win.focus(); win.print(); }, 1000);
     }
 
-    // === DOWNLOAD LOGIC ===
+    // === DOWNLOAD FUNCTION ===
     async function downloadImages(fid, bid, name) {
-        const cleanName = name.replace(/[^a-zA-Z0-9]/g, '_');
+        const safeName = name.replace(/\s+/g, '_');
         
-        // Process Front
+        // Front
         const fEl = document.querySelector(`#${fid} .id-card`);
-        const c1 = await html2canvas(fEl, { scale:4, useCORS:true, allowTaint:true, backgroundColor:null });
-        saveAs(c1.toDataURL("image/png"), `TYS_ID_${cleanName}_FRONT.png`);
+        const c1 = await html2canvas(fEl, { scale: 4, useCORS: true, backgroundColor: null });
+        downloadURI(c1.toDataURL("image/png"), `TYS_${safeName}_FRONT.png`);
 
-        // Process Back
-        const bEl = document.querySelector(`#${bid} .id-card`);
-        const c2 = await html2canvas(bEl, { scale:4, useCORS:true, allowTaint:true, backgroundColor:null });
-        saveAs(c2.toDataURL("image/png"), `TYS_ID_${cleanName}_BACK.png`);
+        // Back
+        setTimeout(async () => {
+            const bEl = document.querySelector(`#${bid} .id-card`);
+            const c2 = await html2canvas(bEl, { scale: 4, useCORS: true, backgroundColor: null });
+            downloadURI(c2.toDataURL("image/png"), `TYS_${safeName}_BACK.png`);
+        }, 1000);
     }
 
-    function saveAs(uri, filename) {
-        const link = document.createElement('a');
+    function downloadURI(uri, name) {
+        var link = document.createElement("a");
+        link.download = name;
         link.href = uri;
-        link.download = filename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
