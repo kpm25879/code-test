@@ -35,7 +35,6 @@
             display: flex; flex-direction: column; align-items: center;
         }
 
-        /* === HEADER === */
         #tys-wrapper h2 {
             color: #1a2a3a; margin: 0 0 10px 0; text-align: center;
             font-weight: 900; font-family: 'Montserrat', sans-serif; font-size: 36px;
@@ -44,7 +43,7 @@
         }
         #tys-wrapper p.desc { color: #555; margin-bottom: 30px; text-align: center; font-size: 16px; font-weight: 600; }
 
-        /* === INPUT CONTROLS === */
+        /* === CONTROLS === */
         #tys-wrapper .controls {
             background: #e8ecf1;
             padding: 30px; 
@@ -115,31 +114,32 @@
         }
         .print-btn:hover { background: #e68a00; transform: translateY(-3px); }
 
-        /* === ID CARD DISPLAY WRAPPER === */
+        /* === ID CARD WRAPPER (54mm x 86mm Standard) === */
         .id-card-wrapper { 
-            width: 54mm; height: 85.6mm; 
+            width: 54mm; height: 86mm; 
             position: relative; 
             box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+            background: transparent; 
             border-radius: 3.18mm; 
             transition: transform 0.3s ease;
         }
         .id-card-wrapper:hover { transform: scale(1.05); z-index: 10; }
 
-        /* === THE ID CARD (CSS Shared with Print) === */
+        /* === INTERNAL CARD STRUCTURE === */
         .id-card { 
-            width: 54mm; height: 85.6mm; 
+            width: 54mm; height: 86mm; 
             background: #fff; 
             position: relative; 
             overflow: hidden; 
             font-family: 'Montserrat', sans-serif; 
             color: #333; 
             display: flex; flex-direction: column;
-            border: 1px solid #000; /* Thin black line for cutting guide */
+            border: 2px solid #1a2a3a; 
             box-sizing: border-box; 
             border-radius: 3.18mm; 
         }
 
-        /* --- FRONT SIDE --- */
+        /* === FRONT SIDE === */
         .v-header {
             height: 18%; 
             background: #002347;
@@ -166,7 +166,7 @@
             width: 9mm; height: 9mm; 
             background: white; padding: 1px; 
             border-radius: 2px; flex-shrink: 0; 
-            margin-left: 1mm; margin-bottom: 2mm; 
+            margin-left: 1mm; margin-bottom: 3mm; 
             display: flex; align-items: center; justify-content: center;
             margin-right: 1mm;
         }
@@ -176,7 +176,6 @@
             flex: 1; position: relative;
             display: flex; flex-direction: column; align-items: center;
             padding-top: 2mm; 
-            /* Subtle Pattern Background */
             background-image: 
                 linear-gradient(#f1f1f1 1px, transparent 1px),
                 linear-gradient(90deg, #f1f1f1 1px, transparent 1px);
@@ -235,12 +234,6 @@
             -webkit-print-color-adjust: exact;
         }
 
-        .v-stamp { 
-            position: absolute; top: 20mm; right: 5mm; 
-            width: 22mm; opacity: 0.8; mix-blend-mode: multiply; 
-            z-index: 10; transform: rotate(-20deg); pointer-events: none;
-        }
-
         /* --- BACK SIDE --- */
         .vb-container { display: flex; flex-direction: column; height: 100%; width: 100%; position: relative; }
         
@@ -285,9 +278,27 @@
         .vb-icon-box { color: #FF9933; width: 3mm; font-size: 6pt; margin-top: 1px; }
         .vb-text-val { font-size: 5pt; color: #444; font-weight: 600; line-height: 1.2; text-align: left; }
 
-        .vb-terms { width: 100%; margin-top: auto; margin-bottom: 8mm; /* Increased Gap here */ }
+        .vb-terms { width: 100%; margin-top: auto; margin-bottom: 12mm; /* High Gap for Sig */ }
         .vb-terms-title { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; text-align: left; }
         .vb-terms-text { font-size: 3.5pt; color: #666; text-align: left; line-height: 1.1; margin-top: 1px; }
+
+        /* SIGNATORY SECTION */
+        .vb-sign-section {
+            position: absolute;
+            bottom: 6mm; /* Above footer */
+            right: 4mm;
+            text-align: center;
+            z-index: 5;
+        }
+        .vb-sign-line { width: 22mm; height: 1px; background: #000; margin-bottom: 1px; }
+        .vb-sign-label { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; }
+        
+        .vb-stamp { 
+            position: absolute; 
+            bottom: 2mm; right: 0; 
+            width: 20mm; opacity: 0.85; mix-blend-mode: multiply; 
+            z-index: 10; transform: rotate(-15deg); pointer-events: none;
+        }
 
         .vb-footer { 
             position: absolute; bottom: 0; left: 0;
@@ -486,7 +497,6 @@
                                 <div class="v-photo-frame">
                                     <img src="${photo}" class="v-user-photo">
                                 </div>
-                                <img src="${CACHED_STAMP}" class="v-stamp">
 
                                 <div class="v-name-block">
                                     <div class="v-name-text">${fullName}</div>
@@ -553,6 +563,12 @@
                                             2. If found, please return to the address mentioned above.
                                         </div>
                                     </div>
+
+                                    <div class="vb-sign-section">
+                                        <div class="vb-sign-line"></div>
+                                        <div class="vb-sign-label">AUTHORIZED SIGNATORY</div>
+                                        <img src="${CACHED_STAMP}" class="vb-stamp">
+                                    </div>
                                 </div>
                                 <div class="vb-footer">
                                     Together We Serve • Jai Hind
@@ -609,29 +625,36 @@
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
             <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
             <style>
-                @page { size: 54mm 85.6mm; margin: 0; }
-                body { margin: 0; padding: 0; width: 100%; height: 100%; background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                /* ZERO MARGIN PAGE RULE - CRITICAL FOR NO CUTTING */
+                @page { size: auto; margin: 0mm; }
                 
-                /* CENTERING CONTAINER FOR PRINT */
+                body { 
+                    margin: 0; padding: 0; width: 100%; height: 100%; 
+                    background: white; 
+                    -webkit-print-color-adjust: exact !important; 
+                    print-color-adjust: exact !important; 
+                }
+                
+                /* CENTER CARD ON PAGE FOR SAFETY */
                 .print-page { 
-                    width: 54mm; height: 85.6mm; 
-                    position: relative; overflow: hidden; 
+                    width: 100vw; height: 100vh; 
+                    position: relative; 
                     font-family: 'Montserrat', sans-serif; 
                     page-break-after: always; 
                     display: flex; justify-content: center; align-items: center;
-                    margin: 0 auto; /* Center on page */
-                    padding: 0;
                 }
                 
+                /* FIXED DIMENSIONS - 54mm x 86mm */
                 .id-card { 
-                    width: 54mm; height: 85.6mm; 
+                    width: 54mm; height: 86mm; 
                     position: relative; background:white; 
                     display:flex; flex-direction:column; 
                     border: 1px solid #000; box-sizing: border-box; 
                     border-radius: 3.18mm; overflow: hidden;
+                    transform: scale(1); /* Ensure 1:1 Scale */
                 }
                  
-                /* REPEAT CSS FOR PRINT WINDOW */
+                /* REPEAT CSS FOR PRINT */
                 .v-header { height: 18%; background: #002347; width: 100%; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 5; padding: 0 2mm 0 3mm; clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%); border-bottom: 2px solid #FF9933; -webkit-print-color-adjust: exact; }
                 .v-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: #FF9933; z-index: 6; }
                 .v-header-left { display: flex; align-items: center; flex: 1; }
@@ -658,7 +681,6 @@
                 .v-barcode-area svg { width: 100%; height: 100%; }
 
                 .v-footer { position: absolute; bottom: 0; left: 0; height: 5mm; background: #002347; width: 100%; display: flex; align-items: center; justify-content: center; color: #FF9933; font-size: 5pt; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; z-index: 5; border-top: 1px solid #FF9933; -webkit-print-color-adjust: exact; }
-                .v-stamp { position: absolute; top: 20mm; right: 5mm; width: 22mm; opacity: 0.8; mix-blend-mode: multiply; z-index: 10; transform: rotate(-20deg); }
 
                 /* BACK */
                 .vb-container { display: flex; flex-direction: column; height: 100%; width: 100%; position: relative; }
@@ -677,10 +699,15 @@
                 .vb-icon-box { color: #FF9933; width: 3mm; font-size: 6pt; margin-top: 1px; }
                 .vb-text-val { font-size: 5pt; color: #444; font-weight: 600; line-height: 1.2; text-align: left; }
                 
-                /* GAP FIX */
                 .vb-terms { width: 100%; margin-top: auto; margin-bottom: 8mm; }
                 .vb-terms-title { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; text-align: left; }
                 .vb-terms-text { font-size: 3.5pt; color: #666; text-align: left; line-height: 1.1; margin-top: 1px; }
+
+                .vb-sign-section { position: absolute; bottom: 6mm; right: 4mm; text-align: center; z-index: 5; }
+                .vb-sign-line { width: 22mm; height: 1px; background: #000; margin-bottom: 1px; }
+                .vb-sign-label { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; }
+                
+                .vb-stamp { position: absolute; bottom: 2mm; right: 0; width: 20mm; opacity: 0.85; mix-blend-mode: multiply; z-index: 10; transform: rotate(-15deg); }
 
                 .vb-footer { position: absolute; bottom: 0; left: 0; height: 5mm; width: 100%; background: #138808; display: flex; align-items: center; justify-content: center; color: white; font-size: 4.5pt; font-weight: 600; text-transform: uppercase; -webkit-print-color-adjust: exact; }
             </style>
