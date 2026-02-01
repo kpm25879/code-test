@@ -1,779 +1,543 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<script>
-    if (!document.querySelector('meta[name="viewport"]')) {
-        const meta = document.createElement('meta');
-        meta.name = "viewport";
-        meta.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
-        document.getElementsByTagName('head')[0].appendChild(meta);
-    }
-</script>
-
-<style>
-    /* === GLOBAL SETUP === */
-    html, body { 
-        margin: 0; padding: 0; width: 100%; overflow-x: hidden; 
-        background-color: #e8ecf1; 
-        -webkit-print-color-adjust: exact; print-color-adjust: exact;
-    }
-
-    #tys-wrapper {
-        font-family: 'Segoe UI', sans-serif;
-        background: #e8ecf1;
-        min-height: 100vh;
-        color: #333;
-        box-sizing: border-box;
-        padding-bottom: 50px;
-    }
-    #tys-wrapper * { box-sizing: border-box; }
-
-    /* === APP CONTAINER === */
-    #tys-wrapper .app-box {
-        width: 100%; max-width: 1200px; margin: 0 auto;
-        padding: 40px 20px;
-        display: flex; flex-direction: column; align-items: center;
-    }
-
-    #tys-wrapper h2 {
-        color: #1a2a3a; margin: 0 0 10px 0; text-align: center;
-        font-weight: 900; font-family: 'Montserrat', sans-serif; font-size: 32px;
-        text-transform: uppercase; letter-spacing: -1px;
-        text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
-    }
-
-    #tys-wrapper p.desc { color: #555; margin-bottom: 30px; text-align: center; font-size: 16px; font-weight: 600; }
-
-    /* === CONTROLS === */
-    #tys-wrapper .controls {
-        background: #e8ecf1;
-        padding: 30px; 
-        border-radius: 20px; 
-        box-shadow: 8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff;
-        display: flex; flex-direction: column; gap: 20px; 
-        align-items: center;
-        border: 1px solid rgba(255,255,255,0.5);
-        width: 100%; max-width: 450px;
-        margin-bottom: 40px;
-    }
-
-    #tys-wrapper .input-group { width: 100%; position: relative; }
-    #tys-wrapper .input-icon {
-        position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
-        color: #002347; font-size: 18px; z-index: 2;
-    }
-
-    #tys-wrapper .secure-input {
-        width: 100%; padding: 16px 16px 16px 50px; 
-        border: none; border-radius: 12px;
-        font-size: 15px; color: #333; 
-        background: #e8ecf1;
-        box-shadow: inset 5px 5px 10px #d1d9e6, inset -5px -5px 10px #ffffff;
-        transition: all 0.3s ease;
-        font-family: 'Montserrat', sans-serif; font-weight: 600;
-    }
-    #tys-wrapper .secure-input:focus { outline: none; box-shadow: inset 2px 2px 5px #d1d9e6, inset -2px -2px 5px #ffffff; }
-
-    #tys-wrapper .btn-verify {
-        background: linear-gradient(135deg, #002347 0%, #00152e 100%);
-        color: white; border: none; padding: 18px;
-        border-radius: 12px; cursor: pointer; font-weight: 800; text-transform: uppercase;
-        font-size: 16px; width: 100%; transition: all 0.3s ease; letter-spacing: 1px;
-        box-shadow: 6px 6px 15px #d1d9e6, -6px -6px 15px #ffffff;
-    }
-    #tys-wrapper .btn-verify:hover { transform: translateY(-2px); }
-
-    #tys-wrapper #status-msg { 
-        font-weight: 700; font-size: 13px; color: #555; margin-top: 5px;
-        min-height: 20px; text-align: center; width: 100%;
-    }
-
-    /* === GRID === */
-    #tys-wrapper #grid-area {
-        display: flex; flex-direction: column; gap: 50px; align-items: center; width: 100%;
-    }
-
-    .member-row {
-        display: flex; gap: 40px; align-items: flex-start; justify-content: center;
-        background: #e8ecf1; padding: 40px; border-radius: 30px;
-        box-shadow:  20px 20px 60px #c5cbd3, -20px -20px 60px #ffffff;
-        animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-        flex-wrap: wrap; width: 100%; max-width: 1000px;
-    }
-    @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
-
-    .preview-col { display: flex; flex-direction: column; align-items: center; gap: 15px; }
-    .preview-label { font-size: 12px; color: #002347; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
-
-    .action-buttons {
-        display: flex; flex-direction: column; gap: 15px; justify-content: center;
-    }
-
-    .action-btn {
-        color: white; border: none; padding: 20px 30px;
-        border-radius: 16px; cursor: pointer; font-size: 16px; font-weight: 800;
-        display: flex; flex-direction: column; align-items: center; gap: 8px;
-        box-shadow: 5px 5px 15px rgba(0,0,0,0.2); transition: all 0.3s;
-        min-width: 180px; text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        text-transform: uppercase;
-    }
-    .btn-print { background: #FF9933; }
-    .btn-print:active { transform: scale(0.95); }
-
-    /* === ID CARD WRAPPER & 3D EFFECT === */
-    .id-card-wrapper { 
-        width: 54mm; height: 85.6mm; 
-        position: relative; 
-        box-shadow: 0 10px 20px rgba(0,0,0,0.15), 0 3px 6px rgba(0,0,0,0.10);
-        background: transparent; 
-        border-radius: 3.18mm; 
-        transition: transform 0.3s ease;
-        transform-style: preserve-3d;
-    }
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Go Raksha Dal ID Card System</title>
     
-    /* === INTERNAL CARD STRUCTURE === */
-    .id-card { 
-        width: 54mm; height: 85.6mm; 
-        background: #fff; 
-        position: relative; 
-        overflow: hidden; 
-        font-family: 'Montserrat', sans-serif; 
-        color: #333; 
-        display: flex; flex-direction: column;
-        border: 1px solid #ddd;
-        box-sizing: border-box; 
-        border-radius: 3.18mm; 
-    }
-    
-    /* Glossy Overlay */
-    .id-card::after {
-        content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%);
-        pointer-events: none; z-index: 20;
-    }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    /* === FRONT SIDE === */
-    .v-header {
-        height: 18%; 
-        background: #002347;
-        width: 100%;
-        display: flex; align-items: center; justify-content: center; 
-        position: relative; z-index: 5;
-        padding: 0 2mm 0 3mm; 
-        clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
-        border-bottom: 2px solid #FF9933;
-    }
-    .v-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: #FF9933; z-index: 6; }
-
-    .v-header-content { display: flex; align-items: center; justify-content: center; width: 100%; }
-    .v-header-logo { width: 9mm; height: auto; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); margin-right: 1.5mm; }
-    
-    .v-org-name { 
-        font-size: 9pt; font-weight: 900; color: white; 
-        text-transform: uppercase; margin: 0; line-height: 1; 
-        font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;
-        white-space: nowrap;
-    }
-
-    /* FRONT BODY */
-    .v-body {
-        flex: 1; position: relative;
-        display: flex; flex-direction: column; align-items: center;
-        padding-top: 2mm; 
-        background-image: 
-            linear-gradient(#f1f1f1 1px, transparent 1px),
-            linear-gradient(90deg, #f1f1f1 1px, transparent 1px);
-        background-size: 4mm 4mm;
-        padding-bottom: 5mm; 
-    }
-
-    .v-photo-frame {
-        width: 20mm; height: 24mm; 
-        background: white;
-        border-radius: 4px;
-        position: relative; z-index: 2; margin-bottom: 1.5mm;
-        border: 1px solid #ddd;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
-    .v-user-photo { width: 100%; height: 100%; object-fit: cover; padding: 1px; border-radius: 3px; }
-    
-    .v-name-block { text-align: center; margin-bottom: 1.5mm; z-index: 2; width: 95%; }
-    .v-name-text { 
-        font-size: 10pt; font-weight: 900; 
-        text-transform: uppercase; line-height: 1.1; margin-bottom: 1px;
-        color: #002347; font-family: 'Montserrat', sans-serif;
-    }
-    .v-role-badge { 
-        background: #FF9933; color: white; 
-        font-size: 5pt; font-weight: 700; 
-        padding: 1.5px 8px; border-radius: 0px; 
-        display: inline-block; text-transform: uppercase; letter-spacing: 1px;
-        clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
-    }
-
-    .v-details-table { width: 90%; z-index: 2; margin-bottom: auto; }
-    .v-row { display: flex; align-items: center; margin-bottom: 1px; border-bottom: 1px solid #eee; padding: 1.5px 0; }
-    .v-row:last-child { border: none; }
-    .v-lbl { width: 40%; font-weight: 700; color: #666; font-size: 5pt; text-transform: uppercase; letter-spacing: 0.2px; }
-    .v-val { width: 60%; font-weight: 800; color: #000; text-align: right; font-size: 6pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-    /* === SIDE-BY-SIDE CONTAINER === */
-    .v-codes-row {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 95%;
-        margin-top: auto;
-        margin-bottom: 1mm; /* 1mm GAP */
-        gap: 3mm;
-        z-index: 2;
-    }
-
-    .v-qr-side {
-        width: 9mm; height: 9mm;
-        background: white; padding: 1px;
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0;
-        border: 1px solid #eee;
-    }
-    .v-qr-side img { width: 100%; height: 100%; }
-
-    .v-barcode-side {
-        height: 9mm;
-        flex: 1;
-        display: flex; align-items: center; justify-content: center;
-    }
-    .v-barcode-side svg { width: 100%; height: 100%; }
-
-    .v-footer {
-        position: absolute; bottom: 0; left: 0;
-        height: 5mm; 
-        background: #002347;
-        width: 100%;
-        display: flex; align-items: center; justify-content: center;
-        color: #FF9933; font-size: 5pt; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
-        z-index: 5;
-        border-top: 1px solid #FF9933;
-    }
-
-    /* === BACK SIDE === */
-    .vb-container { display: flex; flex-direction: column; height: 100%; width: 100%; position: relative; }
-    
-    .vb-header { 
-        height: 12%; 
-        background: #002347; 
-        display: flex; align-items: center; justify-content: center; 
-        color: white; font-weight: 800; font-size: 7.5pt; 
-        text-transform: uppercase; letter-spacing: 1px; 
-        z-index: 2; border-bottom: 2px solid #FF9933;
-    }
-    
-    .vb-body { 
-        flex: 1; display: flex; flex-direction: column; align-items: center; 
-        padding: 0mm 3mm 3mm 3mm; 
-        text-align: center; position: relative; background: #fff; 
-    }
-    
-    /* TERMS AT TOP */
-    .vb-terms { width: 100%; margin-top: 2mm; margin-bottom: 2mm; }
-    .vb-terms-title { font-size: 4pt; font-weight: 900; color: #002347; text-transform: uppercase; text-align: center; text-decoration: underline; margin-bottom: 1px; }
-    .vb-terms-text { font-size: 4pt; color: #444; text-align: center; line-height: 1.1; font-weight: 500; }
-
-    .vb-logo-main { width: 14mm; height: auto; margin-top: 0; opacity: 1.0; }
-    
-    .vb-ngo-title { 
-        font-size: 8pt; font-weight: 900; color: #002347; 
-        text-transform: uppercase; text-align: center; 
-        margin-top: 0.5mm; margin-bottom: 3mm; 
-        width: 90%;
-    }
-
-    .vb-qr-label {
-        font-size: 4.5pt; font-weight: 800; color: #FF9933; 
-        text-transform: uppercase; letter-spacing: 0.5px;
-        margin-bottom: 0.5px;
-    }
-    .vb-qr-container {
-        width: 13mm; height: 13mm;
-        margin-bottom: 3mm;
-        border: 1px solid #ccc; padding: 1px; background: white;
-    }
-    .vb-qr-container img { width: 100%; height: 100%; }
-
-    .vb-info-block { width: 100%; text-align: left; margin-top: 0; }
-    .vb-row-item { display: flex; gap: 2mm; margin-bottom: 1.5mm; align-items: flex-start; }
-    .vb-icon-box { color: #FF9933; width: 3mm; font-size: 6pt; margin-top: 1px; }
-    .vb-text-val { font-size: 5pt; color: #444; font-weight: 600; line-height: 1.2; text-align: left; }
-
-    /* SIGNATURE SECTION GAP */
-    .vb-sign-section {
-        width: 100%; display: flex; flex-direction: column; align-items: flex-end;
-        margin-top: auto; 
-        margin-bottom: 3.5mm; 
-        padding-right: 1mm;
-    }
-    .vb-stamp { 
-        width: 14mm; opacity: 0.8; mix-blend-mode: multiply; 
-        transform: rotate(-10deg); margin-bottom: 1px;
-    }
-    .vb-sign-label {
-        font-size: 4pt; font-weight: 800; color: #002347; 
-        text-transform: uppercase; border-top: 1px solid #333;
-        padding-top: 1px;
-    }
-
-    .vb-footer { 
-        position: absolute; bottom: 0; left: 0;
-        height: 5mm; width: 100%;
-        background: #138808; 
-        display: flex; align-items: center; justify-content: center;
-        color: white; font-size: 4.5pt; font-weight: 600; text-transform: uppercase;
-    }
-
-    /* === RESPONSIVE SCALE === */
-    @media (max-width: 450px) {
-        .app-box { padding: 20px 10px !important; }
-        .member-row { flex-direction: column; gap: 40px; padding: 20px 10px; width: 100%; }
-        .id-card-wrapper {
-            transform-origin: center top;
-            transform: scale(0.9);
-            margin-bottom: -10mm;
+    <style>
+        /* === GLOBAL RESET === */
+        html, body { 
+            margin: 0; padding: 0; width: 100%; 
+            background-color: #f0f2f5; 
+            font-family: 'Poppins', 'Tiro Devanagari Hindi', sans-serif;
+            -webkit-print-color-adjust: exact; print-color-adjust: exact;
         }
-    }
-</style>
 
-<div id="tys-wrapper">
-    <div class="app-box">
-        <h2>ID Card Verification</h2>
-        <p class="desc">Official Database Access Portal</p>
+        #app-wrapper {
+            max-width: 1200px; margin: 0 auto; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+        }
 
-        <div class="controls">
-            <div class="input-group">
-                <i class="fa-solid fa-id-card input-icon"></i>
-                <input type="text" id="inputId" class="secure-input" placeholder="Member ID (e.g. YM-101)">
-            </div>
+        /* === INPUT SECTION === */
+        .controls {
+            background: white; padding: 25px; border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            width: 100%; max-width: 400px; margin-bottom: 40px;
+            text-align: center;
+        }
+        .controls h2 { color: #002347; margin-top: 0; font-family: 'Poppins', sans-serif; }
+        .input-box { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        .btn-action {
+            background: #d62d20; color: white; border: none; padding: 12px 25px;
+            border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%;
+            transition: background 0.3s;
+        }
+        .btn-action:hover { background: #b01c11; }
+        #status-msg { margin-top: 10px; font-size: 14px; color: #555; min-height: 20px; }
 
-            <div class="input-group">
-                <i class="fa-solid fa-phone input-icon"></i>
-                <input type="text" id="inputPhone" class="secure-input" placeholder="Registered Phone">
-            </div>
+        /* === PREVIEW AREA === */
+        #grid-area { display: flex; flex-direction: column; gap: 30px; align-items: center; width: 100%; }
+        .card-preview-row {
+            display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;
+            background: white; padding: 30px; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .print-btn-container { width: 100%; display: flex; justify-content: center; margin-top: 20px; }
+        .btn-print { background: #002347; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; display: flex; align-items: center; gap: 8px; }
 
-            <button class="btn-verify" onclick="verifyAndSearch()">
-                <i class="fa-solid fa-shield-halved"></i> Verify Identity
-            </button>
+        /* =========================================
+           ID CARD CSS (HORIZONTAL ISO ID-1)
+           Size: 85.6mm x 54mm
+        ========================================= */
+        .id-card-wrapper {
+            width: 85.6mm; height: 54mm;
+            position: relative;
+            background: transparent;
+            /* 3D effect for preview */
+            perspective: 1000px;
+        }
 
-            <div id="status-msg">System Ready. Waiting for credentials...</div>
-        </div>
+        .id-card {
+            width: 85.6mm; height: 54mm;
+            background: white;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #ddd;
+            border-radius: 3mm;
+            box-sizing: border-box;
+            font-family: 'Tiro Devanagari Hindi', serif; /* HINDI FONT */
+            display: flex; flex-direction: column;
+            color: #000;
+        }
 
-        <div id="grid-area"></div>
+        /* --- FRONT HEADER --- */
+        .h-header {
+            height: 14mm;
+            background: #fff;
+            border-bottom: 1px solid #002347;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 2mm;
+            position: relative; z-index: 5;
+        }
+        
+        .h-logo-left { width: 10mm; height: auto; }
+        .h-cow-right { width: 11mm; height: auto; }
+        
+        .h-titles { flex: 1; text-align: center; display: flex; flex-direction: column; justify-content: center; }
+        
+        /* Red Main Title */
+        .h-title-main { 
+            font-size: 10pt; font-weight: 700; color: #d62d20; /* Red */
+            line-height: 1.1; white-space: nowrap; margin-top: 1px;
+        }
+        /* Blue Subtitle */
+        .h-title-sub { 
+            font-size: 4.5pt; font-weight: 600; color: #002347; /* Blue */
+            line-height: 1.1; margin-top: 0.5mm;
+        }
+        
+        /* "Pehchan Patra" Tag */
+        .h-tag-top {
+            position: absolute; top: 0.5mm; left: 50%; transform: translateX(-50%);
+            font-size: 3.5pt; background: #002347; color: white; padding: 0.5px 4px;
+            border-radius: 2px; text-transform: uppercase; font-weight: bold;
+        }
+
+        /* --- FRONT BODY --- */
+        .h-body {
+            flex: 1; display: flex;
+            padding: 1mm 2mm;
+            position: relative;
+        }
+
+        /* Left Side: Photo & Sign */
+        .h-col-left {
+            width: 22mm;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        
+        .h-photo-box {
+            width: 20mm; height: 24mm;
+            border: 1px solid #ccc;
+            background: #eee;
+            margin-top: 1mm;
+            position: relative;
+        }
+        .h-photo-img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Stamp overlay on Photo */
+        .h-stamp-overlay {
+            position: absolute;
+            bottom: -4mm; right: -4mm;
+            width: 14mm;
+            opacity: 0.8;
+            mix-blend-mode: multiply;
+            transform: rotate(-15deg);
+            z-index: 10;
+        }
+
+        .h-id-no {
+            font-size: 4pt; font-weight: 700; color: #d62d20;
+            margin-top: 1mm; text-align: center; line-height: 1;
+        }
+        
+        .h-barcode-box {
+            margin-top: auto;
+            width: 100%; height: 6mm;
+            display: flex; justify-content: center; align-items: flex-end;
+        }
+        .h-barcode-box svg { height: 100%; width: 100%; }
+
+        /* Right Side: Details */
+        .h-col-right {
+            flex: 1;
+            padding-left: 2mm;
+            display: flex; flex-direction: column;
+        }
+
+        .h-id-header {
+            font-size: 5pt; font-weight: bold; color: #002347;
+            border-bottom: 0.5px solid #d62d20; margin-bottom: 1mm;
+            display: flex; justify-content: space-between;
+        }
+
+        .h-field-grid {
+            display: grid;
+            grid-template-columns: 16mm 1fr; /* Label width | Value width */
+            row-gap: 0.8mm;
+            font-size: 5.5pt;
+        }
+        
+        .h-lbl { color: #d62d20; font-weight: 700; } /* Red Labels */
+        .h-val { color: #000; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .h-sign-area {
+            position: absolute; bottom: 0; right: 2mm;
+            text-align: center;
+        }
+        .h-sign-img { height: 6mm; width: auto; display: block; margin: 0 auto; }
+        .h-sign-lbl { font-size: 4pt; color: #002347; font-weight: 700; border-top: 0.5px solid #000; padding-top: 0.5px; }
+
+        /* --- FRONT FOOTER --- */
+        .h-footer {
+            height: 4mm;
+            background: #002347; /* Blue Background */
+            color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3.5pt; font-weight: 600;
+            text-align: center; line-height: 1.1;
+            white-space: pre-wrap;
+        }
+
+        /* --- BACK SIDE (Verification) --- */
+        .vb-body {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; padding: 3mm; text-align: center;
+        }
+        .vb-qr-box { width: 25mm; height: 25mm; border: 1px solid #ccc; padding: 1px; margin-bottom: 2mm; }
+        .vb-qr-box img { width: 100%; height: 100%; }
+        .vb-text { font-size: 7pt; font-weight: bold; color: #002347; margin-bottom: 1mm; }
+        .vb-sub { font-size: 5pt; color: #555; width: 80%; }
+        
+        /* Watermark */
+        .bg-watermark {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 30mm; opacity: 0.08; pointer-events: none; z-index: 0;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="app-wrapper">
+    <div class="controls">
+        <h2><i class="fa-solid fa-address-card"></i> आईडी कार्ड सत्यापन</h2>
+        <input type="text" id="inputId" class="input-box" placeholder="Member ID (e.g. 101)">
+        <input type="text" id="inputPhone" class="input-box" placeholder="Phone (e.g. 9053575169)">
+        <button class="btn-action" onclick="verifyAndGenerate()">
+            <i class="fa-solid fa-check-circle"></i> Verify & Generate
+        </button>
+        <div id="status-msg">सिस्टम तैयार है...</div>
     </div>
+
+    <div id="grid-area"></div>
 </div>
 
 <script>
-    // === CONFIGURATION (PRESERVED) ===
+    // === CONFIGURATION ===
+    // Update this URL if your sheet changes
     const EXCEL_FILE_URL = "https://docs.google.com/spreadsheets/d/1p1ynKWyRErPwczTcMkffZfQ7dhOiV9buv_gIVRK3uh0/export?format=csv&gid=85144492";
-
-    const CONFIG = {
-        ngoName: "Tiranga Yuva Samiti",
-        logoUrl: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhCaJCRPLvQgi9REoAvb9b4H4Vvh6RhAmMRGwGEolXIqS2nxxCa9-jS7qexF2JL5puwPOEk-2q7ubDKeL-m-BM0_7_uHrI5EnBXue7deGtgta4UyCDnI43AkB1KBN8PV4G00fg1vW2La338AyzZkHvXpzt49papqeYLt9NDXMcTnvsceg/s1600/TYS-White.png",
-        stampUrl: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj72nNAiChUf9ROOPiYDrwg4RSatVygGQEt7yW1lOmQosfBW9MB2V3qZAcYcOHH-0bAb_2QBZSUsL_9xdVIdpZdvVOha0czW1ssESptg8Mg3X6W8K1DuyPio_oh6X4DdNH2xUhRc2fX1AkpJh2RuPYl5b0a16nYSTgGrkQnKuwYvz3lsQ/s1600/Lokesh%20Stamp.jpg",
-        donateUrl: "https://www.tirangayuvasamiti.org/donate/",
-        contact: {
-            phone: "+91 90535 75169",
-            email: "info@tirangayuvasamiti.org",
-            web: "www.tirangayuvasamiti.org",
-            address: "VPO Khanda 9R, Tehsil Kharkhoda, Sonipat, Haryana – 131402"
-        }
+    
+    // Resource URLs
+    const ASSETS = {
+        logo: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhCaJCRPLvQgi9REoAvb9b4H4Vvh6RhAmMRGwGEolXIqS2nxxCa9-jS7qexF2JL5puwPOEk-2q7ubDKeL-m-BM0_7_uHrI5EnBXue7deGtgta4UyCDnI43AkB1KBN8PV4G00fg1vW2La338AyzZkHvXpzt49papqeYLt9NDXMcTnvsceg/s1600/TYS-White.png",
+        cow: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj4jRFVp4bz-d45e1q-rgRwa4yOre7RBcKtS-dxVu9ayVmpGTs8rHNx6M8xnO5zLkvS7_MOU2_l6k5i6J56mN5FymgLK9IE5eIDdfp2aNEB3xmrAHp8YzzRJ-5OZeT0-uRI_eeo3gE-ZQNFK-FuHmr9Cl_gYVVeFE7bHljkejal8S2LBw/s1600/cow-calf-image.jpg",
+        stamp: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj72nNAiChUf9ROOPiYDrwg4RSatVygGQEt7yW1lOmQosfBW9MB2V3qZAcYcOHH-0bAb_2QBZSUsL_9xdVIdpZdvVOha0czW1ssESptg8Mg3X6W8K1DuyPio_oh6X4DdNH2xUhRc2fX1AkpJh2RuPYl5b0a16nYSTgGrkQnKuwYvz3lsQ/s1600/Lokesh%20Stamp.jpg",
+        sign: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj72nNAiChUf9ROOPiYDrwg4RSatVygGQEt7yW1lOmQosfBW9MB2V3qZAcYcOHH-0bAb_2QBZSUsL_9xdVIdpZdvVOha0czW1ssESptg8Mg3X6W8K1DuyPio_oh6X4DdNH2xUhRc2fX1AkpJh2RuPYl5b0a16nYSTgGrkQnKuwYvz3lsQ/s1600/Lokesh%20Stamp.jpg" // Using stamp as signature placeholder if actual sign column missing
     };
 
-    let ALL_MEMBERS = [];
+    // Excel Column Mappings (Adjust strictly to your Excel header names)
+    const FIELDS = {
+        id: "id",
+        first: "firstname",
+        last: "lastname",
+        father: "father_name",
+        phone: "phone",
+        photo: "photo_url",
+        joined: "joined",
+        // New fields inferred from prompt
+        dob: "dob", 
+        address: "address",
+        blood: "blood_group"
+    };
 
-    // Proxy Helper for Images
-    function getProxyUrl(url) {
-        if(!url) return "";
+    let ALL_DATA = [];
+
+    // Initialize
+    window.onload = loadData;
+
+    function getProxy(url) {
+        if(!url) return "https://via.placeholder.com/150";
         return `https://wsrv.nl/?url=${encodeURIComponent(url)}&output=png`;
     }
 
-    const FIELD = {
-        first: "firstname", 
-        last: "lastname", 
-        father: "father_name", 
-        id: "id", 
-        role: "membership", 
-        issueDate: "joined", 
-        phone: "phone",
-        photo: "photo_url"
-    };
-
-    function formatDate(raw) {
-        if (!raw) return '________';
-        let dateObj;
-        if (typeof raw === 'number') {
-            dateObj = new Date(Math.round((raw - 25569) * 86400 * 1000));
-        } else {
-            const str = String(raw).trim();
-            if(str.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                const parts = str.split('-');
-                return `${parts[2]}-${parts[1]}-${parts[0]}`; 
-            }
-            dateObj = new Date(str);
-        }
-        if (!isNaN(dateObj.getTime())) {
-            const d = String(dateObj.getDate()).padStart(2, '0');
-            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-            const y = dateObj.getFullYear();
-            return `${d}-${m}-${y}`;
-        }
-        return raw;
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-       loadFromConfiguredUrl();
-    });
-
-    async function loadFromConfiguredUrl() {
-        const msg = document.querySelector('#tys-wrapper #status-msg');
-        msg.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Connecting to Secure Server...';
-
+    async function loadData() {
+        const status = document.getElementById('status-msg');
+        status.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> डेटा लोड हो रहा है...';
+        
         try {
-            const response = await fetch(EXCEL_FILE_URL + "&t=" + new Date().getTime());
-            if (!response.ok) throw new Error("Network Error");
-            const arrayBuffer = await response.arrayBuffer();
-            const data = new Uint8Array(arrayBuffer);
-            const wb = XLSX.read(data, {type: 'array', cellDates: true});
-            ALL_MEMBERS = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-            
-            if(ALL_MEMBERS.length) {
-                msg.innerHTML = `<span style="color:#138808">✅ Connection Established. Database Loaded.</span>`;
-            } else { msg.innerHTML = "Database is empty."; }
-        } catch (error) {
-            console.error(error);
-            msg.innerHTML = `<span style="color:#e74c3c">❌ Connection Failed. Check Internet.</span>`;
+            const resp = await fetch(EXCEL_FILE_URL + "&t=" + Date.now());
+            const buffer = await resp.arrayBuffer();
+            const workbook = XLSX.read(new Uint8Array(buffer), {type: 'array', cellDates: true});
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            ALL_DATA = XLSX.utils.sheet_to_json(sheet);
+            status.innerHTML = `<span style="color:green">✅ डेटाबेस कनेक्ट हो गया। (${ALL_DATA.length} सदस्य)</span>`;
+        } catch (e) {
+            console.error(e);
+            status.innerHTML = '<span style="color:red">❌ कनेक्शन विफल। इंटरनेट जांचें।</span>';
         }
     }
 
-    function verifyAndSearch() {
-        const idInput = document.querySelector('#tys-wrapper #inputId').value.trim().toLowerCase();
-        const phoneInput = document.querySelector('#tys-wrapper #inputPhone').value.trim().toLowerCase();
-        const msg = document.querySelector('#tys-wrapper #status-msg');
-        const grid = document.querySelector('#tys-wrapper #grid-area');
+    function formatDate(val) {
+        if (!val) return "";
+        const d = new Date(val);
+        if (isNaN(d.getTime())) return val;
+        return `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
+    }
 
-        if(!idInput || !phoneInput) {
-            msg.innerHTML = '<span style="color:#e67e22">⚠ Please provide both credentials.</span>';
-            grid.innerHTML = "";
+    function verifyAndGenerate() {
+        const inId = document.getElementById('inputId').value.trim().toLowerCase().replace('tym-',''); // handle if user types prefix
+        const inPhone = document.getElementById('inputPhone').value.trim();
+        const grid = document.getElementById('grid-area');
+        const status = document.getElementById('status-msg');
+
+        if (!inId || !inPhone) {
+            status.innerText = "कृपया दोनों विवरण भरें।";
             return;
         }
 
-        msg.innerHTML = "Authenticating...";
-
-        const filtered = ALL_MEMBERS.filter(member => {
-            const mID = String(member[FIELD.id] || '').toLowerCase().trim();
-            const mPhone = String(member[FIELD.phone] || '').toLowerCase().trim();
-            return mID.includes(idInput) && mPhone.includes(phoneInput);
+        const found = ALL_DATA.find(m => {
+            const mId = String(m[FIELDS.id]||'').trim();
+            const mPh = String(m[FIELDS.phone]||'').trim();
+            return mId == inId && mPh.includes(inPhone);
         });
 
-        if(filtered.length === 0) {
-            msg.innerHTML = '<span style="color:#e74c3c">❌ Verification Failed: Invalid Credentials.</span>';
-            grid.innerHTML = "";
-        } else {
-            msg.innerHTML = `✅ Identity Verified. Generating Card...`;
-            drawCards(filtered);
+        if (!found) {
+            status.innerHTML = '<span style="color:red">❌ सदस्य नहीं मिला या विवरण गलत है।</span>';
+            grid.innerHTML = '';
+            return;
         }
+
+        status.innerHTML = '<span style="color:green">✅ सत्यापन सफल! कार्ड बन रहा है...</span>';
+        renderCard(found);
     }
 
-    function drawCards(data) {
-        const grid = document.querySelector('#tys-wrapper #grid-area');
-        grid.innerHTML = "";
+    function renderCard(data) {
+        const grid = document.getElementById('grid-area');
+        
+        // Prepare Data
+        const memID = data[FIELDS.id] || "000";
+        const fullID = `TYS-HR-GRD-TYM-${memID}`;
+        const name = `${data[FIELDS.first] || ''} ${data[FIELDS.last] || ''}`.trim();
+        const father = data[FIELDS.father] || "";
+        const phone = data[FIELDS.phone] || "";
+        const dob = formatDate(data[FIELDS.dob]) || "________";
+        const issueDate = formatDate(data[FIELDS.joined]) || formatDate(new Date());
+        const address = data[FIELDS.address] || "गांव खांडा, सोनीपत"; // Default if empty
+        const blood = data[FIELDS.blood] || "";
+        
+        // Images
+        const photoUrl = getProxy(data[FIELDS.photo]);
+        const logoUrl = getProxy(ASSETS.logo);
+        const cowUrl = getProxy(ASSETS.cow);
+        const stampUrl = getProxy(ASSETS.stamp);
+        
+        // Verification Link
+        const verifyLink = `https://www.tirangayuvasamiti.org/verify?id=${memID}`;
 
-        data.slice(0, 1).forEach((row, i) => {
-            const fName = (row[FIELD.first] || '').trim();
-            const lName = (row[FIELD.last] || '').trim();
-            const father = (row[FIELD.father] || '').trim();
-            const fullName = (fName + ' ' + lName).trim() || 'MEMBER NAME';
-            const fatherDisplay = father || '_______________';
-            const memID = row[FIELD.id] || '000';
-            const membershipType = row[FIELD.role] || 'Lifetime'; 
-            const issueDate = formatDate(row[FIELD.issueDate]);
-            const memberPhone = row[FIELD.phone] || '_______________'; 
-            
-            let rawPhoto = row[FIELD.photo] || 'https://via.placeholder.com/150x200?text=PHOTO';
-            let photoUrl = getProxyUrl(rawPhoto);
-            let logoUrl = getProxyUrl(CONFIG.logoUrl);
-            let stampUrl = getProxyUrl(CONFIG.stampUrl);
+        const frontId = `cf-${memID}`;
+        const backId = `cb-${memID}`;
 
-            // Slug
-            let slugName = fName;
-            if (lName) { slugName += " " + lName; } 
-            else if (father) { slugName += " " + father; }
-            const slug = slugName.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
-            const finalQrUrl = `https://www.tirangayuvasamiti.org/tiranga-yuva-members/${slug}/`;
+        grid.innerHTML = `
+            <div class="card-preview-row">
+                <div>
+                    <div style="text-align:center; font-weight:bold; color:#002347; margin-bottom:5px;">FRONT SIDE</div>
+                    <div class="id-card-wrapper">
+                        <div class="id-card" id="${frontId}">
+                            <div class="h-header">
+                                <div class="h-tag-top">पहचान पत्र</div>
+                                <img src="${logoUrl}" class="h-logo-left" crossorigin="anonymous">
+                                <div class="h-titles">
+                                    <div class="h-title-main">गो रक्षा दल (हरियाणा)</div>
+                                    <div class="h-title-sub">तिरंगा युवा समिति (पंजी. सं. 01820)<br>गांव खांडा, तहसील खरखौदा, सोनीपत (हरियाणा)</div>
+                                </div>
+                                <img src="${cowUrl}" class="h-cow-right" crossorigin="anonymous">
+                            </div>
 
-            const frontId = `card-front-${i}`;
-            const backId = `card-back-${i}`;
-            const frontQrId = `qr-front-${i}`;
-            const backQrId = `qr-back-${i}`;
-            const barcodeId = `barcode-${i}`;
-            const wrapperId = `wrapper-${i}`;
+                            <div class="h-body">
+                                <img src="${logoUrl}" class="bg-watermark" crossorigin="anonymous">
+                                
+                                <div class="h-col-left">
+                                    <div class="h-photo-box">
+                                        <img src="${photoUrl}" class="h-photo-img" crossorigin="anonymous">
+                                        <img src="${stampUrl}" class="h-stamp-overlay" crossorigin="anonymous">
+                                    </div>
+                                    
+                                    <div class="h-barcode-box">
+                                        <svg id="bar-${memID}"></svg>
+                                    </div>
+                                </div>
 
-            const html = `
-            <div class="member-row" id="${wrapperId}">
-                <div class="preview-col">
-                    <div class="preview-label">Front Side</div>
-                    <div class="id-card-wrapper" id="${frontId}">
-                        <div class="id-card">
-                            <div class="v-header">
-                                <div class="v-header-content">
-                                    <img src="${logoUrl}" class="v-header-logo" crossorigin="anonymous">
-                                    <div class="v-org-name">${CONFIG.ngoName}</div>
+                                <div class="h-col-right">
+                                    <div class="h-id-header">
+                                        <span>क्रमांक: ${fullID}</span>
+                                    </div>
+                                    
+                                    <div class="h-field-grid">
+                                        <div class="h-lbl">नाम:</div>
+                                        <div class="h-val" style="font-size:7pt; color:#002347;">${name}</div>
+
+                                        <div class="h-lbl">पिता का नाम:</div>
+                                        <div class="h-val">${father}</div>
+
+                                        <div class="h-lbl">जन्म तिथि:</div>
+                                        <div class="h-val">${dob}</div>
+
+                                        <div class="h-lbl">पद:</div>
+                                        <div class="h-val" style="background:#d62d20; color:white; padding:0 3px; border-radius:2px; display:inline-block; font-size:5pt;">गोरक्षक</div>
+
+                                        <div class="h-lbl">मोबाइल:</div>
+                                        <div class="h-val">${phone}</div>
+
+                                        <div class="h-lbl">पता:</div>
+                                        <div class="h-val" style="font-size:4.5pt; line-height:1;">${address}</div>
+                                        
+                                        <div class="h-lbl">जारी तिथि:</div>
+                                        <div class="h-val">${issueDate} &nbsp; <span style="color:#d62d20">B.G:</span> ${blood}</div>
+                                    </div>
+
+                                    <div class="h-sign-area">
+                                        <img src="${stampUrl}" class="h-sign-img" style="opacity:0;" crossorigin="anonymous"> 
+                                        <div class="h-sign-lbl">(अधिकृत हस्ताक्षर)</div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="v-body">
-                                <div class="v-photo-frame">
-                                    <img src="${photoUrl}" class="v-user-photo" crossorigin="anonymous">
-                                </div>
-
-                                <div class="v-name-block">
-                                    <div class="v-name-text">${fullName}</div>
-                                    <div class="v-role-badge">${membershipType} Member</div>
-                                </div>
-
-                                <div class="v-details-table">
-                                    <div class="v-row"><div class="v-lbl">Father Name</div><div class="v-val">${fatherDisplay}</div></div>
-                                    <div class="v-row"><div class="v-lbl">Membership ID</div><div class="v-val">TYS-${memID}</div></div>
-                                    <div class="v-row"><div class="v-lbl">Contact Number</div><div class="v-val">${memberPhone}</div></div>
-                                    <div class="v-row"><div class="v-lbl">Date of Issue</div><div class="v-val">${issueDate}</div></div>
-                                </div>
-
-                                <div class="v-codes-row">
-                                    <div id="${frontQrId}" class="v-qr-side"></div>
-                                    <div class="v-barcode-side">
-                                        <svg id="${barcodeId}"></svg>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="v-footer">
-                                ${CONFIG.ngoName}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="preview-col">
-                    <div class="preview-label">Back Side</div>
-                    <div class="id-card-wrapper" id="${backId}">
-                        <div class="id-card">
-                            <div class="vb-container">
-                                <div class="vb-header">
-                                    Official Identification
-                                </div>
-                                <div class="vb-body">
-                                    <div class="vb-terms">
-                                        <div class="vb-terms-title">Terms & Conditions:</div>
-                                        <div class="vb-terms-text">
-                                            1. This card is non-transferable property.<br>
-                                            2. If found, please return to the address below.
-                                        </div>
-                                    </div>
-
-                                    <img src="${logoUrl}" class="vb-logo-main" crossorigin="anonymous">
-                                    <div class="vb-ngo-title">${CONFIG.ngoName}</div>
-
-                                    <div class="vb-qr-label">SCAN TO VERIFY MEMBER</div>
-                                    <div id="${backQrId}" class="vb-qr-container"></div>
-
-                                    <div class="vb-info-block">
-                                        <div class="vb-row-item">
-                                            <div class="vb-icon-box"><i class="fa-solid fa-location-dot"></i></div>
-                                            <div class="vb-text-val">${CONFIG.contact.address}</div>
-                                        </div>
-                                        <div class="vb-row-item">
-                                            <div class="vb-icon-box"><i class="fa-solid fa-phone"></i></div>
-                                            <div class="vb-text-val">${CONFIG.contact.phone}</div>
-                                        </div>
-                                        <div class="vb-row-item">
-                                            <div class="vb-icon-box"><i class="fa-solid fa-envelope"></i></div>
-                                            <div class="vb-text-val">${CONFIG.contact.email}</div>
-                                        </div>
-                                        <div class="vb-row-item">
-                                            <div class="vb-icon-box"><i class="fa-solid fa-globe"></i></div>
-                                            <div class="vb-text-val">${CONFIG.contact.web}</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="vb-sign-section">
-                                        <img src="${stampUrl}" class="vb-stamp" crossorigin="anonymous">
-                                        <div class="vb-sign-label">Authorized Signatory</div>
-                                    </div>
-                                </div>
-                                <div class="vb-footer">
-                                    Together We Serve • Jai Hind
-                                </div>
+                            <div class="h-footer">
+                                संपर्क सूत्र: +91 90535 75169 | info@tirangayuvasamiti.org | www.tirangayuvasamiti.org
                             </div>
                         </div>
                     </div>
                 </div>
-                 
-                <div class="action-buttons">
-                    <button class="action-btn btn-print" onclick="printCard('${frontId}', '${backId}')">
-                        <i class="fa-solid fa-print"></i>
-                        <span>PRINT<br>CARD</span>
-                    </button>
+
+                <div>
+                    <div style="text-align:center; font-weight:bold; color:#002347; margin-bottom:5px;">BACK SIDE</div>
+                    <div class="id-card-wrapper">
+                        <div class="id-card" id="${backId}">
+                            <div class="h-header" style="justify-content:center; background:#002347;">
+                                <div class="h-title-main" style="color:white;">सत्यापन और नियम</div>
+                            </div>
+                            <div class="vb-body">
+                                <div class="vb-text">सदस्यता सत्यापित करने के लिए स्कैन करें</div>
+                                <div id="qr-${memID}" class="vb-qr-box"></div>
+                                <div class="vb-sub">
+                                    यह कार्ड तिरंगा युवा समिति की संपत्ति है।<br>
+                                    गुम होने पर कृपया उपरोक्त पते पर लौटाएं।
+                                </div>
+                                <div style="margin-top:10px; font-weight:bold; color:#d62d20;">
+                                    JAI HIND - JAI BHARAT - JAI GAU MATA
+                                </div>
+                            </div>
+                            <div class="h-footer">
+                                Together We Serve • Go Raksha Dal Haryana
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            `;
-            grid.innerHTML += html;
 
-            setTimeout(() => { 
-                // Front Body QR
-                const frontQrDiv = document.getElementById(frontQrId);
-                const tempFrontQr = document.createElement('div');
-                new QRCode(tempFrontQr, { text: finalQrUrl, width: 64, height: 64, correctLevel: QRCode.CorrectLevel.L });
-                frontQrDiv.appendChild(convertCanvasToImg(tempFrontQr));
+            <div class="print-btn-container">
+                <button class="btn-print" onclick="printCard('${frontId}', '${backId}')">
+                    <i class="fa-solid fa-print"></i> प्रिंट आईडी कार्ड
+                </button>
+            </div>
+        `;
 
-                // Back QR
-                const backQrDiv = document.getElementById(backQrId);
-                const temp2 = document.createElement('div');
-                new QRCode(temp2, { text: finalQrUrl, width: 128, height: 128, correctLevel: QRCode.CorrectLevel.H });
-                backQrDiv.appendChild(convertCanvasToImg(temp2));
+        // Generate Barcode (Front)
+        setTimeout(() => {
+            JsBarcode(`#bar-${memID}`, memID, {
+                format: "CODE128",
+                displayValue: false,
+                height: 30,
+                width: 1.5,
+                margin: 0,
+                background: "transparent"
+            });
 
-                // Barcode
-                JsBarcode("#"+barcodeId, "TYS-"+memID, {
-                    format: "CODE128",
-                    displayValue: false,
-                    height: 25,
-                    margin: 0,
-                    width: 1.2,
-                    background: "transparent"
-                });
-
-            }, 100);
-        });
+            // Generate QR (Back)
+            const qrDiv = document.getElementById(`qr-${memID}`);
+            new QRCode(qrDiv, {
+                text: verifyLink,
+                width: 100,
+                height: 100
+            });
+        }, 100);
     }
 
-    function convertCanvasToImg(container) {
-        const canvas = container.querySelector('canvas');
-        if(canvas) {
-            const img = document.createElement('img');
-            img.src = canvas.toDataURL("image/png");
-            img.style.width = '100%'; img.style.height = '100%'; 
-            return img;
-        }
-        return container;
-    }
+    // Print Function specific to Horizontal ID Card
+    function printCard(fid, bid) {
+        const fHtml = document.getElementById(fid).outerHTML;
+        const bHtml = document.getElementById(bid).outerHTML;
 
-    function printCard(frontId, backId) {
-        const frontHTML = document.getElementById(frontId).innerHTML;
-        const backHTML = document.getElementById(backId).innerHTML;
-
-        let printFrame = document.createElement('iframe');
-        printFrame.style.position = 'fixed';
-        printFrame.style.top = '-9999px';
-        printFrame.style.left = '-9999px';
-        printFrame.style.width = '0px';
-        printFrame.style.height = '0px';
-        document.body.appendChild(printFrame);
-
-        const frameDoc = printFrame.contentWindow.document;
-        frameDoc.open();
-        frameDoc.write(`
+        const win = window.open('', '', 'width=900,height=600');
+        win.document.write(`
             <html>
             <head>
-                <title>Print ID Card</title>
-                <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet">
                 <style>
-                    @page { size: 54mm 85.6mm; margin: 0; }
-                    body { margin: 0; padding: 0; background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                    @page { size: 85.6mm 54mm; margin: 0; }
+                    body { margin: 0; padding: 0; background: white; -webkit-print-color-adjust: exact; font-family: 'Tiro Devanagari Hindi', serif; }
+                    .page-break { page-break-after: always; width: 85.6mm; height: 54mm; position: relative; overflow: hidden; }
                     
-                    .print-page { width: 54mm; height: 85.6mm; position: relative; overflow: hidden; page-break-after: always; }
-
-                    .id-card { 
-                        width: 54mm; height: 85.6mm; 
-                        position: relative; background:white; 
-                        display:flex; flex-direction:column; 
-                        border: 1px dotted #ccc;
-                        box-sizing: border-box; 
-                        border-radius: 3.18mm; 
-                        overflow: hidden; 
-                    }
-
-                    /* COPY CSS */
-                    .v-header { height: 18%; background: #002347; width: 100%; display: flex; align-items: center; justify-content: center; position: relative; z-index: 5; padding: 0 2mm 0 3mm; clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%); border-bottom: 2px solid #FF9933; }
-                    .v-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: #FF9933; z-index: 6; }
-                    .v-header-content { display: flex; align-items: center; flex: 1; }
-                    .v-header-logo { width: 9mm; height: auto; margin-right: 1.5mm; }
-                    .v-org-name { font-size: 9pt; font-weight: 900; color: white; text-transform: uppercase; margin: 0; line-height: 1; font-family: 'Oswald', sans-serif; letter-spacing: 0.5px; white-space: nowrap; }
+                    /* Copy minimal CSS needed for rendering */
+                    .id-card { width: 85.6mm; height: 54mm; border: none; position: relative; overflow: hidden; display: flex; flex-direction: column; background:white; }
                     
-                    /* Front Body */
-                    .v-body { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 1.5mm; background-image: linear-gradient(#f1f1f1 1px, transparent 1px), linear-gradient(90deg, #f1f1f1 1px, transparent 1px); background-size: 4mm 4mm; padding-bottom: 5mm; }
-                    .v-photo-frame { width: 20mm; height: 24mm; background: white; border-radius: 4px; position: relative; z-index: 2; margin-bottom: 1.5mm; border: 1px solid #ddd; }
-                    .v-user-photo { width: 100%; height: 100%; object-fit: cover; padding: 1px; border-radius: 3px; }
+                    .h-header { height: 14mm; background: #fff; border-bottom: 1px solid #002347; display: flex; align-items: center; justify-content: space-between; padding: 0 2mm; position: relative; z-index: 5; }
+                    .h-tag-top { position: absolute; top: 0.5mm; left: 50%; transform: translateX(-50%); font-size: 3.5pt; background: #002347; color: white; padding: 0.5px 4px; border-radius: 2px; text-transform: uppercase; font-weight: bold; }
+                    .h-logo-left { width: 10mm; } .h-cow-right { width: 11mm; }
+                    .h-titles { flex: 1; text-align: center; }
+                    .h-title-main { font-size: 10pt; font-weight: 700; color: #d62d20; line-height: 1.1; margin-top: 1px; white-space: nowrap; }
+                    .h-title-sub { font-size: 4.5pt; font-weight: 600; color: #002347; line-height: 1.1; margin-top: 0.5mm; }
+
+                    .h-body { flex: 1; display: flex; padding: 1mm 2mm; position: relative; }
+                    .bg-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30mm; opacity: 0.1; z-index: 0; }
                     
-                    .v-name-block { text-align: center; margin-bottom: 1.5mm; z-index: 2; width: 95%; }
-                    .v-name-text { font-size: 10pt; font-weight: 900; text-transform: uppercase; line-height: 1.1; margin-bottom: 1px; color: #002347; font-family: 'Montserrat', sans-serif; }
-                    .v-role-badge { background: #FF9933; color: white; font-size: 5pt; font-weight: 700; padding: 1.5px 8px; border-radius: 0px; display: inline-block; text-transform: uppercase; letter-spacing: 1px; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%); }
-
-                    .v-details-table { width: 90%; z-index: 2; margin-bottom: auto; }
-                    .v-row { display: flex; align-items: center; margin-bottom: 1px; border-bottom: 1px solid #eee; padding: 1.5px 0; }
-                    .v-row:last-child { border: none; }
-                    .v-lbl { width: 40%; font-weight: 700; color: #666; font-size: 5pt; text-transform: uppercase; letter-spacing: 0.2px; }
-                    .v-val { width: 60%; font-weight: 800; color: #000; text-align: right; font-size: 6pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-                    .v-codes-row { display: flex; justify-content: center; align-items: center; width: 95%; margin-top: auto; margin-bottom: 1mm; gap: 3mm; z-index: 2; }
-                    .v-qr-side { width: 9mm; height: 9mm; background: white; padding: 1px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid #eee; }
-                    .v-qr-side img { width: 100%; height: 100%; }
-                    .v-barcode-side { height: 9mm; flex: 1; display: flex; align-items: center; justify-content: center; }
-                    .v-barcode-side svg { width: 100%; height: 100%; }
-
-                    .v-footer { position: absolute; bottom: 0; left: 0; height: 5mm; background: #002347; width: 100%; display: flex; align-items: center; justify-content: center; color: #FF9933; font-size: 5pt; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; z-index: 5; border-top: 1px solid #FF9933; }
-
-                    /* BACK */
-                    .vb-container { display: flex; flex-direction: column; height: 100%; width: 100%; position: relative; }
-                    .vb-header { height: 12%; background: #002347; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1px; z-index: 2; border-bottom: 2px solid #FF9933; }
-                    .vb-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 0mm 3mm 3mm 3mm; text-align: center; position: relative; background: #fff; }
+                    .h-col-left { width: 22mm; display: flex; flex-direction: column; align-items: center; }
+                    .h-photo-box { width: 20mm; height: 24mm; border: 1px solid #ccc; position: relative; margin-top: 1mm; }
+                    .h-photo-img { width: 100%; height: 100%; object-fit: cover; }
+                    .h-stamp-overlay { position: absolute; bottom: -4mm; right: -4mm; width: 14mm; opacity: 0.8; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
+                    .h-barcode-box { margin-top: auto; width: 100%; height: 6mm; display:flex; justify-content:center; }
                     
-                    /* TERMS AT TOP (Print) */
-                    .vb-terms { width: 100%; margin-top: 2mm; margin-bottom: 2mm; }
-                    .vb-terms-title { font-size: 4pt; font-weight: 900; color: #002347; text-transform: uppercase; text-align: center; text-decoration: underline; margin-bottom: 1px; }
-                    .vb-terms-text { font-size: 4pt; color: #444; text-align: center; line-height: 1.1; font-weight: 500; }
-
-                    .vb-logo-main { width: 14mm; height: auto; margin-top: 0; opacity: 1.0; }
-                    .vb-ngo-title { font-size: 8pt; font-weight: 900; color: #002347; text-transform: uppercase; text-align: center; margin-top: 0.5mm; margin-bottom: 3mm; width: 90%; }
+                    .h-col-right { flex: 1; padding-left: 2mm; display: flex; flex-direction: column; }
+                    .h-id-header { font-size: 5pt; font-weight: bold; color: #002347; border-bottom: 0.5px solid #d62d20; margin-bottom: 1mm; }
+                    .h-field-grid { display: grid; grid-template-columns: 16mm 1fr; row-gap: 0.8mm; font-size: 5.5pt; }
+                    .h-lbl { color: #d62d20; font-weight: 700; }
+                    .h-val { color: #000; font-weight: 600; white-space: nowrap; overflow: hidden; }
                     
-                    .vb-qr-label { font-size: 4.5pt; font-weight: 800; color: #FF9933; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5px; }
-                    .vb-qr-container { width: 13mm; height: 13mm; margin-bottom: 3mm; border: 1px solid #ccc; padding: 1px; background: white; }
-                    .vb-qr-container img { width: 100%; height: 100%; }
-
-                    .vb-info-block { width: 100%; text-align: left; margin-top: 0; }
-                    .vb-row-item { display: flex; gap: 2mm; margin-bottom: 1.5mm; align-items: flex-start; }
-                    .vb-icon-box { color: #FF9933; width: 3mm; font-size: 6pt; margin-top: 1px; }
-                    .vb-text-val { font-size: 5pt; color: #444; font-weight: 600; line-height: 1.2; text-align: left; }
+                    .h-sign-area { position: absolute; bottom: 0; right: 2mm; text-align: center; }
+                    .h-sign-lbl { font-size: 4pt; color: #002347; font-weight: 700; border-top: 0.5px solid #000; padding-top: 0.5px; }
                     
-                    .vb-sign-section { width: 100%; display: flex; flex-direction: column; align-items: flex-end; margin-top: auto; margin-bottom: 3.5mm; padding-right: 1mm; }
-                    .vb-stamp { width: 14mm; opacity: 0.8; mix-blend-mode: multiply; transform: rotate(-10deg); margin-bottom: 1px; }
-                    .vb-sign-label { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; border-top: 1px solid #333; padding-top: 1px; }
+                    .h-footer { height: 4mm; background: #002347; color: white; display: flex; align-items: center; justify-content: center; font-size: 3.5pt; font-weight: 600; text-align: center; line-height: 1.1; }
 
-                    .vb-footer { position: absolute; bottom: 0; left: 0; height: 5mm; width: 100%; background: #138808; display: flex; align-items: center; justify-content: center; color: white; font-size: 4.5pt; font-weight: 600; text-transform: uppercase; }
+                    /* Back Side specifics */
+                    .vb-body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 3mm; text-align: center; }
+                    .vb-qr-box { width: 25mm; height: 25mm; border: 1px solid #ccc; padding: 1px; margin-bottom: 2mm; }
+                    .vb-qr-box img { width: 100%; height: 100%; }
+                    .vb-text { font-size: 7pt; font-weight: bold; color: #002347; }
+                    .vb-sub { font-size: 5pt; color: #555; }
                 </style>
             </head>
             <body>
-                <div class="print-page">${frontHTML}</div>
-                <div class="print-page">${backHTML}</div>
+                <div class="page-break">${fHtml}</div>
+                <div class="page-break">${bHtml}</div>
             </body>
             </html>
         `);
-        frameDoc.close();
-        
+        win.document.close();
         setTimeout(() => {
-            printFrame.contentWindow.focus();
-            printFrame.contentWindow.print();
-            setTimeout(() => { document.body.removeChild(printFrame); }, 2000);
-        }, 800);
+            win.focus();
+            win.print();
+            setTimeout(() => win.close(), 1000);
+        }, 1000);
     }
 </script>
+</body>
+</html>
