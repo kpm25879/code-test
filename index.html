@@ -164,7 +164,7 @@
         height: 18%; 
         background: #002347;
         width: 100%;
-        display: flex; align-items: center; justify-content: space-between; 
+        display: flex; align-items: center; justify-content: center; /* Centered content again */
         position: relative; z-index: 5;
         padding: 0 2mm 0 3mm; 
         clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
@@ -172,7 +172,7 @@
     }
     .v-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: #FF9933; z-index: 6; }
 
-    .v-header-content { display: flex; align-items: center; flex: 1; }
+    .v-header-content { display: flex; align-items: center; justify-content: center; width: 100%; }
     .v-header-logo { width: 9mm; height: auto; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); margin-right: 1.5mm; }
     
     .v-org-name { 
@@ -182,38 +182,29 @@
         white-space: nowrap;
     }
 
-    /* FRONT HEADER QR BOX */
-    .v-header-qr-box { 
-        width: 7.5mm; height: 7.5mm; 
-        background: white; padding: 1px; 
-        border-radius: 2px; flex-shrink: 0; 
-        display: flex; align-items: center; justify-content: center;
-        margin-left: 1mm; margin-bottom: 3.5mm;
-    }
-    .v-header-qr-box img { width: 100%; height: 100%; }
-
+    /* FRONT BODY */
     .v-body {
         flex: 1; position: relative;
         display: flex; flex-direction: column; align-items: center;
-        padding-top: 2mm; 
+        padding-top: 1.5mm; /* Reduced slightly for space */
         background-image: 
             linear-gradient(#f1f1f1 1px, transparent 1px),
             linear-gradient(90deg, #f1f1f1 1px, transparent 1px);
         background-size: 4mm 4mm;
-        padding-bottom: 6mm; 
+        padding-bottom: 5mm; 
     }
 
     .v-photo-frame {
-        width: 21mm; height: 25mm; 
+        width: 20mm; height: 24mm; /* Adjusted slightly to fit new QR */
         background: white;
         border-radius: 4px;
-        position: relative; z-index: 2; margin-bottom: 2mm;
+        position: relative; z-index: 2; margin-bottom: 1.5mm;
         border: 1px solid #ddd;
         box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
     .v-user-photo { width: 100%; height: 100%; object-fit: cover; padding: 1px; border-radius: 3px; }
     
-    .v-name-block { text-align: center; margin-bottom: 2mm; z-index: 2; width: 95%; }
+    .v-name-block { text-align: center; margin-bottom: 1.5mm; z-index: 2; width: 95%; }
     .v-name-text { 
         font-size: 10pt; font-weight: 900; 
         text-transform: uppercase; line-height: 1.1; margin-bottom: 1px;
@@ -232,6 +223,16 @@
     .v-row:last-child { border: none; }
     .v-lbl { width: 40%; font-weight: 700; color: #666; font-size: 5pt; text-transform: uppercase; letter-spacing: 0.2px; }
     .v-val { width: 60%; font-weight: 800; color: #000; text-align: right; font-size: 6pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* FRONT MIDDLE QR (Below Details, Above Barcode) */
+    .v-middle-qr-box {
+        width: 9mm; height: 9mm; 
+        background: white; padding: 1px; 
+        margin-top: 1mm; margin-bottom: 2mm;
+        display: flex; align-items: center; justify-content: center;
+        z-index: 2;
+    }
+    .v-middle-qr-box img { width: 100%; height: 100%; }
 
     .v-barcode-area {
         position: absolute; bottom: 6mm; 
@@ -265,7 +266,7 @@
     
     .vb-body { 
         flex: 1; display: flex; flex-direction: column; align-items: center; 
-        padding: 0mm 3mm 3mm 3mm; /* Zero top padding */
+        padding: 0mm 3mm 3mm 3mm; 
         text-align: center; position: relative; background: #fff; 
     }
     
@@ -279,7 +280,7 @@
     .vb-ngo-title { 
         font-size: 8pt; font-weight: 900; color: #002347; 
         text-transform: uppercase; text-align: center; 
-        margin-top: 0.5mm; margin-bottom: 2mm; 
+        margin-top: 0.5mm; margin-bottom: 3mm; 
         width: 90%;
     }
 
@@ -290,7 +291,7 @@
     }
     .vb-qr-container {
         width: 13mm; height: 13mm;
-        margin-bottom: 2mm;
+        margin-bottom: 3mm;
         border: 1px solid #ccc; padding: 1px; background: white;
     }
     .vb-qr-container img { width: 100%; height: 100%; }
@@ -300,7 +301,7 @@
     .vb-icon-box { color: #FF9933; width: 3mm; font-size: 6pt; margin-top: 1px; }
     .vb-text-val { font-size: 5pt; color: #444; font-weight: 600; line-height: 1.2; text-align: left; }
 
-    /* SIGNATURE SECTION */
+    /* SIGNATURE SECTION GAP */
     .vb-sign-section {
         width: 100%; display: flex; flex-direction: column; align-items: flex-end;
         margin-top: auto; 
@@ -505,7 +506,7 @@
 
             const frontId = `card-front-${i}`;
             const backId = `card-back-${i}`;
-            const headerQrId = `qr-header-${i}`;
+            const frontQrId = `qr-front-${i}`;
             const backQrId = `qr-back-${i}`;
             const barcodeId = `barcode-${i}`;
             const wrapperId = `wrapper-${i}`;
@@ -521,7 +522,6 @@
                                     <img src="${logoUrl}" class="v-header-logo" crossorigin="anonymous">
                                     <div class="v-org-name">${CONFIG.ngoName}</div>
                                 </div>
-                                <div id="${headerQrId}" class="v-header-qr-box"></div>
                             </div>
 
                             <div class="v-body">
@@ -540,6 +540,8 @@
                                     <div class="v-row"><div class="v-lbl">Contact Number</div><div class="v-val">${memberPhone}</div></div>
                                     <div class="v-row"><div class="v-lbl">Date of Issue</div><div class="v-val">${issueDate}</div></div>
                                 </div>
+
+                                <div id="${frontQrId}" class="v-middle-qr-box"></div>
 
                                 <div class="v-barcode-area">
                                     <svg id="${barcodeId}"></svg>
@@ -624,11 +626,11 @@
             grid.innerHTML += html;
 
             setTimeout(() => { 
-                // Header QR
-                const headerQrDiv = document.getElementById(headerQrId);
-                const tempHeaderQr = document.createElement('div');
-                new QRCode(tempHeaderQr, { text: finalQrUrl, width: 64, height: 64, correctLevel: QRCode.CorrectLevel.L });
-                headerQrDiv.appendChild(convertCanvasToImg(tempHeaderQr));
+                // Front Body QR
+                const frontQrDiv = document.getElementById(frontQrId);
+                const tempFrontQr = document.createElement('div');
+                new QRCode(tempFrontQr, { text: finalQrUrl, width: 64, height: 64, correctLevel: QRCode.CorrectLevel.L });
+                frontQrDiv.appendChild(convertCanvasToImg(tempFrontQr));
 
                 // Back QR
                 const backQrDiv = document.getElementById(backQrId);
@@ -725,14 +727,13 @@
                     .v-header-content { display: flex; align-items: center; flex: 1; }
                     .v-header-logo { width: 9mm; height: auto; margin-right: 1.5mm; }
                     .v-org-name { font-size: 9pt; font-weight: 900; color: white; text-transform: uppercase; margin: 0; line-height: 1; font-family: 'Oswald', sans-serif; letter-spacing: 0.5px; white-space: nowrap; }
-                    .v-header-qr-box { width: 7.5mm; height: 7.5mm; background: white; padding: 1px; border-radius: 2px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-left: 1mm; margin-bottom: 3.5mm; }
-                    .v-header-qr-box img { width: 100%; height: 100%; }
-
-                    .v-body { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 2mm; background-image: linear-gradient(#f1f1f1 1px, transparent 1px), linear-gradient(90deg, #f1f1f1 1px, transparent 1px); background-size: 4mm 4mm; padding-bottom: 5mm; }
-                    .v-photo-frame { width: 21mm; height: 25mm; background: white; border-radius: 4px; position: relative; z-index: 2; margin-bottom: 2mm; border: 1px solid #ddd; }
+                    
+                    /* Front Body */
+                    .v-body { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 1.5mm; background-image: linear-gradient(#f1f1f1 1px, transparent 1px), linear-gradient(90deg, #f1f1f1 1px, transparent 1px); background-size: 4mm 4mm; padding-bottom: 5mm; }
+                    .v-photo-frame { width: 20mm; height: 24mm; background: white; border-radius: 4px; position: relative; z-index: 2; margin-bottom: 1.5mm; border: 1px solid #ddd; }
                     .v-user-photo { width: 100%; height: 100%; object-fit: cover; padding: 1px; border-radius: 3px; }
                     
-                    .v-name-block { text-align: center; margin-bottom: 2mm; z-index: 2; width: 95%; }
+                    .v-name-block { text-align: center; margin-bottom: 1.5mm; z-index: 2; width: 95%; }
                     .v-name-text { font-size: 10pt; font-weight: 900; text-transform: uppercase; line-height: 1.1; margin-bottom: 1px; color: #002347; font-family: 'Montserrat', sans-serif; }
                     .v-role-badge { background: #FF9933; color: white; font-size: 5pt; font-weight: 700; padding: 1.5px 8px; border-radius: 0px; display: inline-block; text-transform: uppercase; letter-spacing: 1px; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%); }
 
@@ -741,6 +742,9 @@
                     .v-row:last-child { border: none; }
                     .v-lbl { width: 40%; font-weight: 700; color: #666; font-size: 5pt; text-transform: uppercase; letter-spacing: 0.2px; }
                     .v-val { width: 60%; font-weight: 800; color: #000; text-align: right; font-size: 6pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+                    .v-middle-qr-box { width: 9mm; height: 9mm; background: white; padding: 1px; margin-top: 1mm; margin-bottom: 2mm; display: flex; align-items: center; justify-content: center; z-index: 2; }
+                    .v-middle-qr-box img { width: 100%; height: 100%; }
 
                     .v-barcode-area { position: absolute; bottom: 6mm; z-index: 2; left: 50%; transform: translateX(-50%); width: 90%; height: 8mm; display: flex; align-items: center; justify-content: center; }
                     .v-barcode-area svg { width: 100%; height: 100%; }
@@ -752,7 +756,7 @@
                     .vb-header { height: 12%; background: #002347; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1px; z-index: 2; border-bottom: 2px solid #FF9933; }
                     .vb-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 0mm 3mm 3mm 3mm; text-align: center; position: relative; background: #fff; }
                     
-                    /* TERMS AT TOP (Print) */
+                    /* TERMS RESTORED CSS */
                     .vb-terms { width: 100%; margin-top: 2mm; margin-bottom: 2mm; }
                     .vb-terms-title { font-size: 4pt; font-weight: 900; color: #002347; text-transform: uppercase; text-align: center; text-decoration: underline; margin-bottom: 1px; }
                     .vb-terms-text { font-size: 4pt; color: #444; text-align: center; line-height: 1.1; font-weight: 500; }
