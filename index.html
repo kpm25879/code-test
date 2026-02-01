@@ -56,15 +56,14 @@
     .id-card-inner {
         width: 85.6mm; height: 54mm;
         background-color: #ffffff;
-        /* Micro Pattern */
         background-image: radial-gradient(#002347 0.5px, transparent 0.5px), radial-gradient(#002347 0.5px, #ffffff 0.5px);
         background-size: 20px 20px; background-position: 0 0, 10px 10px; background-blend-mode: overlay;
         position: relative; overflow: hidden;
         border: 1px solid #aaa; border-radius: 3mm;
-        /* FORCE ROUNDED CORNERS ON PRINT */
-        clip-path: inset(0 round 3mm); 
         font-family: 'Noto Sans Devanagari', sans-serif;
         display: flex; flex-direction: column; color: #000; line-height: normal;
+        /* Force Hardware Acceleration for crisp text */
+        transform: translateZ(0);
     }
 
     /* HEADER */
@@ -100,11 +99,11 @@
     .h-body { flex: 1; display: flex; padding: 2mm 3mm; position: relative; background: rgba(255,255,255,0.94); }
     .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 35mm; opacity: 0.08; pointer-events: none; z-index: 0; filter: grayscale(100%); }
 
-    /* LEFT COLUMN: Photo -> Signature */
+    /* LEFT COLUMN: Photo -> Signature -> Barcode */
     .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%; }
     
     .h-p-box { 
-        width: 19mm; height: 23mm; background: #fff; 
+        width: 19mm; height: 21mm; background: #fff; 
         position: relative; border: 1.5px solid #002347; border-radius: 4px; overflow: hidden;
     }
     .h-p-img { width: 100%; height: 100%; object-fit: cover; }
@@ -114,14 +113,22 @@
         opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; 
     }
 
-    /* Signature Area (Now in Left Col) */
-    .h-sign-box { width: 100%; text-align: center; margin-top: 2mm; margin-bottom: 0; flex-shrink: 0; }
-    .h-sign-img { height: 6mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
+    /* Signature Area - Enlarge to fill space */
+    .h-sign-box { width: 100%; text-align: center; margin-top: 1mm; flex-shrink: 0; }
+    .h-sign-img { height: 7mm; /* Increased Size */ width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
     .h-sign-lbl { 
         font-size: 3.5pt; color: #002347; font-weight: 700; 
         border-top: 0.5px solid #000; padding-top: 0.5px; display: block; width: 100%;
     }
 
+    /* Barcode Area - Full Width & Centered */
+    .h-bar-wrap { 
+        width: 100%; height: 8mm; 
+        display: flex; align-items: flex-end; justify-content: center; 
+        margin-top: auto; padding-bottom: 0.5mm;
+    }
+    .h-bar-wrap svg { width: 98%; height: 100%; display: block; } /* Max Width */
+    
     /* RIGHT COLUMN */
     .h-right { flex: 1; padding-left: 4mm; display: flex; flex-direction: column; position: relative; }
     
@@ -135,14 +142,6 @@
     .hl { color: #002347; font-weight: 800; margin: 0; padding: 0; }
     .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; padding: 0; }
 
-    /* Barcode Area (Now in Right Col, Bottom) */
-    .h-bar-wrap { 
-        width: 100%; height: 8mm; /* Taller */
-        display: flex; align-items: flex-end; justify-content: center; 
-        padding-bottom: 0; margin-top: auto; /* Push to bottom */
-    }
-    .h-bar-wrap svg { width: 95%; height: 100%; }
-
     /* FOOTER */
     .h-footer { 
         height: 4mm; background: #002347; color: white; 
@@ -152,7 +151,7 @@
     }
 
     /* BACK SIDE */
-    .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 2mm; text-align: center; background: rgba(255,255,255,0.95); }
+    .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 2mm 3mm; text-align: center; background: rgba(255,255,255,0.95); }
     .h-header-back-title { margin-top: 2mm; color: white; font-family: 'Noto Sans Devanagari'; font-size: 10pt; font-weight: 700; }
     
     /* Back Contact */
@@ -161,10 +160,16 @@
         border-bottom: 1px dashed #d62d20; padding-bottom: 1px; width: 95%; white-space: nowrap; overflow: hidden;
     }
 
-    .vb-qr { width: 23mm; height: 23mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 2mm; background: white; border-radius: 4px; }
+    .vb-qr { width: 23mm; height: 23mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 1mm; background: white; border-radius: 4px; }
     .vb-qr img { width: 100%; height: 100%; display: block; }
     .vb-t { font-size: 8pt; font-weight: 800; color: #002347; margin-bottom: 1mm; text-transform: uppercase; }
-    .vb-s { font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; }
+    
+    /* Back Footer Slogan Spacing */
+    .vb-s { 
+        font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; 
+        flex: 1; /* Pushes content to space nicely */
+    }
+    .vb-slogan { margin-top: auto; margin-bottom: 1mm; font-weight:800; color:#d62d20; font-size: 6.5pt; white-space: nowrap; }
 </style>
 
 <div id="tys-app-container">
@@ -313,6 +318,7 @@
                                         <img src="${signatureUrl}" class="h-sign-img" crossorigin="anonymous"> 
                                         <span class="h-sign-lbl">(अधिकृत हस्ताक्षर)</span>
                                     </div>
+                                    <div class="h-bar-wrap"><svg id="bar-${safeId}"></svg></div>
                                 </div>
                                 <div class="h-right">
                                     <div class="h-row-id">क्रमांक: ${fullID}</div>
@@ -329,7 +335,6 @@
                                             <span style="font-size:5.5pt; color:#d62d20; font-weight:800;">रक्त समूह: <span style="color:black;">${blood}</span></span>
                                         </div>
                                     </div>
-                                    <div class="h-bar-wrap"><svg id="bar-${safeId}"></svg></div>
                                 </div>
                             </div>
                             <div class="h-footer">संपर्क सूत्र: +91 90535 75169 | info@tirangayuvasamiti.org | www.tirangayuvasamiti.org</div>
@@ -348,7 +353,7 @@
                                 <div class="vb-t">सदस्यता सत्यापित करने के लिए स्कैन करें</div>
                                 <div id="qr-${safeId}" class="vb-qr"></div>
                                 <div class="vb-s">यह कार्ड तिरंगा युवा समिति की संपत्ति है।<br>गुम होने पर कृपया उपरोक्त पते पर लौटाएं।</div>
-                                <div style="margin-top:2mm; font-weight:800; color:#d62d20; font-size: 6.5pt; white-space: nowrap;">जय हिंद - जय भारत - जय गौ माता</div>
+                                <div class="vb-slogan">जय हिंद - जय भारत - जय गौ माता</div>
                             </div>
                             <div class="h-footer">Together We Serve • Go Raksha Dal Haryana</div>
                         </div>
@@ -361,35 +366,41 @@
         `;
 
         setTimeout(() => {
-            JsBarcode(`#bar-${safeId}`, fullID, { format: "CODE128", displayValue: false, height: 35, width: 1.2, margin: 0, background: "transparent" });
+            JsBarcode(`#bar-${safeId}`, fullID, { format: "CODE128", displayValue: false, height: 35, width: 1.0, margin: 0, background: "transparent" });
             new QRCode(document.getElementById(`qr-${safeId}`), { text: qrText, width: 90, height: 90, correctLevel: QRCode.CorrectLevel.M });
         }, 100);
     }
 
-    // === PRINT LOGIC ===
+    // === UNIVERSAL PRINT LOGIC (MOBILE & DESKTOP) ===
     function tysPrintNew(fid, bid) {
         const frontHTML = document.getElementById(fid).outerHTML;
         const backHTML = document.getElementById(bid).outerHTML;
-        const win = window.open('', '_blank', 'width=900,height=800');
         
+        // Open a new window
+        const win = window.open('', '_blank');
+        if (!win) { alert("Please allow pop-ups to print!"); return; }
+
         win.document.write(`
             <!DOCTYPE html>
             <html>
             <head>
                 <title>Print ID Card</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Rozha+One&display=swap" rel="stylesheet">
                 <style>
                     @page { size: A4; margin: 10mm; }
                     html, body { margin: 0; padding: 20px; background: #fff; font-family: 'Noto Sans Devanagari', sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                     
                     .print-container { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10mm; }
-                    .cut-wrapper { border: 1px dashed #999; padding: 1px; display: inline-block; }
+                    
+                    /* Cut Line Wrapper */
+                    .cut-wrapper { border: 1px dashed #bbb; padding: 1px; display: inline-block; page-break-inside: avoid; }
 
                     .id-card-inner { 
                         width: 85.6mm; height: 54mm; 
                         background: white; position: relative; overflow: hidden; 
                         border: none; border-radius: 3mm; 
-                        clip-path: inset(0 round 3mm); /* ROUNDED CORNERS */
+                        clip-path: inset(0 round 3mm); /* Rounded Corners */
                         display: flex; flex-direction: column; line-height: normal;
                     }
 
@@ -404,13 +415,15 @@
                     .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 35mm; opacity: 0.08; z-index: 0; }
                     
                     .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
-                    .h-p-box { width: 19mm; height: 23mm; background: #fff; position: relative; border: 1.5px solid #002347; border-radius: 4px; overflow: hidden; }
+                    .h-p-box { width: 19mm; height: 21mm; background: #fff; position: relative; border: 1.5px solid #002347; border-radius: 4px; overflow: hidden; }
                     .h-p-img { width: 100%; height: 100%; object-fit: cover; }
                     .h-stamp { position: absolute; bottom: 0; right: 0; width: 14mm; opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
                     
-                    .h-sign-box { width: 100%; text-align: center; margin-top: 2mm; flex-shrink: 0; }
-                    .h-sign-img { height: 5mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
+                    .h-sign-box { width: 100%; text-align: center; margin-top: 1mm; flex-shrink: 0; }
+                    .h-sign-img { height: 7mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
                     .h-sign-lbl { font-size: 3.5pt; color: #002347; font-weight: 700; border-top: 0.5px solid #000; padding-top: 0.5px; display: block; width: 100%; }
+                    
+                    .h-bar-wrap { width: 100%; height: 8mm; display:flex; justify-content:center; align-items:flex-end; margin-top:auto; padding-bottom:0.5mm; } .h-bar-wrap svg { width:98%; height:100%; }
                     
                     .h-right { flex: 1; padding-left: 4mm; display: flex; flex-direction: column; position: relative; }
                     .h-row-id { font-size: 9pt; font-weight: 800; color: #d62d20; border-bottom: 1px dashed #002347; margin-bottom: 1.5mm; padding-bottom: 0.5mm; display: block; width: 100%; text-align: center; }
@@ -418,15 +431,14 @@
                     .h-grid { display: grid; grid-template-columns: 18mm 1fr; row-gap: 1mm; font-size: 6.2pt; }
                     .hl { color: #002347; font-weight: 800; } .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; }
                     
-                    .h-bar-wrap { width: 100%; height: 8mm; display:flex; justify-content:center; margin-top:auto; padding-bottom:0; } .h-bar-wrap svg { width:100%; height:100%; }
-                    
                     .h-footer { height: 4mm; background: #002347; color: white; display: flex; align-items: center; justify-content: center; font-size: 3pt; font-weight: 600; text-align: center; line-height: 1.1; border-top: 1px solid #d62d20; white-space: nowrap; }
                     
                     .h-header-back-title { margin-top: 2mm; color: white; font-family: 'Noto Sans Devanagari'; font-size: 10pt; font-weight: 700; }
-                    .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 3mm; text-align: center; }
-                    .vb-qr { width: 25mm; height: 25mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 2mm; border-radius: 4px; } .vb-qr img { width: 100%; height: 100%; }
+                    .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 2mm 3mm; text-align: center; }
+                    .vb-qr { width: 23mm; height: 23mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 1mm; border-radius: 4px; } .vb-qr img { width: 100%; height: 100%; }
                     .vb-t { font-size: 8pt; font-weight: 800; color: #002347; margin-bottom: 1mm; text-transform: uppercase; }
-                    .vb-s { font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; }
+                    .vb-s { font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; flex:1; }
+                    .vb-slogan { margin-top: auto; margin-bottom: 1mm; font-weight:800; color:#d62d20; font-size: 6.5pt; white-space: nowrap; }
                     .vb-contact { margin-bottom: 1.5mm; font-size: 4pt; color: #002347; font-weight: 800; border-bottom: 1px dashed #d62d20; padding-bottom: 1px; width: 95%; white-space: nowrap; overflow: hidden; }
                 </style>
             </head>
@@ -440,6 +452,7 @@
         `);
         win.document.close();
         
+        // Wait for images to render
         win.onload = function() {
             setTimeout(() => {
                 win.focus();
