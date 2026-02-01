@@ -3,144 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TYS ID Card System - Final Pro</title>
+    <title>Tiranga Yuva Samiti - ID Card Portal</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* === RESET & LAYOUT === */
-        html, body { margin: 0; padding: 0; background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; -webkit-print-color-adjust: exact; }
+        /* === GLOBAL RESET === */
+        :root {
+            --navy: #002347;
+            --saffron: #FF9933;
+            --green: #138808;
+            --bg-color: #f0f2f5;
+        }
+
+        html, body { 
+            margin: 0; padding: 0; 
+            background-color: var(--bg-color); 
+            font-family: 'Segoe UI', sans-serif; 
+            -webkit-print-color-adjust: exact !important; 
+            print-color-adjust: exact !important; 
+        }
         * { box-sizing: border-box; }
 
-        #app-container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
+        #app-container { 
+            max-width: 1200px; margin: 0 auto; 
+            padding: 40px 20px; 
+            display: flex; flex-direction: column; align-items: center; 
+        }
 
-        h2 { color: #1a2a3a; text-align: center; font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: -1px; margin-bottom: 5px; font-size: 32px; }
-        p.subtitle { color: #666; margin-bottom: 40px; font-weight: 600; }
+        /* === TITLE SECTION === */
+        h2 { 
+            color: #1a2a3a; text-align: center; 
+            font-family: 'Montserrat', sans-serif; font-weight: 900; 
+            text-transform: uppercase; letter-spacing: -1px; 
+            margin-bottom: 5px; font-size: 32px; 
+        }
+        p.subtitle { color: #666; margin-bottom: 40px; font-weight: 600; text-align: center; }
 
-        /* === CONTROLS === */
+        /* === INPUT FORM === */
         .search-box {
             background: #fff; padding: 30px; border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 450px;
-            display: flex; flex-direction: column; gap: 20px; border-top: 5px solid #FF9933; margin-bottom: 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            width: 100%; max-width: 450px;
+            display: flex; flex-direction: column; gap: 20px; 
+            border-top: 5px solid var(--saffron); margin-bottom: 50px;
         }
+        
         .input-wrap { position: relative; width: 100%; }
-        .input-wrap i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #002347; }
-        .inp { width: 100%; padding: 15px 15px 15px 45px; border: 2px solid #eee; border-radius: 8px; font-size: 16px; background: #f9f9f9; outline: none; transition: 0.3s; }
-        .inp:focus { border-color: #FF9933; background: #fff; }
+        .input-wrap i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--navy); }
+        
+        .inp { 
+            width: 100%; padding: 15px 15px 15px 45px; 
+            border: 2px solid #eee; border-radius: 8px; 
+            font-size: 16px; background: #f9f9f9; outline: none; transition: 0.3s; 
+        }
+        .inp:focus { border-color: var(--saffron); background: #fff; }
         
         .btn-action { 
-            background: linear-gradient(135deg, #002347, #00152e); color: white; border: none; 
-            padding: 15px; border-radius: 8px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; 
+            background: linear-gradient(135deg, var(--navy), #00152e); 
+            color: white; border: none; padding: 15px; 
+            border-radius: 8px; font-weight: 800; 
+            text-transform: uppercase; cursor: pointer; transition: 0.3s; 
         }
         .btn-action:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,35,71,0.3); }
+        
         #msg-box { text-align: center; font-weight: 700; color: #555; min-height: 20px; font-size: 14px; }
 
-        /* === RESULTS === */
+        /* === RESULTS AREA === */
         #results-area { width: 100%; display: flex; flex-direction: column; gap: 50px; align-items: center; }
         
         .card-row {
             display: flex; gap: 60px; justify-content: center; align-items: center; flex-wrap: wrap;
-            background: #fff; padding: 50px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+            background: #fff; padding: 50px; border-radius: 20px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+            animation: fadeIn 0.5s ease-in;
         }
+        @keyframes fadeIn { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
 
         .side-col { display: flex; flex-direction: column; align-items: center; gap: 15px; }
         .side-label { font-weight: 800; color: #aaa; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; }
 
-        /* === ID CARD DIMENSIONS (CR80) === */
+        /* === ID CARD CONTAINER (CR80 Standard: 54mm x 86mm) === */
         .card-wrapper {
-            width: 54mm; height: 86mm; /* Standard Vertical Size */
+            width: 54mm; height: 86mm; 
             position: relative;
-            background: transparent; /* Wrapper is invisible */
+            background: transparent; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             border-radius: 3.18mm;
         }
 
-        /* === CARD STYLING (Shared with Print) === */
+        /* === ID CARD STYLING === */
         .id-card {
             width: 54mm; height: 86mm;
             background: #fff;
             position: relative; overflow: hidden;
             border-radius: 3.18mm;
             font-family: 'Montserrat', sans-serif;
-            border: 1px solid #ddd; /* Subtle border for screen */
+            border: 1px solid #ddd; 
             display: flex; flex-direction: column;
+            box-sizing: border-box;
         }
 
-        /* --- Front --- */
+        /* --- FRONT SIDE --- */
         .front-header {
-            height: 18%; background: #002347; display: flex; align-items: center; justify-content: space-between;
-            padding: 0 3mm; position: relative; clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
-            border-bottom: 2px solid #FF9933; z-index: 5;
+            height: 18%; background: var(--navy); 
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 3mm; position: relative; 
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            border-bottom: 2px solid var(--saffron); z-index: 5;
         }
         .fh-logo { width: 8mm; height: auto; margin-right: 2mm; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); }
         .fh-title { color: white; font-family: 'Oswald', sans-serif; font-size: 7.5pt; line-height: 1.1; font-weight: 700; text-transform: uppercase; }
-        .fh-qr { width: 9mm; height: 9mm; background: white; padding: 1px; border-radius: 2px; display: flex; align-items: center; justify-content: center; margin-bottom: 3mm; }
+        
+        .fh-qr { 
+            width: 9mm; height: 9mm; background: white; padding: 1px; 
+            border-radius: 2px; display: flex; align-items: center; justify-content: center; 
+            margin-bottom: 3mm; 
+        }
         .fh-qr img { width: 100%; height: 100%; }
 
         .front-body {
-            flex: 1; display: flex; flex-direction: column; align-items: center; padding-top: 3mm; position: relative;
+            flex: 1; display: flex; flex-direction: column; align-items: center; 
+            padding-top: 3mm; position: relative;
             background-image: linear-gradient(#f4f4f4 1px, transparent 1px), linear-gradient(90deg, #f4f4f4 1px, transparent 1px);
             background-size: 4mm 4mm;
         }
         .fb-photo {
-            width: 21mm; height: 25mm; background: #eee; border: 1px solid #ccc; border-radius: 4px; 
-            margin-bottom: 2mm; object-fit: cover; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 21mm; height: 25mm; 
+            background: #eee; border: 1px solid #ccc; border-radius: 4px; 
+            margin-bottom: 2mm; object-fit: cover; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        .fb-name { font-size: 10pt; font-weight: 900; color: #002347; text-transform: uppercase; text-align: center; line-height: 1.1; width: 90%; margin-bottom: 1px; }
-        .fb-role { background: #FF9933; color: white; font-size: 5pt; font-weight: 700; padding: 1px 8px; border-radius: 4px; text-transform: uppercase; margin-bottom: 2mm; }
+        .fb-name { 
+            font-size: 10pt; font-weight: 900; color: var(--navy); 
+            text-transform: uppercase; text-align: center; 
+            line-height: 1.1; width: 90%; margin-bottom: 1px; 
+        }
+        .fb-role { 
+            background: var(--saffron); color: white; 
+            font-size: 5pt; font-weight: 700; padding: 1px 8px; 
+            border-radius: 4px; text-transform: uppercase; margin-bottom: 2mm; 
+        }
         
         .fb-table { width: 90%; display: flex; flex-direction: column; gap: 1px; margin-bottom: auto; }
         .fb-row { display: flex; font-size: 6pt; border-bottom: 1px dashed #eee; padding-bottom: 1px; }
         .fb-lbl { width: 45%; color: #666; font-weight: 700; text-transform: uppercase; font-size: 5pt; }
-        .fb-val { width: 55%; color: #000; font-weight: 800; text-align: right; }
+        .fb-val { width: 55%; color: #000; font-weight: 800; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .fb-barcode { height: 8mm; width: 90%; margin-bottom: 6mm; display: flex; justify-content: center; }
         .fb-barcode svg { width: 100%; height: 100%; }
 
         .front-footer {
-            position: absolute; bottom: 0; width: 100%; height: 5mm; background: #002347; border-top: 1px solid #FF9933;
-            display: flex; align-items: center; justify-content: center; color: #FF9933; font-size: 5pt; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            position: absolute; bottom: 0; width: 100%; height: 5mm; 
+            background: var(--navy); border-top: 1px solid var(--saffron);
+            display: flex; align-items: center; justify-content: center; 
+            color: var(--saffron); font-size: 5pt; font-weight: 800; 
+            text-transform: uppercase; letter-spacing: 1px;
         }
 
         /* --- Back --- */
-        .back-header { height: 12%; background: #002347; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #FF9933; }
-        .back-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 3mm; position: relative; }
+        .back-header { 
+            height: 12%; background: var(--navy); 
+            display: flex; align-items: center; justify-content: center; 
+            color: white; font-weight: 800; font-size: 7.5pt; 
+            text-transform: uppercase; letter-spacing: 1px; 
+            border-bottom: 2px solid var(--saffron); 
+        }
+        .back-body { 
+            flex: 1; display: flex; flex-direction: column; align-items: center; 
+            padding: 3mm; position: relative; 
+        }
         .bb-logo { width: 16mm; margin-top: 1mm; opacity: 1; }
-        .bb-title { font-size: 8pt; font-weight: 900; color: #002347; text-transform: uppercase; margin: 2mm 0; border-bottom: 1px solid #eee; width: 90%; text-align: center; padding-bottom: 1mm; }
+        .bb-title { 
+            font-size: 8pt; font-weight: 900; color: var(--navy); 
+            text-transform: uppercase; margin: 2mm 0; 
+            border-bottom: 1px solid #eee; width: 90%; 
+            text-align: center; padding-bottom: 1mm; 
+        }
         
-        .bb-qr-label { font-size: 5pt; font-weight: 800; color: #FF9933; margin-bottom: 1px; }
-        .bb-qr-box { width: 14mm; height: 14mm; border: 1px solid #ddd; padding: 1px; margin-bottom: 3mm; }
+        .bb-qr-label { font-size: 5pt; font-weight: 800; color: var(--saffron); margin-bottom: 1px; }
+        .bb-qr-box { 
+            width: 14mm; height: 14mm; border: 1px solid #ddd; 
+            padding: 1px; margin-bottom: 3mm; 
+        }
         .bb-qr-box img { width: 100%; height: 100%; }
 
         .bb-info { width: 100%; margin-bottom: 2mm; }
         .bb-row { display: flex; gap: 2mm; margin-bottom: 1.5mm; }
-        .bb-icon { color: #FF9933; font-size: 6pt; width: 3mm; text-align: center; }
+        .bb-icon { color: var(--saffron); font-size: 6pt; width: 3mm; text-align: center; }
         .bb-text { font-size: 5pt; font-weight: 600; color: #444; flex: 1; }
 
         .bb-terms { width: 100%; margin-top: auto; margin-bottom: 10mm; /* Space for Sig */ }
-        .bb-terms h4 { margin: 0; font-size: 4.5pt; color: #002347; text-transform: uppercase; }
+        .bb-terms h4 { margin: 0; font-size: 4.5pt; color: var(--navy); text-transform: uppercase; }
         .bb-terms p { margin: 0; font-size: 3.5pt; color: #666; line-height: 1.2; }
 
         .bb-sign-area { position: absolute; bottom: 7mm; right: 4mm; text-align: center; z-index: 5; }
         .bb-sign-line { width: 22mm; height: 1px; background: #000; margin-bottom: 1px; }
-        .bb-sign-txt { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; }
+        .bb-sign-txt { font-size: 4pt; font-weight: 800; color: var(--navy); text-transform: uppercase; }
         
-        .bb-stamp { position: absolute; bottom: 3mm; right: 0; width: 20mm; opacity: 0.85; mix-blend-mode: multiply; transform: rotate(-15deg); pointer-events: none; }
+        .bb-stamp { 
+            position: absolute; bottom: 3mm; right: 0; 
+            width: 20mm; opacity: 0.85; mix-blend-mode: multiply; 
+            transform: rotate(-15deg); pointer-events: none; 
+        }
 
-        .back-footer { position: absolute; bottom: 0; width: 100%; height: 5mm; background: #138808; display: flex; align-items: center; justify-content: center; color: white; font-size: 4.5pt; font-weight: 700; text-transform: uppercase; }
+        .back-footer { 
+            position: absolute; bottom: 0; width: 100%; height: 5mm; 
+            background: var(--green); 
+            display: flex; align-items: center; justify-content: center; 
+            color: white; font-size: 4.5pt; font-weight: 700; text-transform: uppercase; 
+        }
 
-        /* === BUTTONS === */
+        /* === ACTION BUTTONS === */
         .btn-group { display: flex; gap: 20px; flex-direction: column; justify-content: center; }
         .tool-btn {
-            border: none; padding: 15px 25px; border-radius: 10px; cursor: pointer; color: white; font-weight: 800; font-size: 14px;
-            display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 140px; transition: 0.3s;
+            border: none; padding: 15px 25px; border-radius: 10px; 
+            cursor: pointer; color: white; font-weight: 800; font-size: 14px;
+            display: flex; flex-direction: column; align-items: center; gap: 5px; 
+            min-width: 140px; transition: 0.3s;
         }
-        .btn-print { background: #FF9933; box-shadow: 0 5px 15px rgba(255, 153, 51, 0.3); }
+        .btn-print { background: var(--saffron); box-shadow: 0 5px 15px rgba(255, 153, 51, 0.3); }
         .btn-print:hover { transform: translateY(-3px); background: #e68a00; }
         
         .btn-dl { background: #2980b9; box-shadow: 0 5px 15px rgba(41, 128, 185, 0.3); }
@@ -154,7 +242,7 @@
 </head>
 <body>
 
-<div id="tys-wrapper">
+<div id="app-container">
     <div class="app-box">
         <h2>ID Card Verification</h2>
         <p class="subtitle">Official Member Database</p>
@@ -179,7 +267,7 @@
 <script>
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/1p1ynKWyRErPwczTcMkffZfQ7dhOiV9buv_gIVRK3uh0/export?format=csv&gid=85144492";
     
-    // ASSETS (With CrossOrigin Support)
+    // CONFIG: Assets with CORS enabled
     const CFG = {
         org: "Tiranga Yuva Samiti",
         logo: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhCaJCRPLvQgi9REoAvb9b4H4Vvh6RhAmMRGwGEolXIqS2nxxCa9-jS7qexF2JL5puwPOEk-2q7ubDKeL-m-BM0_7_uHrI5EnBXue7deGtgta4UyCDnI43AkB1KBN8PV4G00fg1vW2La338AyzZkHvXpzt49papqeYLt9NDXMcTnvsceg/s1600/TYS-White.png",
@@ -195,7 +283,6 @@
 
     let MEM_DATA = [];
 
-    // Init
     document.addEventListener('DOMContentLoaded', loadData);
 
     async function loadData() {
@@ -232,7 +319,6 @@
     function renderCard(data) {
         const grid = document.getElementById('results-area');
         
-        // Data Mapping
         const fName = (data.firstname || '').trim();
         const lName = (data.lastname || '').trim();
         const fullName = `${fName} ${lName}`;
@@ -241,12 +327,12 @@
         const phone = data.phone || '________';
         const role = data.membership || 'Member';
         const joined = formatDate(data.joined);
+        // Use a CORS proxy or ensure image server allows CORS
         const photoUrl = data.photo_url || 'https://via.placeholder.com/150';
         
-        // Slug for QR
+        // Use full name + ID for unique slug
         let slug = fName;
         if(lName) slug += " " + lName;
-        else if(father) slug += " " + father;
         slug = slug.toLowerCase().replace(/[^a-z0-9]/g, '-');
         const qrUrl = `https://www.tirangayuvasamiti.org/tiranga-yuva-members/${slug}/`;
 
@@ -319,27 +405,24 @@
 
             <div class="btn-group">
                 <button class="tool-btn btn-print" onclick="printCards('front-${uId}', 'back-${uId}')">
-                    <i class="fa-solid fa-print" style="font-size:20px;"></i> PRINT<br>CARD
+                    <i class="fa-solid fa-print" style="font-size:24px;"></i> PRINT<br>CARD
                 </button>
                 <button class="tool-btn btn-dl" onclick="downloadImages('front-${uId}', 'back-${uId}', '${fullName}')">
-                    <i class="fa-solid fa-download" style="font-size:20px;"></i> DOWNLOAD<br>IMAGE
+                    <i class="fa-solid fa-download" style="font-size:24px;"></i> DOWNLOAD<br>IMAGE
                 </button>
             </div>
         </div>`;
 
-        // Generate Codes
+        // Render Codes
         setTimeout(() => {
-            // Donate QR
             const q1 = document.getElementById(`qr-head-${uId}`);
-            new QRCode(q1, { text: CFG.donate, width: 64, height: 64, correctLevel: QRCode.CorrectLevel.L });
+            const qCode1 = new QRCode(q1, { text: CFG.donate, width: 64, height: 64, correctLevel: QRCode.CorrectLevel.L });
             
-            // Member QR
             const q2 = document.getElementById(`qr-back-${uId}`);
-            new QRCode(q2, { text: qrUrl, width: 128, height: 128, correctLevel: QRCode.CorrectLevel.H });
+            const qCode2 = new QRCode(q2, { text: qrUrl, width: 128, height: 128, correctLevel: QRCode.CorrectLevel.H });
 
-            // Barcode
             JsBarcode(`#bar-${uId}`, `TYS-${memId}`, {
-                format:"CODE128", displayValue:false, height:25, margin:0, background:"transparent", width:1.5
+                format:"CODE128", displayValue:false, height:30, margin:0, background:"transparent", width:1.5
             });
         }, 100);
     }
@@ -351,32 +434,34 @@
         return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
     }
 
-    // === PRINT FUNCTION ===
+    // === PRINT LOGIC ===
     function printCards(fid, bid) {
         const fHtml = document.getElementById(fid).innerHTML;
         const bHtml = document.getElementById(bid).innerHTML;
         
-        const win = window.open('', '', 'width=800,height=600');
+        const win = window.open('', '', 'width=900,height=700');
         win.document.write(`
             <html><head><title>Print ID Card</title>
             <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
             <style>
                 @page { size: auto; margin: 0; }
-                body { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                body { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: white; }
                 
-                /* SAFE PRINT CONTAINER */
-                .page-break { 
-                    width: 100vw; height: 100vh; 
-                    display: flex; justify-content: center; align-items: center; 
-                    page-break-after: always; 
+                .page-container {
+                    width: 100vw; height: 100vh;
+                    display: flex; justify-content: center; align-items: center;
+                    page-break-after: always;
                 }
 
-                /* PRESERVE CSS FROM MAIN */
-                * { box-sizing: border-box; }
-                .id-card { width: 54mm; height: 86mm; border: 1px solid #000; border-radius: 3.18mm; overflow: hidden; position: relative; background: white; display: flex; flex-direction: column; font-family: 'Montserrat', sans-serif; }
+                .id-card { 
+                    width: 54mm; height: 86mm; 
+                    border: 1px solid #000; border-radius: 3.18mm; overflow: hidden; 
+                    position: relative; background: white; display: flex; flex-direction: column; font-family: 'Montserrat', sans-serif;
+                }
                 
-                /* Front CSS Re-applied */
+                /* === COPY OF CARD CSS FOR PRINT WINDOW === */
+                * { box-sizing: border-box; }
                 .front-header { height: 18%; background: #002347; display: flex; align-items: center; justify-content: space-between; padding: 0 3mm; clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%); border-bottom: 2px solid #FF9933; z-index: 5; }
                 .front-header:after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:#FF9933; }
                 .fh-logo { width: 8mm; margin-right: 2mm; }
@@ -396,7 +481,6 @@
                 .fb-barcode svg { width: 100%; height: 100%; }
                 .front-footer { position: absolute; bottom: 0; width: 100%; height: 5mm; background: #002347; border-top: 1px solid #FF9933; display: flex; align-items: center; justify-content: center; color: #FF9933; font-size: 5pt; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
 
-                /* Back CSS Re-applied */
                 .back-header { height: 12%; background: #002347; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #FF9933; }
                 .back-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 3mm; position: relative; }
                 .bb-logo { width: 16mm; margin-top: 1mm; }
@@ -418,35 +502,33 @@
                 .back-footer { position: absolute; bottom: 0; width: 100%; height: 5mm; background: #138808; display: flex; align-items: center; justify-content: center; color: white; font-size: 4.5pt; font-weight: 700; text-transform: uppercase; }
             </style>
             </head><body>
-                <div class="page-break">${fHtml}</div>
-                <div class="page-break">${bHtml}</div>
+                <div class="page-container">${fHtml}</div>
+                <div class="page-container">${bHtml}</div>
             </body></html>
         `);
         win.document.close();
         setTimeout(() => { win.focus(); win.print(); }, 1000);
     }
 
-    // === DOWNLOAD FUNCTION ===
+    // === DOWNLOAD LOGIC ===
     async function downloadImages(fid, bid, name) {
-        const safeName = name.replace(/\s+/g, '_');
+        const cleanName = name.replace(/[^a-zA-Z0-9]/g, '_');
         
-        // 1. Capture Front
+        // Process Front
         const fEl = document.querySelector(`#${fid} .id-card`);
-        const c1 = await html2canvas(fEl, { scale: 4, useCORS: true, backgroundColor: null });
-        downloadURI(c1.toDataURL("image/png"), `TYS_${safeName}_FRONT.png`);
+        const c1 = await html2canvas(fEl, { scale:4, useCORS:true, allowTaint:true, backgroundColor:null });
+        saveAs(c1.toDataURL("image/png"), `TYS_ID_${cleanName}_FRONT.png`);
 
-        // 2. Capture Back (delayed)
-        setTimeout(async () => {
-            const bEl = document.querySelector(`#${bid} .id-card`);
-            const c2 = await html2canvas(bEl, { scale: 4, useCORS: true, backgroundColor: null });
-            downloadURI(c2.toDataURL("image/png"), `TYS_${safeName}_BACK.png`);
-        }, 1000);
+        // Process Back
+        const bEl = document.querySelector(`#${bid} .id-card`);
+        const c2 = await html2canvas(bEl, { scale:4, useCORS:true, allowTaint:true, backgroundColor:null });
+        saveAs(c2.toDataURL("image/png"), `TYS_ID_${cleanName}_BACK.png`);
     }
 
-    function downloadURI(uri, name) {
-        var link = document.createElement("a");
-        link.download = name;
+    function saveAs(uri, filename) {
+        const link = document.createElement('a');
         link.href = uri;
+        link.download = filename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
