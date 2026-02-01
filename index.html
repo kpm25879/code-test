@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tiranga Yuva Samiti - ID System</title>
+    <title>Tiranga Yuva Samiti - Official ID Portal</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -13,12 +13,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* === THEME VARIABLES === */
+        /* === RESET & VARS === */
         :root {
-            --primary: #002347;   /* Navy */
-            --accent: #FF9933;    /* Saffron */
-            --success: #138808;   /* Green */
-            --bg-color: #e8ecf1;
+            --navy: #002347;
+            --saffron: #FF9933;
+            --green: #138808;
+            --bg-color: #eef2f5;
         }
 
         html, body { 
@@ -30,7 +30,7 @@
         }
         * { box-sizing: border-box; }
 
-        /* === APP CONTAINER === */
+        /* === LAYOUT === */
         #app-container { 
             max-width: 1200px; margin: 0 auto; 
             padding: 40px 20px; 
@@ -38,7 +38,7 @@
         }
 
         h2 { 
-            color: var(--primary); text-align: center; 
+            color: #1a2a3a; text-align: center; 
             font-family: 'Montserrat', sans-serif; font-weight: 900; 
             text-transform: uppercase; letter-spacing: -1px; 
             margin-bottom: 5px; font-size: 32px; 
@@ -46,27 +46,27 @@
         }
         p.subtitle { color: #555; margin-bottom: 40px; font-weight: 600; text-align: center; }
 
-        /* === SEARCH BOX === */
+        /* === SEARCH INPUTS === */
         .search-box {
             background: #fff; padding: 30px; border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
             width: 100%; max-width: 450px;
             display: flex; flex-direction: column; gap: 20px; 
-            border-top: 5px solid var(--accent); margin-bottom: 50px;
+            border-top: 5px solid var(--saffron); margin-bottom: 50px;
         }
         
         .input-wrap { position: relative; width: 100%; }
-        .input-wrap i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
+        .input-wrap i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--navy); }
         
         .inp { 
             width: 100%; padding: 15px 15px 15px 45px; 
             border: 2px solid #eee; border-radius: 8px; 
             font-size: 16px; background: #f9f9f9; outline: none; transition: 0.3s; 
         }
-        .inp:focus { border-color: var(--accent); background: #fff; }
+        .inp:focus { border-color: var(--saffron); background: #fff; }
         
         .btn-action { 
-            background: linear-gradient(135deg, var(--primary), #00152e); 
+            background: linear-gradient(135deg, var(--navy), #00152e); 
             color: white; border: none; padding: 15px; 
             border-radius: 8px; font-weight: 800; 
             text-transform: uppercase; cursor: pointer; transition: 0.3s; 
@@ -75,7 +75,7 @@
         
         #msg-box { text-align: center; font-weight: 700; color: #555; min-height: 20px; font-size: 14px; }
 
-        /* === RESULTS === */
+        /* === RESULT AREA === */
         #results-area { width: 100%; display: flex; flex-direction: column; gap: 50px; align-items: center; }
         
         .card-row {
@@ -90,21 +90,7 @@
         .side-col { display: flex; flex-direction: column; align-items: center; gap: 15px; }
         .side-label { font-weight: 800; color: #aaa; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; }
 
-        /* === BUTTONS === */
-        .btn-group { display: flex; gap: 20px; flex-direction: column; justify-content: center; }
-        .tool-btn {
-            border: none; padding: 15px 25px; border-radius: 10px; 
-            cursor: pointer; color: white; font-weight: 800; font-size: 14px;
-            display: flex; flex-direction: column; align-items: center; gap: 5px; 
-            min-width: 140px; transition: 0.3s;
-        }
-        .btn-print { background: var(--accent); box-shadow: 0 5px 15px rgba(255, 153, 51, 0.3); }
-        .btn-print:hover { transform: translateY(-3px); background: #e68a00; }
-        
-        .btn-dl { background: #2980b9; box-shadow: 0 5px 15px rgba(41, 128, 185, 0.3); }
-        .btn-dl:hover { transform: translateY(-3px); background: #2471a3; }
-
-        /* === ID CARD WRAPPER (CR80 Standard) === */
+        /* === ID CARD WRAPPER (Visual) === */
         .card-wrapper {
             width: 54mm; height: 86mm; 
             position: relative;
@@ -113,27 +99,27 @@
             border-radius: 3.18mm;
         }
 
-        /* === ID CARD STYLING === */
+        /* === ID CARD STRUCTURE (Print/View) === */
         .id-card {
             width: 54mm; height: 86mm;
             background: #fff;
             position: relative; overflow: hidden;
             border-radius: 3.18mm;
             font-family: 'Montserrat', sans-serif;
-            border: 1px solid #000; 
+            border: 1px solid #000; /* Crisp boundary */
             display: flex; flex-direction: column;
             box-sizing: border-box;
         }
 
         /* --- FRONT SIDE --- */
         .front-header {
-            height: 18%; background: var(--primary); 
+            height: 18%; background: var(--navy); 
             display: flex; align-items: center; justify-content: space-between;
             padding: 0 2mm 0 3mm; position: relative; 
             clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
-            border-bottom: 2px solid var(--accent); z-index: 5;
+            border-bottom: 2px solid var(--saffron); z-index: 5;
         }
-        .front-header:after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:var(--accent); z-index:6; }
+        .front-header:after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:var(--saffron); z-index:6; }
 
         .fh-logo { width: 8.5mm; height: auto; margin-right: 1.5mm; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); }
         .fh-title { color: white; font-family: 'Oswald', sans-serif; font-size: 7.5pt; line-height: 1.1; font-weight: 700; text-transform: uppercase; text-align: left; }
@@ -150,7 +136,7 @@
             padding-top: 3mm; position: relative;
             background-image: linear-gradient(#f4f4f4 1px, transparent 1px), linear-gradient(90deg, #f4f4f4 1px, transparent 1px);
             background-size: 4mm 4mm;
-            padding-bottom: 6mm; 
+            padding-bottom: 6mm;
         }
         .fb-photo {
             width: 21mm; height: 25mm; 
@@ -159,12 +145,12 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .fb-name { 
-            font-size: 10pt; font-weight: 900; color: var(--primary); 
+            font-size: 10pt; font-weight: 900; color: var(--navy); 
             text-transform: uppercase; text-align: center; 
             line-height: 1.1; width: 95%; margin-bottom: 1px; 
         }
         .fb-role { 
-            background: var(--accent); color: white; 
+            background: var(--saffron); color: white; 
             font-size: 5pt; font-weight: 700; padding: 1.5px 8px; 
             border-radius: 0px; text-transform: uppercase; margin-bottom: 2mm;
             clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
@@ -183,19 +169,19 @@
 
         .front-footer {
             position: absolute; bottom: 0; width: 100%; height: 5mm; 
-            background: var(--primary); border-top: 1px solid var(--accent);
+            background: var(--navy); border-top: 1px solid var(--saffron);
             display: flex; align-items: center; justify-content: center; 
-            color: var(--accent); font-size: 5pt; font-weight: 800; 
+            color: var(--saffron); font-size: 5pt; font-weight: 800; 
             text-transform: uppercase; letter-spacing: 1px; z-index: 5;
         }
 
         /* --- BACK SIDE --- */
         .back-header { 
-            height: 12%; background: var(--primary); 
+            height: 12%; background: var(--navy); 
             display: flex; align-items: center; justify-content: center; 
             color: white; font-weight: 800; font-size: 7.5pt; 
             text-transform: uppercase; letter-spacing: 1px; 
-            border-bottom: 2px solid var(--accent); 
+            border-bottom: 2px solid var(--saffron); 
         }
         .back-body { 
             flex: 1; display: flex; flex-direction: column; align-items: center; 
@@ -203,25 +189,25 @@
         }
         .bb-logo { width: 16mm; margin-top: 1mm; opacity: 1; }
         .bb-title { 
-            font-size: 8pt; font-weight: 900; color: var(--primary); 
+            font-size: 8pt; font-weight: 900; color: var(--navy); 
             text-transform: uppercase; margin: 1mm 0 2mm 0; 
             width: 90%; text-align: center; 
         }
         
-        .bb-qr-label { font-size: 5pt; font-weight: 800; color: var(--accent); margin-bottom: 1px; text-transform: uppercase; }
+        .bb-qr-label { font-size: 5pt; font-weight: 800; color: var(--saffron); margin-bottom: 1px; text-transform: uppercase; }
         .bb-qr-box { 
             width: 14mm; height: 14mm; border: 1px solid #ddd; 
-            padding: 1px; margin-bottom: 2mm; background: white;
+            padding: 1px; margin-bottom: 3mm; background: white;
         }
         .bb-qr-box img { width: 100%; height: 100%; }
 
         .bb-info { width: 100%; margin-bottom: 2mm; margin-top: 1mm; }
         .bb-row { display: flex; gap: 2mm; margin-bottom: 1.5mm; align-items: flex-start; }
-        .bb-icon { color: var(--accent); font-size: 6pt; width: 3mm; text-align: center; margin-top: 1px; }
+        .bb-icon { color: var(--saffron); font-size: 6pt; width: 3mm; text-align: center; margin-top: 1px; }
         .bb-text { font-size: 5pt; font-weight: 600; color: #444; flex: 1; line-height: 1.2; text-align: left; }
 
         .bb-terms { width: 100%; margin-top: auto; margin-bottom: 12mm; }
-        .bb-terms h4 { margin: 0; font-size: 4pt; color: var(--primary); text-transform: uppercase; text-align: left; }
+        .bb-terms h4 { margin: 0; font-size: 4pt; color: var(--navy); text-transform: uppercase; text-align: left; }
         .bb-terms p { margin: 0; font-size: 3.5pt; color: #666; line-height: 1.1; text-align: left; margin-top: 1px; }
 
         .bb-sign-area { 
@@ -229,7 +215,7 @@
             text-align: center; z-index: 5; 
         }
         .bb-sign-line { width: 22mm; height: 1px; background: #000; margin-bottom: 1px; }
-        .bb-sign-txt { font-size: 4pt; font-weight: 800; color: var(--primary); text-transform: uppercase; }
+        .bb-sign-txt { font-size: 4pt; font-weight: 800; color: var(--navy); text-transform: uppercase; }
         
         .bb-stamp { 
             position: absolute; bottom: 2mm; right: 0; 
@@ -239,10 +225,24 @@
 
         .back-footer { 
             position: absolute; bottom: 0; width: 100%; height: 5mm; 
-            background: var(--success); 
+            background: var(--green); 
             display: flex; align-items: center; justify-content: center; 
             color: white; font-size: 4.5pt; font-weight: 700; text-transform: uppercase; 
         }
+
+        /* === BUTTONS === */
+        .btn-group { display: flex; gap: 20px; flex-direction: column; justify-content: center; }
+        .tool-btn {
+            border: none; padding: 15px 25px; border-radius: 10px; 
+            cursor: pointer; color: white; font-weight: 800; font-size: 14px;
+            display: flex; flex-direction: column; align-items: center; gap: 5px; 
+            min-width: 140px; transition: 0.3s;
+        }
+        .btn-print { background: var(--saffron); box-shadow: 0 5px 15px rgba(255, 153, 51, 0.3); }
+        .btn-print:hover { transform: translateY(-3px); background: #e68a00; }
+        
+        .btn-dl { background: #2980b9; box-shadow: 0 5px 15px rgba(41, 128, 185, 0.3); }
+        .btn-dl:hover { transform: translateY(-3px); background: #2471a3; }
 
         @media (max-width: 768px) {
             .card-row { flex-direction: column; padding: 20px; gap: 40px; }
@@ -275,7 +275,7 @@
 <script>
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/1p1ynKWyRErPwczTcMkffZfQ7dhOiV9buv_gIVRK3uh0/export?format=csv&gid=85144492";
     
-    // CONFIG: Assets with exact URLs
+    // CONFIG: Restored your specific images and links
     const CFG = {
         org: "Tiranga Yuva Samiti",
         logo: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhCaJCRPLvQgi9REoAvb9b4H4Vvh6RhAmMRGwGEolXIqS2nxxCa9-jS7qexF2JL5puwPOEk-2q7ubDKeL-m-BM0_7_uHrI5EnBXue7deGtgta4UyCDnI43AkB1KBN8PV4G00fg1vW2La338AyzZkHvXpzt49papqeYLt9NDXMcTnvsceg/s1600/TYS-White.png",
