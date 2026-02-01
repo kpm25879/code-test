@@ -1,468 +1,681 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tiranga Yuva Samiti - Professional ID System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* =========================================
+       2. CSS STYLESHEET
+    ========================================= */
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    /* Scoped Container to protect against WP Theme styles */
+    #tys-app-container {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #eef2f5;
+        color: #333;
+        width: 100%;
+        padding: 40px 20px;
+        box-sizing: border-box;
+        border-radius: 8px;
+        margin: 20px 0;
+    }
 
-    <style>
-        /* =========================================
-           1. GLOBAL VARIABLES & RESET
-        ========================================== */
-        :root {
-            --navy-dark: #001a35;
-            --navy: #002347;
-            --navy-light: #003366;
-            --saffron: #FF9933;
-            --saffron-dark: #cc7a00;
-            --green: #138808;
-            --green-dark: #0b5e05;
-            --white: #ffffff;
-            --gray-bg: #eef2f5;
-            --text-dark: #1a2a3a;
-            --shadow-card: 0 15px 35px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.1);
-            --border-radius: 3.18mm; /* Standard ID Card Radius */
-        }
+    #tys-app-container * {
+        box-sizing: border-box;
+    }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    /* --- Typography & Headings --- */
+    #tys-app-container h2.tys-title {
+        color: #002347; /* Navy */
+        text-align: center;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: -1px;
+        margin: 0 0 10px 0;
+        font-size: 32px;
+        text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+    }
 
-        html, body {
-            margin: 0; padding: 0;
-            width: 100%; min-height: 100vh;
-            background-color: var(--gray-bg);
-            font-family: 'Segoe UI', sans-serif;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            overflow-x: hidden;
-        }
+    #tys-app-container p.tys-subtitle {
+        color: #666;
+        margin-bottom: 40px;
+        font-weight: 600;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 14px;
+    }
 
-        /* =========================================
-           2. MAIN APPLICATION CONTAINER
-        ========================================== */
-        #tys-app {
-            width: 100%; max-width: 1200px;
-            margin: 0 auto; padding: 40px 20px;
-            display: flex; flex-direction: column; align-items: center;
-        }
+    /* --- Search Control Panel --- */
+    .tys-controls {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto 50px auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        border-top: 6px solid #FF9933; /* Saffron */
+    }
 
-        .main-title {
-            color: var(--navy); text-align: center;
-            font-family: 'Montserrat', sans-serif; font-weight: 900;
-            font-size: 2.5rem; text-transform: uppercase;
-            letter-spacing: -1px; margin-bottom: 5px;
-            text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.5);
-        }
+    .tys-input-group {
+        position: relative;
+        width: 100%;
+    }
 
-        .sub-title {
-            color: #666; margin-bottom: 40px; text-align: center;
-            font-size: 1rem; font-weight: 600; letter-spacing: 1px;
-            text-transform: uppercase;
-        }
+    .tys-input-icon {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #002347;
+        font-size: 18px;
+        z-index: 2;
+    }
 
-        /* =========================================
-           3. SEARCH & VERIFICATION BOX
-        ========================================== */
-        .controls-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 40px; border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-            width: 100%; max-width: 500px;
-            display: flex; flex-direction: column; gap: 20px;
-            border-top: 6px solid var(--saffron);
-            margin-bottom: 50px;
-            border-bottom: 1px solid #eee;
-        }
+    .tys-input {
+        width: 100%;
+        padding: 16px 16px 16px 50px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 16px;
+        color: #333;
+        background: #f9f9f9;
+        outline: none;
+        transition: all 0.3s ease;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+    }
 
-        .input-group { position: relative; width: 100%; }
-        .input-icon {
-            position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
-            color: var(--navy); font-size: 1.2rem; z-index: 2;
-        }
+    .tys-input:focus {
+        border-color: #FF9933;
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(255, 153, 51, 0.1);
+    }
 
-        .app-input {
-            width: 100%; padding: 16px 16px 16px 50px;
-            border: 2px solid #e0e0e0; border-radius: 12px;
-            font-size: 16px; color: #333; background: #fff;
-            transition: all 0.3s ease; font-weight: 600;
-        }
-        .app-input:focus {
-            outline: none; border-color: var(--saffron);
-            box-shadow: 0 0 0 4px rgba(255, 153, 51, 0.15);
-        }
+    .tys-btn-verify {
+        background: linear-gradient(135deg, #002347 0%, #00152e 100%);
+        color: white;
+        border: none;
+        padding: 18px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 16px;
+        width: 100%;
+        transition: all 0.3s ease;
+        letter-spacing: 1px;
+        box-shadow: 0 10px 20px rgba(0, 35, 71, 0.2);
+    }
 
-        .btn-verify {
-            background: linear-gradient(135deg, var(--navy) 0%, #004e92 100%);
-            color: white; border: none; padding: 18px;
-            border-radius: 12px; cursor: pointer; font-weight: 800;
-            font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(0, 35, 71, 0.2);
-        }
-        .btn-verify:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(0, 35, 71, 0.35);
-        }
+    .tys-btn-verify:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px rgba(0, 35, 71, 0.3);
+    }
 
-        #status-display {
-            font-weight: 700; font-size: 14px; margin-top: 10px;
-            min-height: 24px; text-align: center; width: 100%;
-        }
+    #tys-status-msg {
+        text-align: center;
+        font-weight: 700;
+        font-size: 14px;
+        color: #555;
+        min-height: 24px;
+        margin-top: 10px;
+    }
 
-        /* =========================================
-           4. RESULT DISPLAY AREA
-        ========================================== */
-        #card-display-area {
-            width: 100%; display: flex; flex-direction: column; 
-            gap: 50px; align-items: center;
-        }
+    /* --- Result Grid Area --- */
+    #tys-results {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
+        align-items: center;
+    }
 
-        .result-row {
-            display: flex; gap: 50px; align-items: center; justify-content: center;
-            background: white; padding: 50px; border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.05);
-            flex-wrap: wrap; width: 100%; max-width: 1100px;
-            animation: fadeIn 0.6s ease-out;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .tys-card-row {
+        display: flex;
+        gap: 60px;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        background: #ffffff;
+        padding: 50px;
+        border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+        animation: tysFadeIn 0.5s ease-in;
+        width: 100%;
+        max-width: 1200px;
+    }
 
-        .column { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-        .column-title {
-            font-size: 12px; color: var(--navy); font-weight: 800;
-            text-transform: uppercase; letter-spacing: 2px;
-        }
+    @keyframes tysFadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-        /* =========================================
-           5. ID CARD VISUAL CONTAINER
-        ========================================== */
-        .card-visual-wrapper {
-            width: 54mm; height: 86mm; /* Standard Credit Card Size */
-            position: relative;
-            background: transparent;
-            box-shadow: var(--shadow-card);
-            border-radius: var(--border-radius);
-            transition: transform 0.3s ease;
-        }
-        .card-visual-wrapper:hover { transform: scale(1.03); z-index: 10; }
+    .tys-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
 
-        /* =========================================
-           6. ID CARD CSS (Used for Display & Print)
-        ========================================== */
-        .id-card-body {
-            width: 54mm; height: 86mm;
-            background: #fff;
-            position: relative; overflow: hidden;
-            font-family: 'Montserrat', sans-serif;
-            color: #333; display: flex; flex-direction: column;
-            border: 1px solid #000; /* Crisp Cut Line */
-            box-sizing: border-box;
-            border-radius: var(--border-radius);
-        }
+    .tys-label {
+        font-weight: 800;
+        color: #aaa;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 12px;
+    }
 
-        /* --- FRONT SIDE --- */
-        .front-header {
-            height: 18%; background: var(--navy);
-            width: 100%; display: flex; align-items: center; justify-content: space-between;
-            position: relative; z-index: 5; padding: 0 2mm 0 3mm;
-            clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
-            border-bottom: 2px solid var(--saffron);
-        }
-        /* Saffron Accent Line */
-        .front-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--saffron); z-index: 6; }
+    /* --- ID Card Container (Visual Wrapper) --- */
+    .tys-card-wrapper {
+        width: 54mm;
+        height: 86mm;
+        position: relative;
+        background: transparent;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+        border-radius: 3.18mm;
+        transition: transform 0.3s ease;
+    }
 
-        .header-logo { width: 8.5mm; height: auto; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); margin-right: 1.5mm; }
-        .header-text {
-            font-size: 7.5pt; font-weight: 800; color: white;
-            text-transform: uppercase; margin: 0; line-height: 1.1;
-            font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;
-            text-align: left;
-        }
+    .tys-card-wrapper:hover {
+        transform: scale(1.03);
+        z-index: 10;
+    }
 
-        .header-qr-box {
-            width: 9mm; height: 9mm; background: white; padding: 1px;
-            border-radius: 2px; flex-shrink: 0; margin-left: 1mm;
-            margin-bottom: 3mm; margin-right: 1mm;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .header-qr-box img { width: 100%; height: 100%; }
+    /* --- THE ID CARD (Actual Design) --- */
+    /* This class is used for both Display and Print generation */
+    .id-card-body {
+        width: 54mm;
+        height: 86mm;
+        background: #ffffff;
+        position: relative;
+        overflow: hidden;
+        border-radius: 3.18mm;
+        font-family: 'Montserrat', sans-serif;
+        /* Visible Boundary Line */
+        border: 1px solid #000; 
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
 
-        .front-content {
-            flex: 1; position: relative; display: flex; flex-direction: column; align-items: center;
-            padding-top: 2mm; padding-bottom: 6mm;
-            /* Ultra Pro Mesh Background */
-            background-image: 
-                linear-gradient(#f1f1f1 1px, transparent 1px),
-                linear-gradient(90deg, #f1f1f1 1px, transparent 1px);
-            background-size: 4mm 4mm;
-        }
+    /* --- FRONT DESIGN --- */
+    .front-header {
+        height: 18%;
+        background: #002347; /* Navy */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2mm 0 3mm;
+        position: relative;
+        z-index: 5;
+        /* Diagonal Cut */
+        clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
+        border-bottom: 2px solid #FF9933; /* Saffron */
+    }
+    
+    /* Saffron Accent Line */
+    .front-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: #FF9933;
+        z-index: 6;
+    }
 
-        .photo-box {
-            width: 21mm; height: 25mm; background: white;
-            border-radius: 4px; position: relative; z-index: 2; margin-bottom: 2mm;
-            border: 1px solid #ddd;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15), 0 0 0 1px white, 0 0 0 2px var(--navy);
-        }
-        .user-img { width: 100%; height: 100%; object-fit: cover; padding: 1px; border-radius: 3px; }
+    .header-logo {
+        width: 8.5mm;
+        height: auto;
+        margin-right: 1.5mm;
+        filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+    }
 
-        .name-box { text-align: center; margin-bottom: 2mm; z-index: 2; width: 95%; }
-        .name-text {
-            font-size: 10pt; font-weight: 900;
-            text-transform: uppercase; line-height: 1.1; margin-bottom: 1px;
-            color: var(--navy); font-family: 'Montserrat', sans-serif;
-        }
-        .role-badge {
-            background: var(--saffron); color: white;
-            font-size: 5pt; font-weight: 700; padding: 1.5px 8px;
-            border-radius: 0px; display: inline-block;
-            text-transform: uppercase; letter-spacing: 1px;
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
-        }
+    .header-title {
+        color: white;
+        font-family: 'Oswald', sans-serif;
+        font-size: 7.5pt;
+        line-height: 1.1;
+        font-weight: 700;
+        text-transform: uppercase;
+        text-align: left;
+    }
 
-        .details-table { width: 90%; z-index: 2; margin-bottom: auto; }
-        .d-row { display: flex; align-items: center; margin-bottom: 1px; border-bottom: 1px solid #eee; padding: 1.5px 0; }
-        .d-label { width: 40%; font-weight: 700; color: #666; font-size: 5pt; text-transform: uppercase; letter-spacing: 0.2px; }
-        .d-val { width: 60%; font-weight: 800; color: #000; text-align: right; font-size: 6pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .header-qr {
+        width: 9mm;
+        height: 9mm;
+        background: white;
+        padding: 1px;
+        border-radius: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2mm;
+        margin-right: 1mm;
+    }
+    .header-qr img { width: 100%; height: 100%; }
 
-        .barcode-container {
-            position: absolute; bottom: 6mm; z-index: 2;
-            left: 50%; transform: translateX(-50%);
-            width: 90%; height: 8mm; display: flex; align-items: center; justify-content: center;
-        }
-        .barcode-container svg { width: 100%; height: 100%; }
+    .front-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 3mm;
+        position: relative;
+        /* Security Mesh Pattern */
+        background-image: 
+            linear-gradient(#f4f4f4 1px, transparent 1px),
+            linear-gradient(90deg, #f4f4f4 1px, transparent 1px);
+        background-size: 4mm 4mm;
+        padding-bottom: 6mm;
+    }
 
-        .front-footer {
-            position: absolute; bottom: 0; left: 0;
-            height: 5mm; background: var(--navy);
-            width: 100%; display: flex; align-items: center; justify-content: center;
-            color: var(--saffron); font-size: 5pt; font-weight: 800;
-            letter-spacing: 1px; text-transform: uppercase;
-            z-index: 5; border-top: 1px solid var(--saffron);
-        }
+    .photo-container {
+        width: 21mm;
+        height: 25mm;
+        background: #eee;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 2mm;
+        object-fit: cover;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
 
-        /* --- BACK SIDE --- */
-        .back-header {
-            height: 12%; background: var(--navy);
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 800; font-size: 7.5pt;
-            text-transform: uppercase; letter-spacing: 1px;
-            z-index: 2; border-bottom: 2px solid var(--saffron);
-        }
+    .name-display {
+        font-size: 10pt;
+        font-weight: 900;
+        color: #002347;
+        text-transform: uppercase;
+        text-align: center;
+        line-height: 1.1;
+        width: 95%;
+        margin-bottom: 1px;
+    }
 
-        .back-content {
-            flex: 1; display: flex; flex-direction: column; align-items: center;
-            padding: 3mm; text-align: center; position: relative; background: #fff;
-        }
+    .role-badge {
+        background: #FF9933;
+        color: white;
+        font-size: 5pt;
+        font-weight: 700;
+        padding: 1.5px 8px;
+        border-radius: 0px;
+        text-transform: uppercase;
+        margin-bottom: 2mm;
+        clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+    }
 
-        .back-logo { width: 16mm; height: auto; margin-top: 1mm; opacity: 1.0; }
-        .back-title {
-            font-size: 8pt; font-weight: 900; color: var(--navy);
-            text-transform: uppercase; text-align: center;
-            margin-top: 1mm; margin-bottom: 2mm; width: 90%;
-        }
+    .details-grid {
+        width: 90%;
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        margin-bottom: auto;
+    }
 
-        .qr-label {
-            font-size: 5pt; font-weight: 800; color: var(--saffron);
-            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1px;
-        }
-        .qr-frame {
-            width: 14mm; height: 14mm; margin-bottom: 2mm;
-            border: 1px solid #ccc; padding: 1px; background: white;
-        }
-        .qr-frame img { width: 100%; height: 100%; }
+    .d-row {
+        display: flex;
+        font-size: 6pt;
+        border-bottom: 1px dashed #eee;
+        padding-bottom: 1px;
+        align-items: center;
+    }
 
-        .info-list { width: 100%; text-align: left; margin-top: 1mm; }
-        .info-item { display: flex; gap: 2mm; margin-bottom: 1.5mm; align-items: flex-start; }
-        .info-icon { color: var(--saffron); width: 3mm; font-size: 6pt; margin-top: 1px; text-align: center; }
-        .info-txt { font-size: 5pt; color: #444; font-weight: 600; line-height: 1.2; text-align: left; }
+    .d-key {
+        width: 40%;
+        color: #666;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 5pt;
+        letter-spacing: 0.2px;
+    }
 
-        .terms-box { width: 100%; margin-top: auto; margin-bottom: 12mm; /* Gap for Sig */ }
-        .terms-head { font-size: 4pt; font-weight: 800; color: var(--navy); text-transform: uppercase; text-align: left; }
-        .terms-body { font-size: 3.5pt; color: #666; text-align: left; line-height: 1.1; margin-top: 1px; }
+    .d-val {
+        width: 60%;
+        color: #000;
+        font-weight: 800;
+        text-align: right;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
-        .signatory-box {
-            position: absolute; bottom: 6mm; right: 4mm;
-            text-align: center; z-index: 5;
-        }
-        .sign-line { width: 22mm; height: 1px; background: #000; margin-bottom: 1px; }
-        .sign-label { font-size: 4pt; font-weight: 800; color: var(--navy); text-transform: uppercase; }
+    .barcode-wrapper {
+        position: absolute;
+        bottom: 6mm;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 8mm;
+        width: 90%;
+        display: flex;
+        justify-content: center;
+        z-index: 2;
+    }
+    .barcode-wrapper svg { width: 100%; height: 100%; }
 
-        .stamp-img {
-            position: absolute; bottom: 2mm; right: 0;
-            width: 20mm; opacity: 0.85; mix-blend-mode: multiply;
-            transform: rotate(-15deg); pointer-events: none; z-index: 10;
-        }
+    .front-footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 5mm;
+        background: #002347;
+        border-top: 1px solid #FF9933;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FF9933;
+        font-size: 5pt;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        z-index: 5;
+    }
 
-        .back-footer {
-            position: absolute; bottom: 0; left: 0;
-            height: 5mm; width: 100%; background: var(--green);
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 4.5pt; font-weight: 600; text-transform: uppercase;
-        }
+    /* --- BACK DESIGN --- */
+    .back-header {
+        height: 12%;
+        background: #002347;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 800;
+        font-size: 7.5pt;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 2px solid #FF9933;
+    }
 
-        /* =========================================
-           7. ACTION BUTTONS
-        ========================================== */
-        .btn-container {
-            display: flex; gap: 20px; flex-direction: column; justify-content: center;
-            width: 100%; max-width: 300px;
-        }
+    .back-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 3mm;
+        position: relative;
+    }
+
+    .back-logo {
+        width: 16mm;
+        margin-top: 1mm;
+        opacity: 1;
+    }
+
+    .back-org-title {
+        font-size: 8pt;
+        font-weight: 900;
+        color: #002347;
+        text-transform: uppercase;
+        margin: 1mm 0 2mm 0;
+        width: 90%;
+        text-align: center;
+        padding-bottom: 1mm;
+        border-bottom: 1px solid #eee;
+    }
+
+    .qr-title {
+        font-size: 5pt;
+        font-weight: 800;
+        color: #FF9933;
+        margin-bottom: 1px;
+        text-transform: uppercase;
+    }
+
+    .qr-box {
+        width: 14mm;
+        height: 14mm;
+        border: 1px solid #ddd;
+        padding: 1px;
+        margin-bottom: 3mm;
+        background: white;
+    }
+    .qr-box img { width: 100%; height: 100%; }
+
+    .info-box {
+        width: 100%;
+        margin-bottom: 2mm;
+        margin-top: 1mm;
+    }
+
+    .info-row {
+        display: flex;
+        gap: 2mm;
+        margin-bottom: 1.5mm;
+        align-items: flex-start;
+    }
+
+    .info-icon {
+        color: #FF9933;
+        font-size: 6pt;
+        width: 3mm;
+        text-align: center;
+        margin-top: 1px;
+    }
+
+    .info-text {
+        font-size: 5pt;
+        font-weight: 600;
+        color: #444;
+        flex: 1;
+        line-height: 1.2;
+        text-align: left;
+    }
+
+    .terms-section {
+        width: 100%;
+        margin-top: auto;
+        /* Critical Gap for Signatory */
+        margin-bottom: 12mm; 
+    }
+
+    .terms-head {
+        margin: 0;
+        font-size: 4pt;
+        color: #002347;
+        text-transform: uppercase;
+        text-align: left;
+        font-weight: 800;
+    }
+
+    .terms-body {
+        margin: 0;
+        font-size: 3.5pt;
+        color: #666;
+        line-height: 1.1;
+        text-align: left;
+        margin-top: 1px;
+    }
+
+    /* AUTHORIZED SIGNATORY SECTION */
+    .signatory-area {
+        position: absolute;
+        bottom: 6mm;
+        right: 4mm;
+        text-align: center;
+        z-index: 5;
+    }
+
+    .sign-line {
+        width: 22mm;
+        height: 1px;
+        background: #000;
+        margin-bottom: 1px;
+    }
+
+    .sign-text {
+        font-size: 4pt;
+        font-weight: 800;
+        color: #002347;
+        text-transform: uppercase;
+    }
+
+    .stamp-overlay {
+        position: absolute;
+        bottom: 2mm;
+        right: 0;
+        width: 20mm;
+        opacity: 0.85;
+        mix-blend-mode: multiply;
+        transform: rotate(-15deg);
+        pointer-events: none;
+        z-index: 10;
+    }
+
+    .back-footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 5mm;
+        background: #138808; /* Green */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 4.5pt;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    /* --- ACTION BUTTONS --- */
+    .tys-btn-group {
+        display: flex;
+        gap: 20px;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .tys-tool-btn {
+        border: none;
+        padding: 20px 25px;
+        border-radius: 12px;
+        cursor: pointer;
+        color: white;
+        font-weight: 800;
+        font-size: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        transition: 0.3s;
+        text-transform: uppercase;
+    }
+
+    .btn-print {
+        background: linear-gradient(135deg, #FF9933, #e67e22);
+        box-shadow: 0 8px 15px rgba(255, 153, 51, 0.3);
+    }
+    .btn-print:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(255, 153, 51, 0.4); }
+
+    .btn-download {
+        background: linear-gradient(135deg, #2980b9, #2c3e50);
+        box-shadow: 0 8px 15px rgba(41, 128, 185, 0.3);
+    }
+    .btn-download:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(41, 128, 185, 0.4); }
+
+    /* --- RESPONSIVE FIXES --- */
+    @media (max-width: 768px) {
+        .tys-card-row { flex-direction: column; padding: 20px; gap: 40px; }
+        .tys-btn-group { flex-direction: row; max-width: 100%; }
+        .tys-tool-btn { font-size: 12px; padding: 15px; }
+    }
+</style>
+
+<div id="tys-app-container">
+    
+    <div class="tys-controls">
+        <h2 class="tys-title">ID Card Verification</h2>
+        <p class="tys-subtitle">Official Database Access</p>
         
-        .action-btn {
-            border: none; padding: 20px 25px; border-radius: 12px;
-            cursor: pointer; color: white; font-weight: 800; font-size: 14px;
-            display: flex; flex-direction: column; align-items: center; gap: 8px;
-            width: 100%; transition: 0.3s;
-        }
-        
-        .btn-print {
-            background: linear-gradient(135deg, var(--saffron), #e67e22);
-            box-shadow: 0 8px 15px rgba(255, 153, 51, 0.3);
-        }
-        .btn-print:hover { transform: translateY(-3px); background: #e68a00; }
-
-        .btn-download {
-            background: linear-gradient(135deg, #2980b9, #2c3e50);
-            box-shadow: 0 8px 15px rgba(41, 128, 185, 0.3);
-        }
-        .btn-download:hover { transform: translateY(-3px); background: #2471a3; }
-
-        /* =========================================
-           8. RESPONSIVE DESIGN
-        ========================================== */
-        @media (max-width: 900px) {
-            .result-row { flex-direction: column; gap: 40px; padding: 30px; }
-            .btn-container { flex-direction: row; max-width: 100%; }
-            .controls-panel { width: 100%; border-radius: 0; margin-bottom: 20px; }
-            #tys-app { padding: 10px; }
-        }
-    </style>
-</head>
-<body>
-
-<div id="tys-app">
-    <div class="controls-panel">
-        <h2 class="main-title">ID Verification</h2>
-        <p class="sub-title">Secure Database Access Portal</p>
-        
-        <div class="input-group">
-            <i class="fa-solid fa-id-card input-icon"></i>
-            <input type="text" id="inputId" class="app-input" placeholder="Member ID (e.g. YM-101)">
+        <div class="tys-input-group">
+            <i class="fa-solid fa-id-badge tys-input-icon"></i>
+            <input type="text" id="inputId" class="tys-input" placeholder="Member ID (e.g. YM-101)">
         </div>
-        <div class="input-group">
-            <i class="fa-solid fa-phone input-icon"></i>
-            <input type="text" id="inputPhone" class="app-input" placeholder="Registered Phone">
+        
+        <div class="tys-input-group">
+            <i class="fa-solid fa-phone tys-input-icon"></i>
+            <input type="text" id="inputPhone" class="tys-input" placeholder="Registered Phone">
         </div>
         
-        <button class="btn-verify" onclick="initiateSearch()">
-            <i class="fa-solid fa-shield-halved"></i> Verify & Generate
-        </button>
-        
-        <div id="status-display">System Ready. Waiting for input...</div>
+        <button class="tys-btn-verify" onclick="verifyAndSearch()">Verify & Generate</button>
+        <div id="tys-status-msg">System Ready. Waiting for credentials...</div>
     </div>
 
-    <div id="card-display-area"></div>
+    <div id="tys-results"></div>
+
 </div>
 
 <script>
-    // =========================================
-    // 1. CONFIGURATION & DATA SOURCE
-    // =========================================
-    const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1p1ynKWyRErPwczTcMkffZfQ7dhOiV9buv_gIVRK3uh0/export?format=csv&gid=85144492";
+    // --- CONFIGURATION ---
+    const DB_URL = "https://docs.google.com/spreadsheets/d/1p1ynKWyRErPwczTcMkffZfQ7dhOiV9buv_gIVRK3uh0/export?format=csv&gid=85144492";
     
-    const SETTINGS = {
-        orgName: "Tiranga Yuva Samiti",
-        urls: {
-            logo: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhCaJCRPLvQgi9REoAvb9b4H4Vvh6RhAmMRGwGEolXIqS2nxxCa9-jS7qexF2JL5puwPOEk-2q7ubDKeL-m-BM0_7_uHrI5EnBXue7deGtgta4UyCDnI43AkB1KBN8PV4G00fg1vW2La338AyzZkHvXpzt49papqeYLt9NDXMcTnvsceg/s1600/TYS-White.png",
-            stamp: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEif3QsddJJfS7s0DWat3m-JGugl9Jf3PHlxuPenO9wCWmjqiqV2UZ2IBMA_0b2ID8Uk1Ukwozo206pIjMGCEm5rK6e24u33ZDaSUUvnVzfsMQX6aY4BoleEeCGB3PMBfh4VER_I5Qsac0CHXkwtvVu5kuefZWrr9qr5MEOPyL8_tpkKow/s1600/Naveen%20Stamp.jpg",
-            donate: "https://www.tirangayuvasamiti.org/donate/"
-        },
+    const ASSETS = {
+        org: "Tiranga Yuva Samiti",
+        logo: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhCaJCRPLvQgi9REoAvb9b4H4Vvh6RhAmMRGwGEolXIqS2nxxCa9-jS7qexF2JL5puwPOEk-2q7ubDKeL-m-BM0_7_uHrI5EnBXue7deGtgta4UyCDnI43AkB1KBN8PV4G00fg1vW2La338AyzZkHvXpzt49papqeYLt9NDXMcTnvsceg/s1600/TYS-White.png",
+        stamp: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEif3QsddJJfS7s0DWat3m-JGugl9Jf3PHlxuPenO9wCWmjqiqV2UZ2IBMA_0b2ID8Uk1Ukwozo206pIjMGCEm5rK6e24u33ZDaSUUvnVzfsMQX6aY4BoleEeCGB3PMBfh4VER_I5Qsac0CHXkwtvVu5kuefZWrr9qr5MEOPyL8_tpkKow/s1600/Naveen%20Stamp.jpg",
+        donate: "https://www.tirangayuvasamiti.org/donate/",
         contact: {
-            address: "VPO Khanda 9R, Tehsil Kharkhoda, Sonipat, Haryana – 131402",
-            phone: "+91 90535 75169",
-            email: "info@tirangayuvasamiti.org",
-            web: "www.tirangayuvasamiti.org"
+            addr: "VPO Khanda 9R, Tehsil Kharkhoda, Sonipat, Haryana – 131402",
+            ph: "+91 90535 75169",
+            em: "info@tirangayuvasamiti.org",
+            wb: "www.tirangayuvasamiti.org"
         }
     };
 
-    let MEMBERS_DB = [];
+    let MEM_DB = [];
 
-    // =========================================
-    // 2. INITIALIZATION
-    // =========================================
-    document.addEventListener('DOMContentLoaded', fetchDatabase);
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', loadDatabase);
 
-    async function fetchDatabase() {
-        const statusBox = document.getElementById('status-display');
-        statusBox.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Connecting to Secure Server...';
-        
+    async function loadDatabase() {
+        const msg = document.getElementById('tys-status-msg');
+        msg.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Connecting to Secure Server...';
         try {
-            const response = await fetch(GOOGLE_SHEET_URL + "&t=" + new Date().getTime());
-            if (!response.ok) throw new Error("Network Error");
-            
-            const arrayBuffer = await response.arrayBuffer();
-            const data = new Uint8Array(arrayBuffer);
-            const workbook = XLSX.read(data, {type: 'array', cellDates: true});
-            
-            MEMBERS_DB = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-            
-            if(MEMBERS_DB.length > 0) {
-                statusBox.innerHTML = `<span style="color:var(--success)">✅ Database Connected (${MEMBERS_DB.length} Records)</span>`;
-            } else {
-                statusBox.innerHTML = "Database is empty.";
-            }
-        } catch (error) {
-            console.error(error);
-            statusBox.innerHTML = `<span style="color:#e74c3c">❌ Connection Failed. Check Internet.</span>`;
-        }
+            const res = await fetch(DB_URL + "&t=" + Date.now());
+            const buf = await res.arrayBuffer();
+            const wb = XLSX.read(new Uint8Array(buf), {type:'array', cellDates:true});
+            MEM_DB = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+            msg.innerHTML = MEM_DB.length ? `<span style="color:#138808">✅ Database Active (${MEM_DB.length} Records)</span>` : "Database Empty";
+        } catch(e) { msg.innerHTML = `<span style="color:#e74c3c">❌ Connection Failed. Check Internet.</span>`; }
     }
 
-    // =========================================
-    // 3. SEARCH LOGIC
-    // =========================================
-    function initiateSearch() {
-        const inputId = document.getElementById('inputId').value.trim().toLowerCase();
-        const inputPhone = document.getElementById('inputPhone').value.trim().toLowerCase();
-        const statusBox = document.getElementById('status-display');
-        const displayArea = document.getElementById('card-display-area');
-        
-        displayArea.innerHTML = ""; // Clear previous
+    // --- SEARCH ---
+    function verifyAndSearch() {
+        const id = document.getElementById('inputId').value.trim().toLowerCase();
+        const ph = document.getElementById('inputPhone').value.trim().toLowerCase();
+        const msg = document.getElementById('tys-status-msg');
+        const grid = document.getElementById('tys-results');
+        grid.innerHTML = "";
 
-        if(!inputId || !inputPhone) {
-            statusBox.innerHTML = '<span style="color:#e67e22">⚠ Please enter both Member ID and Phone.</span>';
-            return;
-        }
+        if(!id || !ph) { msg.innerText = "⚠ Please provide both credentials."; return; }
 
-        statusBox.innerHTML = "Authenticating...";
+        msg.innerHTML = "Authenticating...";
+        const found = MEM_DB.filter(m => 
+            String(m.id).toLowerCase().includes(id) && String(m.phone).toLowerCase().includes(ph)
+        );
 
-        // Filter Logic
-        const result = MEMBERS_DB.filter(member => {
-            const dbId = String(member.id || '').toLowerCase().trim();
-            const dbPhone = String(member.phone || '').toLowerCase().trim();
-            return dbId.includes(inputId) && dbPhone.includes(inputPhone);
-        });
-
-        if(result.length === 0) {
-            statusBox.innerHTML = '<span style="color:#e74c3c">❌ Verification Failed: Invalid Credentials.</span>';
+        if(!found.length) { 
+            msg.innerHTML = `<span style="color:#e74c3c">❌ Verification Failed: Invalid Credentials.</span>`; 
         } else {
-            statusBox.innerHTML = `<span style="color:var(--success)">✅ Verified! Generating Identity Card...</span>`;
-            renderCardUI(result[0]);
+            msg.innerHTML = `<span style="color:#138808">✅ Identity Verified. Generating Card...</span>`;
+            renderCard(found[0]);
         }
     }
 
-    // =========================================
-    // 4. RENDERING LOGIC
-    // =========================================
-    function renderCardUI(data) {
-        const container = document.getElementById('card-display-area');
-        const uniqueId = Date.now();
-
+    // --- RENDER ---
+    function renderCard(data) {
+        const grid = document.getElementById('tys-results');
+        
         // Data Mapping
         const fName = (data.firstname || '').trim();
         const lName = (data.lastname || '').trim();
@@ -471,141 +684,115 @@
         const memId = data.id || '000';
         const phone = data.phone || '________';
         const role = data.membership || 'Member';
-        const issueDate = formatDate(data.joined);
-        // Important: Use placeholder if no photo, add CrossOrigin for download support
-        const photo = data.photo_url || 'https://via.placeholder.com/200x250?text=PHOTO';
+        const joined = formatDate(data.joined);
+        const photoUrl = data.photo_url || 'https://via.placeholder.com/150';
+        
+        // Slug
+        let slug = fName;
+        if(lName) slug += " " + lName;
+        slug = slug.toLowerCase().replace(/[^a-z0-9]/g, '-');
+        const qrUrl = `https://www.tirangayuvasamiti.org/tiranga-yuva-members/${slug}/`;
 
-        // Slug Generation
-        let slugName = fName;
-        if (lName) slugName += " " + lName;
-        const slug = slugName.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
-        const profileUrl = `https://www.tirangayuvasamiti.org/tiranga-yuva-members/${slug}/`;
-
-        // ID Generation
-        const frontId = `card-front-${uniqueId}`;
-        const backId = `card-back-${uniqueId}`;
-        const qrDonateId = `qr-donate-${uniqueId}`;
-        const qrMemberId = `qr-member-${uniqueId}`;
-        const barcodeId = `barcode-${uniqueId}`;
-
+        const uId = Date.now();
+        
         const html = `
-        <div class="result-row">
-            <div class="column">
-                <div class="column-title">Front Side (Vertical)</div>
-                <div class="card-visual-wrapper" id="${frontId}">
+        <div class="tys-card-row">
+            <div class="tys-col">
+                <div class="tys-label">Front Side</div>
+                <div class="tys-card-wrapper" id="front-${uId}">
                     <div class="id-card-body">
                         <div class="front-header">
                             <div style="display:flex; align-items:center;">
-                                <img src="${SETTINGS.urls.logo}" class="header-logo" crossorigin="anonymous">
-                                <div class="header-text">${SETTINGS.orgName}</div>
+                                <img src="${ASSETS.logo}" class="header-logo" crossorigin="anonymous">
+                                <div class="header-title">${ASSETS.org}</div>
                             </div>
-                            <div id="${qrDonateId}" class="header-qr-box"></div>
+                            <div class="header-qr" id="qr-head-${uId}"></div>
                         </div>
-
-                        <div class="front-content">
-                            <div class="photo-box">
-                                <img src="${photo}" class="user-img" crossorigin="anonymous">
+                        <div class="front-main">
+                            <img src="${photoUrl}" class="photo-container" crossorigin="anonymous">
+                            <div class="name-display">${fullName}</div>
+                            <div class="role-badge">${role} Member</div>
+                            
+                            <div class="details-grid">
+                                <div class="d-row"><div class="d-key">FATHER'S NAME</div><div class="d-val">${father}</div></div>
+                                <div class="d-row"><div class="d-key">MEMBER ID</div><div class="d-val">TYS-${memId}</div></div>
+                                <div class="d-row"><div class="d-key">CONTACT</div><div class="d-val">${phone}</div></div>
+                                <div class="d-row"><div class="d-key">ISSUED ON</div><div class="d-val">${joined}</div></div>
                             </div>
-
-                            <div class="name-box">
-                                <div class="name-text">${fullName}</div>
-                                <div class="role-badge">${role} Member</div>
-                            </div>
-
-                            <div class="details-table">
-                                <div class="d-row"><div class="d-label">Father's Name</div><div class="d-val">${father}</div></div>
-                                <div class="d-row"><div class="d-label">Membership ID</div><div class="d-val">TYS-${memId}</div></div>
-                                <div class="d-row"><div class="d-label">Contact Number</div><div class="d-val">${phone}</div></div>
-                                <div class="d-row"><div class="d-label">Date of Issue</div><div class="d-val">${issueDate}</div></div>
-                            </div>
-
-                            <div class="barcode-container">
-                                <svg id="${barcodeId}"></svg>
-                            </div>
+                            
+                            <div class="barcode-wrapper"><svg id="bar-${uId}"></svg></div>
                         </div>
-
-                        <div class="front-footer">${SETTINGS.orgName}</div>
+                        <div class="front-footer">${ASSETS.org}</div>
                     </div>
                 </div>
             </div>
 
-            <div class="column">
-                <div class="column-title">Back Side (Vertical)</div>
-                <div class="card-visual-wrapper" id="${backId}">
+            <div class="tys-col">
+                <div class="tys-label">Back Side</div>
+                <div class="tys-card-wrapper" id="back-${uId}">
                     <div class="id-card-body">
                         <div class="back-header">OFFICIAL IDENTIFICATION</div>
-                        
-                        <div class="back-content">
-                            <img src="${SETTINGS.urls.logo}" class="back-logo" crossorigin="anonymous">
-                            <div class="back-title">${SETTINGS.orgName}</div>
+                        <div class="back-main">
+                            <img src="${ASSETS.logo}" class="back-logo" crossorigin="anonymous">
+                            <div class="back-org-title">${ASSETS.org}</div>
+                            
+                            <div class="qr-title">SCAN TO VERIFY MEMBER</div>
+                            <div class="qr-box" id="qr-back-${uId}"></div>
 
-                            <div class="qr-label">SCAN TO VERIFY MEMBER</div>
-                            <div id="${qrMemberId}" class="qr-frame"></div>
-
-                            <div class="info-list">
-                                <div class="info-item"><div class="info-icon"><i class="fa-solid fa-location-dot"></i></div><div class="info-txt">${SETTINGS.contact.address}</div></div>
-                                <div class="info-item"><div class="info-icon"><i class="fa-solid fa-phone"></i></div><div class="info-txt">${SETTINGS.contact.phone}</div></div>
-                                <div class="info-item"><div class="info-icon"><i class="fa-solid fa-envelope"></i></div><div class="info-txt">${SETTINGS.contact.email}</div></div>
-                                <div class="info-item"><div class="info-icon"><i class="fa-solid fa-globe"></i></div><div class="info-txt">${SETTINGS.contact.web}</div></div>
+                            <div class="info-box">
+                                <div class="info-row"><div class="info-icon"><i class="fa-solid fa-location-dot"></i></div><div class="info-text">${ASSETS.contact.addr}</div></div>
+                                <div class="info-row"><div class="info-icon"><i class="fa-solid fa-phone"></i></div><div class="info-text">${ASSETS.contact.ph}</div></div>
+                                <div class="info-row"><div class="info-icon"><i class="fa-solid fa-envelope"></i></div><div class="info-text">${ASSETS.contact.em}</div></div>
+                                <div class="info-row"><div class="info-icon"><i class="fa-solid fa-globe"></i></div><div class="info-text">${ASSETS.contact.wb}</div></div>
                             </div>
 
-                            <div class="terms-box">
+                            <div class="terms-section">
                                 <div class="terms-head">Terms & Conditions:</div>
                                 <div class="terms-body">
-                                    1. This card is non-transferable property of the organization.<br>
-                                    2. If found, please return to the address mentioned above.
+                                    1. This card is non-transferable property of the organization.<br>2. If found, return to the address above.
                                 </div>
                             </div>
 
-                            <div class="signatory-box">
+                            <div class="signatory-area">
                                 <div class="sign-line"></div>
-                                <div class="sign-label">AUTHORIZED SIGNATORY</div>
-                                <img src="${SETTINGS.urls.stamp}" class="stamp-img" crossorigin="anonymous">
+                                <div class="sign-text">AUTHORIZED SIGNATORY</div>
+                                <img src="${ASSETS.stamp}" class="stamp-overlay" crossorigin="anonymous">
                             </div>
                         </div>
-
                         <div class="back-footer">Together We Serve • Jai Hind</div>
                     </div>
                 </div>
             </div>
 
-            <div class="btn-container">
-                <button class="action-btn btn-print" onclick="printCard('${frontId}', '${backId}')">
-                    <i class="fa-solid fa-print" style="font-size:24px;"></i>
-                    <span>PRINT CARD</span>
+            <div class="tys-btn-group">
+                <button class="tys-tool-btn btn-print" onclick="printCards('front-${uId}', 'back-${uId}')">
+                    <i class="fa-solid fa-print" style="font-size:24px;"></i> PRINT CARD
                 </button>
-                <button class="action-btn btn-download" onclick="downloadCard('${frontId}', '${backId}', '${fullName}')">
-                    <i class="fa-solid fa-download" style="font-size:24px;"></i>
-                    <span>DOWNLOAD HIGH-RES</span>
+                <button class="tys-tool-btn btn-download" onclick="downloadImages('front-${uId}', 'back-${uId}', '${fullName}')">
+                    <i class="fa-solid fa-download" style="font-size:24px;"></i> DOWNLOAD PNG
                 </button>
             </div>
-        </div>
-        `;
+        </div>`;
 
-        container.innerHTML = html;
+        grid.innerHTML = html;
 
-        // Async Generation of Codes
+        // Async Generate Codes
         setTimeout(() => {
-            // 1. Donate QR
-            const q1 = document.getElementById(qrDonateId);
-            const qCode1 = new QRCode(q1, { text: SETTINGS.urls.donate, width: 64, height: 64, correctLevel: QRCode.CorrectLevel.L });
-            // Fix canvas to img for download compatibility
-            replaceCanvasWithImg(q1);
+            const q1 = document.getElementById(`qr-head-${uId}`);
+            new QRCode(q1, { text: ASSETS.donate, width: 64, height: 64, correctLevel: QRCode.CorrectLevel.L });
+            fixCanvas(q1);
 
-            // 2. Member QR
-            const q2 = document.getElementById(qrMemberId);
-            const qCode2 = new QRCode(q2, { text: profileUrl, width: 128, height: 128, correctLevel: QRCode.CorrectLevel.H });
-            replaceCanvasWithImg(q2);
+            const q2 = document.getElementById(`qr-back-${uId}`);
+            new QRCode(q2, { text: qrUrl, width: 128, height: 128, correctLevel: QRCode.CorrectLevel.H });
+            fixCanvas(q2);
 
-            // 3. Barcode
-            JsBarcode(`#${barcodeId}`, `TYS-${memId}`, {
-                format: "CODE128", displayValue: false, height: 30, margin: 0, width: 1.5, background: "transparent"
+            JsBarcode(`#bar-${uId}`, `TYS-${memId}`, {
+                format:"CODE128", displayValue:false, height:30, margin:0, background:"transparent", width:1.5
             });
         }, 100);
     }
 
-    // Helper: Convert QR Canvas to IMG for HTML2Canvas compatibility
-    function replaceCanvasWithImg(container) {
+    function fixCanvas(container) {
         setTimeout(() => {
             const canvas = container.querySelector('canvas');
             if(canvas) {
@@ -619,29 +806,16 @@
     }
 
     function formatDate(raw) {
-        if (!raw) return '________';
-        let dateObj;
-        if (typeof raw === 'number') { dateObj = new Date(Math.round((raw - 25569) * 86400 * 1000)); } 
-        else {
-            const str = String(raw).trim();
-            if(str.match(/^\d{4}-\d{2}-\d{2}$/)) { const parts = str.split('-'); return `${parts[2]}-${parts[1]}-${parts[0]}`; }
-            dateObj = new Date(str);
-        }
-        if (!isNaN(dateObj.getTime())) {
-            const d = String(dateObj.getDate()).padStart(2, '0');
-            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-            const y = dateObj.getFullYear();
-            return `${d}-${m}-${y}`;
-        }
-        return raw;
+        if(!raw) return '________';
+        let d = new Date(raw);
+        if(isNaN(d.getTime())) return raw;
+        return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
     }
 
-    // =========================================
-    // 5. PRINT FUNCTIONALITY (SOLVED)
-    // =========================================
-    function printCard(fId, bId) {
-        const fHtml = document.getElementById(fId).innerHTML;
-        const bHtml = document.getElementById(bId).innerHTML;
+    // --- PRINT FUNCTION (CENTERED & UNCUT) ---
+    function printCards(fid, bid) {
+        const fHtml = document.getElementById(fid).innerHTML;
+        const bHtml = document.getElementById(bid).innerHTML;
         
         const win = window.open('', '', 'width=900,height=700');
         win.document.write(`
@@ -658,50 +832,59 @@
                     page-break-after: always; 
                 }
 
-                /* REPLICATED STYLES FOR PRINT WINDOW */
                 * { box-sizing: border-box; }
-                .id-card-body { width: 54mm; height: 86mm; background: #fff; position: relative; overflow: hidden; font-family: 'Montserrat', sans-serif; color: #333; display: flex; flex-direction: column; border: 1px solid #000; box-sizing: border-box; border-radius: 3.18mm; transform: scale(1); }
-                
-                /* Front CSS */
+                /* CARD DIMENSIONS */
+                .id-card-body { 
+                    width: 54mm; height: 86mm; 
+                    background: #fff; position: relative; overflow: hidden; 
+                    border-radius: 3.18mm; font-family: 'Montserrat', sans-serif; 
+                    border: 1px solid #000; box-sizing: border-box; display: flex; flex-direction: column;
+                }
+
+                /* FRONT CSS */
                 .front-header { height: 18%; background: #002347; display: flex; align-items: center; justify-content: space-between; padding: 0 2mm 0 3mm; clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%); border-bottom: 2px solid #FF9933; position: relative; z-index: 5; }
                 .front-header:after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:#FF9933; z-index:6; }
                 .header-logo { width: 8.5mm; margin-right: 1.5mm; }
-                .header-text { font-size: 7.5pt; font-weight: 800; color: white; text-transform: uppercase; text-align: left; font-family: 'Oswald', sans-serif; line-height: 1.1; }
+                .header-title { font-size: 7.5pt; font-weight: 800; color: white; text-transform: uppercase; text-align: left; font-family: 'Oswald', sans-serif; line-height: 1.1; }
                 .header-qr-box { width: 9mm; height: 9mm; background: white; padding: 1px; display: flex; align-items: center; justify-content: center; margin-bottom: 2mm; margin-right: 1mm; }
                 .header-qr-box img { width: 100%; height: 100%; }
                 
-                .front-content { flex: 1; display: flex; flex-direction: column; align-items: center; padding-top: 2mm; padding-bottom: 6mm; background-image: linear-gradient(#f1f1f1 1px, transparent 1px), linear-gradient(90deg, #f1f1f1 1px, transparent 1px); background-size: 4mm 4mm; }
-                .photo-box { width: 21mm; height: 25mm; background: white; border-radius: 4px; margin-bottom: 2mm; border: 1px solid #ddd; }
-                .user-img { width: 100%; height: 100%; object-fit: cover; padding: 1px; border-radius: 3px; }
-                .name-text { font-size: 10pt; font-weight: 900; color: #002347; text-transform: uppercase; text-align: center; line-height: 1.1; width: 95%; margin-bottom: 1px; font-family: 'Montserrat', sans-serif; }
+                .front-main { flex: 1; display: flex; flex-direction: column; align-items: center; padding-top: 2mm; background-image: linear-gradient(#f4f4f4 1px, transparent 1px), linear-gradient(90deg, #f4f4f4 1px, transparent 1px); background-size: 4mm 4mm; padding-bottom: 6mm; }
+                .photo-container { width: 21mm; height: 25mm; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 2mm; object-fit: cover; }
+                .name-display { font-size: 10pt; font-weight: 900; color: #002347; text-transform: uppercase; text-align: center; line-height: 1.1; width: 95%; margin-bottom: 1px; }
                 .role-badge { background: #FF9933; color: white; font-size: 5pt; font-weight: 700; padding: 1.5px 8px; text-transform: uppercase; margin-bottom: 2mm; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%); }
-                .details-table { width: 90%; }
+                
+                .details-grid { width: 90%; display: flex; flex-direction: column; gap: 1px; margin-bottom: auto; }
                 .d-row { display: flex; align-items: center; margin-bottom: 1px; border-bottom: 1px solid #eee; padding: 1.5px 0; }
-                .d-label { width: 40%; font-weight: 700; color: #666; font-size: 5pt; text-transform: uppercase; }
+                .d-key { width: 40%; font-weight: 700; color: #666; font-size: 5pt; text-transform: uppercase; }
                 .d-val { width: 60%; font-weight: 800; color: #000; text-align: right; font-size: 6pt; }
-                .barcode-container { position: absolute; bottom: 6mm; left: 50%; transform: translateX(-50%); height: 8mm; width: 90%; display: flex; justify-content: center; }
-                .barcode-container svg { width: 100%; height: 100%; }
+                
+                .barcode-wrapper { position: absolute; bottom: 6mm; left: 50%; transform: translateX(-50%); height: 8mm; width: 90%; display: flex; justify-content: center; }
+                .barcode-wrapper svg { width: 100%; height: 100%; }
                 .front-footer { position: absolute; bottom: 0; width: 100%; height: 5mm; background: #002347; display: flex; align-items: center; justify-content: center; color: #FF9933; font-size: 5pt; font-weight: 800; text-transform: uppercase; border-top: 1px solid #FF9933; }
 
-                /* Back CSS */
+                /* BACK CSS */
                 .back-header { height: 12%; background: #002347; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 7.5pt; text-transform: uppercase; border-bottom: 2px solid #FF9933; }
-                .back-content { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 3mm; text-align: center; position: relative; background: #fff; }
+                .back-main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 3mm; text-align: center; position: relative; background: #fff; }
                 .back-logo { width: 16mm; margin-top: 1mm; }
-                .back-title { font-size: 8pt; font-weight: 900; color: #002347; text-transform: uppercase; margin: 1mm 0 2mm 0; width: 90%; }
-                .qr-label { font-size: 5pt; font-weight: 800; color: #FF9933; text-transform: uppercase; margin-bottom: 1px; }
-                .qr-frame { width: 14mm; height: 14mm; margin-bottom: 2mm; border: 1px solid #ccc; padding: 1px; }
-                .qr-frame img { width: 100%; height: 100%; }
-                .info-list { width: 100%; text-align: left; margin-top: 1mm; }
-                .info-item { display: flex; gap: 2mm; margin-bottom: 1.5mm; }
+                .back-org-title { font-size: 8pt; font-weight: 900; color: #002347; text-transform: uppercase; margin: 1mm 0 2mm 0; width: 90%; }
+                .qr-title { font-size: 5pt; font-weight: 800; color: #FF9933; margin-bottom: 1px; text-transform: uppercase; }
+                .qr-box { width: 14mm; height: 14mm; border: 1px solid #ddd; padding: 1px; margin-bottom: 3mm; }
+                .qr-box img { width: 100%; height: 100%; }
+                .info-box { width: 100%; text-align: left; margin-top: 1mm; }
+                .info-row { display: flex; gap: 2mm; margin-bottom: 1.5mm; }
                 .info-icon { color: #FF9933; font-size: 6pt; width: 3mm; text-align: center; }
-                .info-txt { font-size: 5pt; font-weight: 600; color: #444; flex: 1; text-align: left; }
-                .terms-box { width: 100%; margin-top: auto; margin-bottom: 12mm; }
+                .info-text { font-size: 5pt; font-weight: 600; color: #444; flex: 1; text-align: left; }
+                
+                .terms-section { width: 100%; margin-top: auto; margin-bottom: 12mm; }
                 .terms-head { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; text-align: left; }
                 .terms-body { font-size: 3.5pt; color: #666; text-align: left; line-height: 1.1; margin-top: 1px; }
-                .signatory-box { position: absolute; bottom: 6mm; right: 4mm; text-align: center; z-index: 5; }
+                
+                .signatory-area { position: absolute; bottom: 6mm; right: 4mm; text-align: center; z-index: 5; }
                 .sign-line { width: 22mm; height: 1px; background: #000; margin-bottom: 1px; }
-                .sign-label { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; }
-                .stamp-img { position: absolute; bottom: 2mm; right: 0; width: 20mm; opacity: 0.85; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
+                .sign-text { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; }
+                .stamp-overlay { position: absolute; bottom: 2mm; right: 0; width: 20mm; opacity: 0.85; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
+                
                 .back-footer { position: absolute; bottom: 0; width: 100%; height: 5mm; background: #138808; display: flex; align-items: center; justify-content: center; color: white; font-size: 4.5pt; font-weight: 600; text-transform: uppercase; }
             </style>
             </head><body>
@@ -713,28 +896,24 @@
         setTimeout(() => { win.focus(); win.print(); }, 1000);
     }
 
-    // =========================================
-    // 6. DOWNLOAD FUNCTIONALITY (HIGH RES)
-    // =========================================
-    async function downloadCard(fId, bId, name) {
-        const safeName = name.replace(/\s+/g, '_');
+    // --- DOWNLOAD FUNCTION (HIGH RES) ---
+    async function downloadImages(fid, bid, name) {
+        const cleanName = name.replace(/[^a-zA-Z0-9]/g, '_');
         const config = { scale: 4, useCORS: true, allowTaint: true, backgroundColor: null };
 
-        // Front
-        const fEl = document.querySelector(`#${fId} .id-card-body`);
+        const fEl = document.querySelector(`#${fid} .id-card-body`);
         const c1 = await html2canvas(fEl, config);
-        saveAs(c1.toDataURL("image/png"), `TYS_ID_${safeName}_FRONT.png`);
+        saveAs(c1.toDataURL("image/png"), `TYS_${cleanName}_FRONT.png`);
 
-        // Back
         setTimeout(async () => {
-            const bEl = document.querySelector(`#${bId} .id-card-body`);
+            const bEl = document.querySelector(`#${bid} .id-card-body`);
             const c2 = await html2canvas(bEl, config);
-            saveAs(c2.toDataURL("image/png"), `TYS_ID_${safeName}_BACK.png`);
+            saveAs(c2.toDataURL("image/png"), `TYS_${cleanName}_BACK.png`);
         }, 1000);
     }
 
     function saveAs(uri, filename) {
-        var link = document.createElement("a");
+        const link = document.createElement("a");
         link.download = filename;
         link.href = uri;
         document.body.appendChild(link);
