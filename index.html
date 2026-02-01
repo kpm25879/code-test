@@ -17,16 +17,16 @@
 
     /* Controls */
     #tys-app-container .controls-box {
-        background: #fff; padding: 25px; border-radius: 0; /* Square */
+        background: #fff; padding: 25px; border-radius: 12px;
         border: 1px solid #e0e0e0; width: 100%; max-width: 500px; 
         margin: 0 auto 40px auto; text-align: center;
         box-shadow: 0 10px 25px rgba(0,35,71,0.1);
     }
     #tys-app-container h2 { color: #002347; margin: 0 0 20px 0; font-size: 22px; font-weight: 800; text-transform: uppercase; }
-    #tys-app-container .input-field { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #eee; border-radius: 0; font-size: 16px; font-family: 'Poppins', sans-serif; }
+    #tys-app-container .input-field { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #eee; border-radius: 8px; font-size: 16px; font-family: 'Poppins', sans-serif; }
     #tys-app-container .btn-verify {
         background: #002347; color: white; border: none; padding: 14px 25px; 
-        border-radius: 0; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%;
+        border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%;
         transition: all 0.2s; text-decoration: none; display: inline-block;
     }
     #tys-app-container .btn-verify:hover { background: #d62d20; }
@@ -36,13 +36,13 @@
     #tys-grid { display: flex; flex-direction: column; gap: 40px; align-items: center; width: 100%; }
     .card-row {
         display: flex; flex-wrap: wrap; gap: 40px; justify-content: center;
-        background: #f4f6f8; padding: 30px; border-radius: 0;
+        background: #f4f6f8; padding: 30px; border-radius: 15px;
         border: 1px solid #e1e4e8; width: 100%;
     }
     .btn-print-wrap { width: 100%; display: flex; justify-content: center; margin-top: 20px; }
     .btn-print { 
         background: #002347; color: white; padding: 12px 25px; border: none; 
-        border-radius: 0; cursor: pointer; font-size: 16px; font-weight: 600;
+        border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 600;
         display: inline-flex; align-items: center; gap: 8px;
     }
 
@@ -50,17 +50,19 @@
     .id-card-wrapper {
         width: 85.6mm; height: 54mm;
         position: relative; margin: 0 auto;
-        border-radius: 0; /* Square */
-        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        border-radius: 3mm; box-shadow: 0 15px 35px rgba(0,0,0,0.2);
     }
 
     .id-card-inner {
         width: 85.6mm; height: 54mm;
         background-color: #ffffff;
+        /* Micro Pattern */
         background-image: radial-gradient(#002347 0.5px, transparent 0.5px), radial-gradient(#002347 0.5px, #ffffff 0.5px);
         background-size: 20px 20px; background-position: 0 0, 10px 10px; background-blend-mode: overlay;
         position: relative; overflow: hidden;
-        border: 1px solid #aaa; border-radius: 0; /* Square */
+        border: 1px solid #aaa; border-radius: 3mm;
+        /* FORCE ROUNDED CORNERS ON PRINT */
+        clip-path: inset(0 round 3mm); 
         font-family: 'Noto Sans Devanagari', sans-serif;
         display: flex; flex-direction: column; color: #000; line-height: normal;
     }
@@ -90,29 +92,20 @@
     .h-tag { 
         position: absolute; top: 0; left: 50%; transform: translateX(-50%); 
         font-size: 3.5pt; background: #d62d20; color: white; padding: 1px 8px; 
-        border-radius: 0; /* Square */
-        text-transform: uppercase; font-weight: 800; 
+        border-radius: 0 0 4px 4px; text-transform: uppercase; font-weight: 800; 
         z-index: 10;
     }
 
     /* BODY */
-    .h-body { 
-        flex: 1; display: flex; flex-direction: column; /* Changed to Column for Top/Bottom split */
-        padding: 1.5mm 3mm; 
-        position: relative; background: rgba(255,255,255,0.94); 
-    }
+    .h-body { flex: 1; display: flex; padding: 2mm 3mm; position: relative; background: rgba(255,255,255,0.94); }
     .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 35mm; opacity: 0.08; pointer-events: none; z-index: 0; filter: grayscale(100%); }
 
-    /* CONTENT ROW (Photo + Details) */
-    .h-content-row { display: flex; width: 100%; flex: 1; }
-
-    /* LEFT COLUMN: Large Photo + Signature */
-    .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+    /* LEFT COLUMN: Photo -> Signature */
+    .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%; }
     
     .h-p-box { 
-        width: 100%; height: 26mm; /* ENLARGED PHOTO */
-        background: #fff; 
-        position: relative; border: 1.5px solid #002347; border-radius: 0; /* Square */ overflow: hidden;
+        width: 19mm; height: 21mm; background: #fff; 
+        position: relative; border: 1.5px solid #002347; border-radius: 4px; overflow: hidden;
     }
     .h-p-img { width: 100%; height: 100%; object-fit: cover; }
     
@@ -121,6 +114,7 @@
         opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; 
     }
 
+    /* Signature Area */
     .h-sign-box { width: 100%; text-align: center; margin-top: 1mm; flex-shrink: 0; }
     .h-sign-img { height: 6mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
     .h-sign-lbl { 
@@ -128,7 +122,17 @@
         border-top: 0.5px solid #000; padding-top: 0.5px; display: block; width: 100%;
     }
 
-    /* RIGHT COLUMN: Details */
+    /* Barcode Area - Added Bottom Margin */
+    .h-bar-wrap { 
+        width: 100%; height: 8mm; 
+        display: flex; align-items: flex-end; justify-content: center; 
+        margin-top: auto; padding-bottom: 0.5mm;
+        margin-bottom: 1.5mm; /* GAP ADDED FROM FOOTER */
+        border-top: 0.5px dotted #ccc;
+    }
+    .h-bar-wrap svg { width: 98%; height: 100%; display: block; }
+    
+    /* RIGHT COLUMN */
     .h-right { flex: 1; padding-left: 4mm; display: flex; flex-direction: column; position: relative; }
     
     .h-row-id { 
@@ -140,16 +144,6 @@
     .h-grid { display: grid; grid-template-columns: 18mm 1fr; row-gap: 1mm; font-size: 6.2pt; }
     .hl { color: #002347; font-weight: 800; margin: 0; padding: 0; }
     .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; padding: 0; }
-
-    /* BOTTOM ROW: Barcode */
-    .h-barcode-row {
-        width: 100%; height: 8mm; /* Fixed Height for Barcode */
-        display: flex; justify-content: center; align-items: center;
-        margin-top: 1mm; padding-top: 1mm;
-        border-top: 0.5px dotted #ccc; /* Subtle separation */
-    }
-    .h-bar-wrap { width: 95%; height: 100%; display: flex; justify-content: center; }
-    .h-bar-wrap svg { width: 100%; height: 100%; }
 
     /* FOOTER */
     .h-footer { 
@@ -169,10 +163,13 @@
         border-bottom: 1px dashed #d62d20; padding-bottom: 1px; width: 95%; white-space: nowrap; overflow: hidden;
     }
 
-    .vb-qr { width: 23mm; height: 23mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 1mm; background: white; border-radius: 0; /* Square */ }
+    .vb-qr { width: 23mm; height: 23mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 1mm; background: white; border-radius: 4px; }
     .vb-qr img { width: 100%; height: 100%; display: block; }
     .vb-t { font-size: 8pt; font-weight: 800; color: #002347; margin-bottom: 1mm; text-transform: uppercase; }
-    .vb-s { font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; }
+    .vb-s { font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; flex: 1; }
+    
+    /* Added Margin to Slogan */
+    .vb-slogan { margin-top: auto; margin-bottom: 2mm; /* GAP ADDED FROM FOOTER */ font-weight:800; color:#d62d20; font-size: 6.5pt; white-space: nowrap; }
 </style>
 
 <div id="tys-app-container">
@@ -312,40 +309,33 @@
                             </div>
                             <div class="h-body">
                                 <img src="${logoUrl}" class="bg-wm" crossorigin="anonymous">
-                                
-                                <div class="h-content-row">
-                                    <div class="h-left">
-                                        <div class="h-p-box">
-                                            <img src="${photoUrl}" class="h-p-img" crossorigin="anonymous">
-                                            <img src="${stampUrl}" class="h-stamp" crossorigin="anonymous">
-                                        </div>
-                                        <div class="h-sign-box">
-                                            <img src="${signatureUrl}" class="h-sign-img" crossorigin="anonymous"> 
-                                            <span class="h-sign-lbl">(अधिकृत हस्ताक्षर)</span>
-                                        </div>
+                                <div class="h-left">
+                                    <div class="h-p-box">
+                                        <img src="${photoUrl}" class="h-p-img" crossorigin="anonymous">
+                                        <img src="${stampUrl}" class="h-stamp" crossorigin="anonymous">
                                     </div>
-                                    <div class="h-right">
-                                        <div class="h-row-id">क्रमांक: ${fullID}</div>
-                                        <div class="h-grid">
-                                            <div class="hl">नाम:</div><div class="hv" style="font-size:8pt; color:#002347;">${name}</div>
-                                            <div class="hl">पिता का नाम:</div><div class="hv">${father}</div>
-                                            <div class="hl">जन्म तिथि:</div><div class="hv">${dob}</div>
-                                            <div class="hl">पद:</div><div class="hv"><span style="background:#d62d20; color:white; padding:1px 5px; border-radius:0; display:inline-block; font-size:6pt; line-height:1.2;">${designation}</span></div>
-                                            <div class="hl">मोबाइल:</div><div class="hv">${phone}</div>
-                                            <div class="hl">पता:</div><div class="hv" style="font-size:5pt; line-height:1.2; white-space:normal;">${address}</div>
-                                            <div class="hl">वैधता:</div>
-                                            <div class="hv" style="display:flex; justify-content:space-between;">
-                                                <span>${validityDate}</span>
-                                                <span style="font-size:5.5pt; color:#d62d20; font-weight:800;">रक्त समूह: <span style="color:black;">${blood}</span></span>
-                                            </div>
-                                        </div>
+                                    <div class="h-sign-box">
+                                        <img src="${signatureUrl}" class="h-sign-img" crossorigin="anonymous"> 
+                                        <span class="h-sign-lbl">(अधिकृत हस्ताक्षर)</span>
                                     </div>
                                 </div>
-
-                                <div class="h-barcode-row">
+                                <div class="h-right">
+                                    <div class="h-row-id">क्रमांक: ${fullID}</div>
+                                    <div class="h-grid">
+                                        <div class="hl">नाम:</div><div class="hv" style="font-size:8pt; color:#002347;">${name}</div>
+                                        <div class="hl">पिता का नाम:</div><div class="hv">${father}</div>
+                                        <div class="hl">जन्म तिथि:</div><div class="hv">${dob}</div>
+                                        <div class="hl">पद:</div><div class="hv"><span style="background:#d62d20; color:white; padding:1px 5px; border-radius:3px; display:inline-block; font-size:6pt; line-height:1.2;">${designation}</span></div>
+                                        <div class="hl">मोबाइल:</div><div class="hv">${phone}</div>
+                                        <div class="hl">पता:</div><div class="hv" style="font-size:5pt; line-height:1.2; white-space:normal;">${address}</div>
+                                        <div class="hl">वैधता:</div>
+                                        <div class="hv" style="display:flex; justify-content:space-between;">
+                                            <span>${validityDate}</span>
+                                            <span style="font-size:5.5pt; color:#d62d20; font-weight:800;">रक्त समूह: <span style="color:black;">${blood}</span></span>
+                                        </div>
+                                    </div>
                                     <div class="h-bar-wrap"><svg id="bar-${safeId}"></svg></div>
                                 </div>
-
                             </div>
                             <div class="h-footer">संपर्क सूत्र: +91 90535 75169 | info@tirangayuvasamiti.org | www.tirangayuvasamiti.org</div>
                         </div>
@@ -363,7 +353,7 @@
                                 <div class="vb-t">सदस्यता सत्यापित करने के लिए स्कैन करें</div>
                                 <div id="qr-${safeId}" class="vb-qr"></div>
                                 <div class="vb-s">यह कार्ड तिरंगा युवा समिति की संपत्ति है।<br>गुम होने पर कृपया उपरोक्त पते पर लौटाएं।</div>
-                                <div style="margin-top:2mm; font-weight:800; color:#d62d20; font-size: 6.5pt; white-space: nowrap;">जय हिंद - जय भारत - जय गौ माता</div>
+                                <div class="vb-slogan">जय हिंद - जय भारत - जय गौ माता</div>
                             </div>
                             <div class="h-footer">Together We Serve • Go Raksha Dal Haryana</div>
                         </div>
@@ -381,29 +371,31 @@
         }, 100);
     }
 
-    // === PRINT LOGIC ===
+    // === UNIVERSAL PRINT LOGIC (MOBILE & DESKTOP) ===
     function tysPrintNew(fid, bid) {
         const frontHTML = document.getElementById(fid).outerHTML;
         const backHTML = document.getElementById(bid).outerHTML;
-        const win = window.open('', '_blank', 'width=900,height=800');
+        const win = window.open('', '_blank');
         
         win.document.write(`
             <!DOCTYPE html>
             <html>
             <head>
                 <title>Print ID Card</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Rozha+One&display=swap" rel="stylesheet">
                 <style>
                     @page { size: A4; margin: 10mm; }
                     html, body { margin: 0; padding: 20px; background: #fff; font-family: 'Noto Sans Devanagari', sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                     
                     .print-container { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10mm; }
-                    .cut-wrapper { border: 1px dashed #999; padding: 1px; display: inline-block; }
+                    .cut-wrapper { border: 1px dashed #999; padding: 1px; display: inline-block; page-break-inside: avoid; }
 
                     .id-card-inner { 
                         width: 85.6mm; height: 54mm; 
                         background: white; position: relative; overflow: hidden; 
-                        border: 1px solid #aaa; border-radius: 0; 
+                        border: none; border-radius: 3mm; 
+                        clip-path: inset(0 round 3mm); /* ROUNDED CORNERS */
                         display: flex; flex-direction: column; line-height: normal;
                     }
 
@@ -412,20 +404,23 @@
                     .h-titles { flex: 1; text-align: center; padding-top: 3.5mm; }
                     .h-main-title { font-family: 'Rozha One', serif; font-size: 12.5pt; color: white; line-height: 0.9; margin:0; white-space: nowrap; }
                     .h-sub-title { font-size: 5pt; font-weight: 700; color: #ffeb3b; line-height: 1.2; margin-top: 0.5mm; }
-                    .h-tag { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 3.5pt; background: #d62d20; color: white; padding: 1px 8px; border-radius: 0; text-transform: uppercase; font-weight: 800; z-index:10; }
+                    .h-tag { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 3.5pt; background: #d62d20; color: white; padding: 1px 8px; border-radius: 0 0 4px 4px; text-transform: uppercase; font-weight: 800; z-index:10; }
                     
-                    .h-body { flex: 1; display: flex; flex-direction: column; padding: 2mm 3mm; position: relative; background: rgba(255,255,255,0.94); }
+                    .h-body { flex: 1; display: flex; padding: 2mm 3mm; position: relative; background: rgba(255,255,255,0.94); }
                     .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 35mm; opacity: 0.08; z-index: 0; }
                     
-                    .h-content-row { display: flex; width: 100%; flex: 1; }
                     .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
-                    .h-p-box { width: 19mm; height: 21mm; background: #fff; position: relative; border: 1.5px solid #002347; border-radius: 0; overflow: hidden; }
+                    .h-p-box { width: 19mm; height: 21mm; background: #fff; position: relative; border: 1.5px solid #002347; border-radius: 4px; overflow: hidden; }
                     .h-p-img { width: 100%; height: 100%; object-fit: cover; }
                     .h-stamp { position: absolute; bottom: 0; right: 0; width: 14mm; opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
                     
                     .h-sign-box { width: 100%; text-align: center; margin-top: 1mm; flex-shrink: 0; }
-                    .h-sign-img { height: 6mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
+                    .h-sign-img { height: 7mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
                     .h-sign-lbl { font-size: 3.5pt; color: #002347; font-weight: 700; border-top: 0.5px solid #000; padding-top: 0.5px; display: block; width: 100%; }
+                    
+                    /* PRINT BARCODE FIX */
+                    .h-bar-wrap { width: 100%; height: 8mm; display:flex; justify-content:center; align-items:flex-end; margin-top:auto; padding-bottom:0.5mm; margin-bottom: 1.5mm; border-top: 0.5px dotted #ccc; } 
+                    .h-bar-wrap svg { width:98%; height:100%; }
                     
                     .h-right { flex: 1; padding-left: 4mm; display: flex; flex-direction: column; position: relative; }
                     .h-row-id { font-size: 9pt; font-weight: 800; color: #d62d20; border-bottom: 1px dashed #002347; margin-bottom: 1.5mm; padding-bottom: 0.5mm; display: block; width: 100%; text-align: center; }
@@ -433,16 +428,16 @@
                     .h-grid { display: grid; grid-template-columns: 18mm 1fr; row-gap: 1mm; font-size: 6.2pt; }
                     .hl { color: #002347; font-weight: 800; } .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; }
                     
-                    .h-barcode-row { width: 100%; height: 8mm; display: flex; justify-content: center; align-items: center; margin-top: 1mm; border-top: 0.5px dotted #ccc; }
-                    .h-bar-wrap { width: 95%; height: 100%; display:flex; justify-content:center; } .h-bar-wrap svg { width:100%; height:100%; }
-                    
                     .h-footer { height: 4mm; background: #002347; color: white; display: flex; align-items: center; justify-content: center; font-size: 3pt; font-weight: 600; text-align: center; line-height: 1.1; border-top: 1px solid #d62d20; white-space: nowrap; }
                     
                     .h-header-back-title { margin-top: 2mm; color: white; font-family: 'Noto Sans Devanagari'; font-size: 10pt; font-weight: 700; }
-                    .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 3mm; text-align: center; }
-                    .vb-qr { width: 23mm; height: 23mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 1mm; border-radius: 0; } .vb-qr img { width: 100%; height: 100%; }
+                    .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 2mm 3mm; text-align: center; }
+                    .vb-qr { width: 23mm; height: 23mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 1mm; border-radius: 4px; } .vb-qr img { width: 100%; height: 100%; }
                     .vb-t { font-size: 8pt; font-weight: 800; color: #002347; margin-bottom: 1mm; text-transform: uppercase; }
-                    .vb-s { font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; }
+                    
+                    /* PRINT SPACING FIXES */
+                    .vb-s { font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; flex:1; }
+                    .vb-slogan { margin-top: auto; margin-bottom: 2mm; font-weight:800; color:#d62d20; font-size: 6.5pt; white-space: nowrap; }
                     .vb-contact { margin-bottom: 1.5mm; font-size: 4pt; color: #002347; font-weight: 800; border-bottom: 1px dashed #d62d20; padding-bottom: 1px; width: 95%; white-space: nowrap; overflow: hidden; }
                 </style>
             </head>
