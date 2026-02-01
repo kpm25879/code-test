@@ -97,12 +97,13 @@
     .h-body { flex: 1; display: flex; padding: 2mm 3mm; position: relative; background: rgba(255,255,255,0.94); }
     .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 35mm; opacity: 0.08; pointer-events: none; z-index: 0; filter: grayscale(100%); }
 
-    /* LEFT COLUMN */
-    .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+    /* LEFT COLUMN: Photo -> Signature -> Barcode */
+    .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%; }
     
     .h-p-box { 
         width: 19mm; height: 23mm; background: #fff; 
         position: relative; border: 1.5px solid #002347; border-radius: 4px; overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
     }
     .h-p-img { width: 100%; height: 100%; object-fit: cover; }
     
@@ -111,17 +112,20 @@
         opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; 
     }
 
-    /* SIGNATURE AREA (MOVED UP) */
-    .h-sign-box { width: 100%; text-align: center; margin-top: 1mm; margin-bottom: 0.5mm; }
+    /* Signature (Middle) */
+    .h-sign-box { width: 100%; text-align: center; margin-top: 1mm; margin-bottom: 0.5mm; flex-shrink: 0; }
     .h-sign-img { height: 5mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
     .h-sign-lbl { 
         font-size: 3.5pt; color: #002347; font-weight: 700; 
         border-top: 0.5px solid #000; padding-top: 0.5px; display: block; width: 100%;
     }
 
-    /* BARCODE AREA (MOVED DOWN) */
-    .h-bar-wrap { width: 100%; height: 6mm; display: flex; justify-content: center; overflow:hidden; }
-    .h-bar-wrap svg { width: 100%; height: 100%; }
+    /* Barcode (Bottom) - MAXIMIZED FOR SCANNING */
+    .h-bar-wrap { 
+        width: 100%; flex: 1; display: flex; align-items: flex-end; justify-content: center; 
+        padding-bottom: 0; margin-top: auto; 
+    }
+    .h-bar-wrap svg { width: 100%; height: 8mm; /* Taller Barcode */ }
     
     /* RIGHT COLUMN */
     .h-right { flex: 1; padding-left: 4mm; display: flex; flex-direction: column; position: relative; }
@@ -145,21 +149,19 @@
     }
 
     /* BACK SIDE */
-    .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 3mm; text-align: center; background: rgba(255,255,255,0.95); position: relative; }
+    .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 2mm; text-align: center; background: rgba(255,255,255,0.95); }
     .h-header-back-title { margin-top: 2mm; color: white; font-family: 'Noto Sans Devanagari'; font-size: 10pt; font-weight: 700; }
     
-    .vb-qr { width: 25mm; height: 25mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 2mm; background: white; border-radius: 4px; }
-    .vb-qr img { width: 100%; height: 100%; display: block; }
-    .vb-t { font-size: 8pt; font-weight: 800; color: #002347; margin-bottom: 1mm; text-transform: uppercase; }
-    .vb-s { font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; }
-    
-    /* Back Contact Info (New Position) */
+    /* Back Contact - MOVED TO TOP OF BODY */
     .vb-contact {
-        margin-top: 2mm;
-        font-size: 3.5pt; color: #002347; font-weight: 700; 
-        border-top: 1px dashed #d62d20; padding-top: 1px;
-        width: 90%; white-space: nowrap; overflow: hidden;
+        margin-bottom: 1.5mm; font-size: 4pt; color: #002347; font-weight: 800; 
+        border-bottom: 1px dashed #d62d20; padding-bottom: 1px; width: 95%; white-space: nowrap; overflow: hidden;
     }
+
+    .vb-qr { width: 23mm; height: 23mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 1mm; background: white; border-radius: 4px; }
+    .vb-qr img { width: 100%; height: 100%; display: block; }
+    .vb-t { font-size: 7.5pt; font-weight: 800; color: #002347; margin-bottom: 0.5mm; text-transform: uppercase; }
+    .vb-s { font-size: 5pt; color: #444; width: 90%; font-weight: 600; line-height: 1.2; }
 </style>
 
 <div id="tys-app-container">
@@ -339,11 +341,11 @@
                                 <div class="h-header-back-title">सत्यापन और नियम</div>
                             </div>
                             <div class="h-body vb-c">
+                                <div class="vb-contact">संपर्क सूत्र: +91 90535 75169 | info@tirangayuvasamiti.org | www.tirangayuvasamiti.org</div>
                                 <div class="vb-t">सदस्यता सत्यापित करने के लिए स्कैन करें</div>
                                 <div id="qr-${safeId}" class="vb-qr"></div>
                                 <div class="vb-s">यह कार्ड तिरंगा युवा समिति की संपत्ति है।<br>गुम होने पर कृपया उपरोक्त पते पर लौटाएं।</div>
-                                <div style="margin-top:2mm; font-weight:800; color:#d62d20; font-size: 6.5pt; white-space: nowrap;">जय हिंद - जय भारत - जय गौ माता</div>
-                                <div class="vb-contact">संपर्क सूत्र: +91 90535 75169 | info@tirangayuvasamiti.org | www.tirangayuvasamiti.org</div>
+                                <div style="margin-top:1.5mm; font-weight:800; color:#d62d20; font-size: 6.5pt; white-space: nowrap;">जय हिंद - जय भारत - जय गौ माता</div>
                             </div>
                             <div class="h-footer">Together We Serve • Go Raksha Dal Haryana</div>
                         </div>
@@ -356,7 +358,7 @@
         `;
 
         setTimeout(() => {
-            JsBarcode(`#bar-${safeId}`, fullID, { format: "CODE128", displayValue: false, height: 25, width: 1.0, margin: 0, background: "transparent" });
+            JsBarcode(`#bar-${safeId}`, fullID, { format: "CODE128", displayValue: false, height: 35, width: 1.2, margin: 0, background: "transparent" });
             new QRCode(document.getElementById(`qr-${safeId}`), { text: qrText, width: 90, height: 90, correctLevel: QRCode.CorrectLevel.M });
         }, 100);
     }
@@ -377,17 +379,13 @@
                     @page { size: A4; margin: 10mm; }
                     html, body { margin: 0; padding: 20px; background: #fff; font-family: 'Noto Sans Devanagari', sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                     
-                    /* Forces Page Break between Front and Back */
-                    .print-page-wrapper {
-                        page-break-after: always;
-                        display: flex; justify-content: center; align-items: center;
-                        padding: 10mm;
-                    }
+                    .print-container { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10mm; }
+                    .cut-wrapper { border: 1px dashed #999; padding: 1px; display: inline-block; }
 
                     .id-card-inner { 
                         width: 85.6mm; height: 54mm; 
                         background: white; position: relative; overflow: hidden; 
-                        border: 1px solid #aaa; border-radius: 3mm !important; /* Force Rounded */
+                        border: none; border-radius: 3mm; 
                         display: flex; flex-direction: column; line-height: normal;
                     }
 
@@ -406,12 +404,11 @@
                     .h-p-img { width: 100%; height: 100%; object-fit: cover; }
                     .h-stamp { position: absolute; bottom: 0; right: 0; width: 14mm; opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
                     
-                    /* Swapped Positions */
-                    .h-sign-box { width: 100%; text-align: center; margin-top: 1mm; margin-bottom: 0.5mm; }
+                    .h-sign-box { width: 100%; text-align: center; margin-top: 1mm; margin-bottom: 0.5mm; flex-shrink:0; }
                     .h-sign-img { height: 5mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
                     .h-sign-lbl { font-size: 3.5pt; color: #002347; font-weight: 700; border-top: 0.5px solid #000; padding-top: 0.5px; display: block; width: 100%; }
                     
-                    .h-bar-wrap { width: 100%; height: 6mm; display:flex; justify-content:center; overflow:hidden; } .h-bar-wrap svg { width:100%; height:100%; }
+                    .h-bar-wrap { width: 100%; height: 8mm; display:flex; justify-content:center; margin-top:auto; padding-bottom:0; } .h-bar-wrap svg { width:100%; height:100%; }
                     
                     .h-right { flex: 1; padding-left: 4mm; display: flex; flex-direction: column; position: relative; }
                     .h-row-id { font-size: 9pt; font-weight: 800; color: #d62d20; border-bottom: 1px dashed #002347; margin-bottom: 1.5mm; padding-bottom: 0.5mm; display: block; width: 100%; text-align: center; }
@@ -423,17 +420,17 @@
                     
                     .h-header-back-title { margin-top: 2mm; color: white; font-family: 'Noto Sans Devanagari'; font-size: 10pt; font-weight: 700; }
                     .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 3mm; text-align: center; }
-                    .vb-qr { width: 25mm; height: 25mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 2mm; border-radius: 4px; } .vb-qr img { width: 100%; height: 100%; }
-                    .vb-t { font-size: 8pt; font-weight: 800; color: #002347; margin-bottom: 1mm; text-transform: uppercase; }
+                    .vb-qr { width: 23mm; height: 23mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 1mm; border-radius: 4px; } .vb-qr img { width: 100%; height: 100%; }
+                    .vb-t { font-size: 8pt; font-weight: 800; color: #002347; margin-bottom: 0.5mm; text-transform: uppercase; }
                     .vb-s { font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; }
-                    
-                    /* Back Contact in Body */
-                    .vb-contact { margin-top: 2mm; font-size: 3.5pt; color: #002347; font-weight: 700; border-top: 1px dashed #d62d20; padding-top: 1px; width: 90%; white-space: nowrap; overflow: hidden; }
+                    .vb-contact { margin-bottom: 1.5mm; font-size: 4pt; color: #002347; font-weight: 800; border-bottom: 1px dashed #d62d20; padding-bottom: 1px; width: 95%; white-space: nowrap; overflow: hidden; }
                 </style>
             </head>
             <body>
-                <div class="print-page-wrapper">${frontHTML}</div>
-                <div class="print-page-wrapper">${backHTML}</div>
+                <div class="print-container">
+                    <div class="cut-wrapper">${frontHTML}</div>
+                    <div class="cut-wrapper">${backHTML}</div>
+                </div>
             </body>
             </html>
         `);
