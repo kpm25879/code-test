@@ -1,13 +1,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700;800&family=Rozha+One&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Rozha+One&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-    /* Scope to protect WordPress Theme */
+    /* --- WORDPRESS CONTAINER SCOPE --- */
     #tys-app-container {
         font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
         max-width: 100%;
@@ -15,197 +16,178 @@
         padding: 20px 0;
         box-sizing: border-box;
     }
-
     #tys-app-container * { box-sizing: border-box; }
 
     /* Controls UI */
     #tys-app-container .controls-box {
         background: #ffffff; 
-        padding: 30px; 
+        padding: 25px; 
         border-radius: 12px;
         border: 1px solid #e0e0e0;
         width: 100%; 
-        max-width: 450px; 
+        max-width: 500px; 
         margin: 0 auto 40px auto;
         text-align: center;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        box-shadow: 0 10px 25px rgba(0,35,71,0.1);
     }
     
     #tys-app-container h2 { 
-        color: #002347; 
-        margin: 0 0 20px 0; 
-        font-size: 22px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        color: #002347; margin: 0 0 20px 0; 
+        font-size: 22px; font-weight: 800;
+        text-transform: uppercase; letter-spacing: 0.5px;
     }
 
     #tys-app-container .input-field { 
-        width: 100%; 
-        padding: 14px; 
-        margin-bottom: 15px; 
-        border: 2px solid #eee; 
-        border-radius: 8px; 
-        font-size: 16px; 
-        transition: border 0.3s;
-        font-family: 'Poppins', sans-serif;
+        width: 100%; padding: 12px; margin-bottom: 15px; 
+        border: 2px solid #eee; border-radius: 8px; 
+        font-size: 16px; font-family: 'Poppins', sans-serif;
     }
     #tys-app-container .input-field:focus { border-color: #002347; outline: none; }
 
     #tys-app-container .btn-verify {
-        background: linear-gradient(135deg, #d62d20 0%, #b01c11 100%); 
-        color: white; 
-        border: none; 
-        padding: 14px 25px;
-        border-radius: 8px; 
-        font-size: 16px; 
-        font-weight: 700; 
-        cursor: pointer; 
-        width: 100%;
-        transition: transform 0.2s, box-shadow 0.2s;
-        text-decoration: none;
-        display: inline-block;
-        box-shadow: 0 4px 15px rgba(214, 45, 32, 0.3);
+        background: #002347; color: white; border: none; 
+        padding: 14px 25px; border-radius: 8px; 
+        font-size: 16px; font-weight: 700; cursor: pointer; width: 100%;
+        transition: all 0.2s; text-decoration: none; display: inline-block;
+        box-shadow: 0 4px 10px rgba(0,35,71,0.3);
     }
-    
-    #tys-app-container .btn-verify:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(214, 45, 32, 0.4); }
-
+    #tys-app-container .btn-verify:hover { background: #d62d20; }
     #tys-status { margin-top: 15px; font-size: 14px; color: #555; font-weight: 600; }
 
-    /* Results Grid */
+    /* Grid */
     #tys-grid { display: flex; flex-direction: column; gap: 40px; align-items: center; width: 100%; }
-    
     .card-row {
         display: flex; flex-wrap: wrap; gap: 40px; justify-content: center;
-        background: #f8f9fa; padding: 30px; border-radius: 15px;
-        border: 1px solid #eee;
-        width: 100%;
+        background: #f4f6f8; padding: 30px; border-radius: 15px;
+        border: 1px solid #e1e4e8; width: 100%;
     }
 
-    /* --- ID CARD STYLES (Fixed ISO ID-1 Size: 85.6mm x 54mm) --- */
+    /* --- PRO ID CARD STYLES (ISO 85.6mm x 54mm) --- */
     .id-card-wrapper {
         width: 85.6mm; height: 54mm;
         position: relative;
-        background: transparent;
         margin: 0 auto;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.15); /* 3D effect on preview */
         border-radius: 3mm;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
     }
 
     .id-card-inner {
         width: 85.6mm; height: 54mm;
-        background: white;
-        position: relative;
-        overflow: hidden;
-        border: 1px solid #ccc; /* Crisp border */
+        /* Subtle Pattern Background to look like Plastic Card */
+        background-color: #ffffff;
+        background-image: radial-gradient(#002347 0.5px, transparent 0.5px), radial-gradient(#002347 0.5px, #ffffff 0.5px);
+        background-size: 20px 20px;
+        background-position: 0 0, 10px 10px;
+        background-blend-mode: overlay;
+        opacity: 1;
+        
+        position: relative; overflow: hidden;
+        border: 1px solid #aaa;
         border-radius: 3mm;
-        /* PRO FONT STACK: Noto Sans Devanagari is best for Hindi visibility */
-        font-family: 'Noto Sans Devanagari', sans-serif;
+        font-family: 'Noto Sans Devanagari', sans-serif; /* FORCE HINDI FONT */
         display: flex; flex-direction: column;
         color: #000;
         line-height: normal;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        text-rendering: optimizeLegibility; /* Sharper text */
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
     }
 
-    /* Header */
+    /* --- HEADER (Blue Top, Red Bottom Strip) --- */
     .h-header { 
-        height: 14.5mm; 
-        background: #fff; 
-        border-bottom: 1.5px solid #002347; 
+        height: 15mm; 
+        background: #002347; /* Blue Background */
         display: flex; align-items: center; justify-content: space-between; 
-        padding: 0 1.5mm; 
-        position: relative; z-index: 5; 
+        padding: 0 2mm; 
+        position: relative; z-index: 5;
+        border-bottom: 2mm solid #d62d20; /* Red Strip */
     }
-    .h-logo { width: 9mm; height: auto; display: block; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1)); }
-    .h-cow { width: 11mm; height: auto; display: block; }
+    
+    .h-logo { width: 9mm; height: auto; display: block; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); }
+    .h-cow { width: 11mm; height: auto; display: block; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); border-radius: 50%; border: 1px solid white; }
     
     .h-titles { flex: 1; text-align: center; display: flex; flex-direction: column; justify-content: center; }
     
-    /* ULTRA PRO HEADER TEXT */
     .h-main-title { 
-        font-family: 'Rozha One', serif; /* Official Govt Look */
-        font-size: 13pt; /* Big and Bold */
-        color: #d62d20; /* Red */
-        line-height: 0.9; 
-        margin-top: 2px; 
+        font-family: 'Rozha One', serif; 
+        font-size: 13pt; 
+        color: #ffffff; /* White Text on Blue */
+        line-height: 0.9; margin-top: 1px; 
         white-space: nowrap; 
-        text-shadow: 0.5px 0.5px 0px rgba(0,0,0,0.05);
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
     }
     .h-sub-title { 
         font-family: 'Noto Sans Devanagari', sans-serif;
-        font-size: 5.5pt; 
-        font-weight: 700; 
-        color: #002347; /* Blue */
-        line-height: 1.2; 
-        margin-top: 0.8mm; 
+        font-size: 5.5pt; font-weight: 700; 
+        color: #ffeb3b; /* Yellow/Gold for readability on Blue */
+        line-height: 1.2; margin-top: 0.5mm; 
     }
     
+    /* "Pehchan Patra" Tag */
     .h-tag { 
-        position: absolute; top: 0.5mm; left: 50%; transform: translateX(-50%); 
-        font-size: 3.5pt; background: #002347; color: white; padding: 0.5px 5px; 
+        position: absolute; top: 0; left: 50%; transform: translateX(-50%); 
+        font-size: 3.5pt; background: #d62d20; color: white; padding: 1px 6px; 
         border-radius: 0 0 4px 4px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
 
-    /* Body */
-    .h-body { 
-        flex: 1; display: flex; 
-        padding: 2mm 3mm; 
-        position: relative; 
+    /* --- BODY --- */
+    .h-body { flex: 1; display: flex; padding: 2mm 3mm; position: relative; background: rgba(255,255,255,0.92); } /* Overlay to fade pattern */
+    .bg-wm { 
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+        width: 35mm; opacity: 0.08; pointer-events: none; z-index: 0; filter: grayscale(100%); 
     }
-    .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 35mm; opacity: 0.08; pointer-events: none; z-index: 0; filter: grayscale(100%); }
 
-    /* Left Col */
+    /* LEFT COL: Photo & Barcode */
     .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; }
     
     .h-p-box { 
         width: 20mm; height: 24mm; 
-        background: #f0f0f0; 
+        background: #fff; 
         margin-top: 0; 
         position: relative; 
-        border: 1px solid #002347; /* Pro Border */
+        border: 1.5px solid #002347; /* Blue Border */
         border-radius: 4px;
         overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
     }
     .h-p-img { width: 100%; height: 100%; object-fit: cover; display: block; }
     
+    /* Stamp Position */
     .h-stamp { 
         position: absolute; 
         bottom: -3mm; right: -3mm; 
         width: 15mm; 
-        opacity: 0.85; 
+        opacity: 0.9; 
         mix-blend-mode: multiply; 
         transform: rotate(-15deg); 
         z-index: 10; 
     }
     
+    /* Barcode Position */
     .h-bar-box { 
-        margin-top: 3mm; /* Gap below photo */
+        margin-top: 2.5mm; 
         width: 100%; height: 6mm; 
         display: flex; justify-content: center; align-items: flex-start; 
     }
     .h-bar-box svg { height: 100%; width: 100%; display: block; }
 
-    /* Right Col */
-    .h-right { flex: 1; padding-left: 3.5mm; display: flex; flex-direction: column; }
+    /* RIGHT COL: Text Data */
+    .h-right { flex: 1; padding-left: 4mm; display: flex; flex-direction: column; }
     
     .h-row-id { 
-        font-size: 5pt; font-weight: 800; color: #002347; 
-        border-bottom: 1px solid #d62d20; 
+        font-size: 5pt; font-weight: 800; color: #d62d20; 
+        border-bottom: 1px dashed #002347; 
         margin-bottom: 1.5mm; padding-bottom: 0.5mm;
         display: inline-block; width: 100%;
     }
     
     .h-grid { 
-        display: grid; grid-template-columns: 18mm 1fr; /* Adjusted label width */
-        row-gap: 1.2mm; /* Better spacing */
-        font-size: 5.8pt; 
+        display: grid; grid-template-columns: 18mm 1fr; 
+        row-gap: 1.2mm; font-size: 6pt; /* Slightly larger text */
     }
     
-    .hl { color: #d62d20; font-weight: 700; margin: 0; padding: 0; }
+    .hl { color: #002347; font-weight: 800; margin: 0; padding: 0; text-transform: uppercase; }
     .hv { 
-        color: #000; font-weight: 700; /* Bolder text for visibility */
+        color: #000; font-weight: 700; 
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
         margin: 0; padding: 0; 
     }
@@ -214,22 +196,22 @@
     .h-sign img { height: 6mm; width: auto; display: block; margin: 0 auto; opacity: 0; }
     .h-sign span { 
         font-size: 4pt; color: #002347; font-weight: 700; 
-        border-top: 0.8px solid #000; padding-top: 1px; display: block; width: 100%;
+        border-top: 1px solid #000; padding-top: 1px; display: block; width: 100%;
     }
 
-    /* Footer */
+    /* --- FOOTER --- */
     .h-footer { 
         height: 4mm; background: #002347; color: white; 
         display: flex; align-items: center; justify-content: center; 
         font-size: 3.5pt; font-weight: 700; text-align: center; line-height: 1.1; 
-        letter-spacing: 0.2px;
+        letter-spacing: 0.2px; border-top: 1px solid #d62d20;
     }
 
-    /* Back Side */
-    .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 3mm; text-align: center; }
-    .vb-qr { width: 25mm; height: 25mm; border: 1px solid #ccc; padding: 1px; margin-bottom: 2mm; display: block; background: white; }
+    /* --- BACK SIDE --- */
+    .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 3mm; text-align: center; background: rgba(255,255,255,0.95); }
+    .vb-qr { width: 25mm; height: 25mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 2mm; background: white; border-radius: 4px; }
     .vb-qr img { width: 100%; height: 100%; display: block; }
-    .vb-t { font-size: 7.5pt; font-weight: 800; color: #002347; margin-bottom: 1mm; text-transform: uppercase; }
+    .vb-t { font-size: 8pt; font-weight: 800; color: #002347; margin-bottom: 1mm; text-transform: uppercase; }
     .vb-s { font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; }
     
     .btn-print-wrap { width: 100%; display: flex; justify-content: center; margin-top: 20px; }
@@ -274,7 +256,7 @@
 
     let TYS_DATA = [];
 
-    // Safe load for WordPress
+    // Safe load
     document.addEventListener("DOMContentLoaded", function() {
         loadTysData();
     });
@@ -305,7 +287,6 @@
     function formatDate(val) {
         if (!val) return "";
         const d = new Date(val);
-        // Supports "12th Oct 1991" or standard dates
         if (isNaN(d.getTime())) return val; 
         return `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
     }
@@ -324,7 +305,7 @@
         const found = TYS_DATA.find(m => {
             const mId = String(m[FIELDS.id]||'').trim().toLowerCase();
             const mPh = String(m[FIELDS.phone]||'').trim();
-            // Allows searching by "1" for "TYS...-1"
+            // Match input "1" with "TYS...-1"
             return mId.includes(inId) && mPh.includes(inPhone);
         });
 
@@ -411,8 +392,8 @@
                     <div style="text-align:center; font-weight:bold; color:#002347; margin-bottom:5px;">BACK SIDE</div>
                     <div class="id-card-wrapper">
                         <div class="id-card-inner" id="${backId}">
-                            <div class="h-header" style="justify-content:center; background:#002347;">
-                                <div class="h-main-title" style="color:white; font-family:'Noto Sans Devanagari';">सत्यापन और नियम</div>
+                            <div class="h-header" style="justify-content:center; background:#002347; border-bottom: 2mm solid #d62d20;">
+                                <div class="h-main-title" style="color:white; font-family:'Noto Sans Devanagari'; font-size:10pt;">सत्यापन और नियम</div>
                             </div>
                             <div class="h-body vb-c">
                                 <div class="vb-t">सदस्यता सत्यापित करने के लिए स्कैन करें</div>
@@ -432,7 +413,7 @@
 
         setTimeout(() => {
             JsBarcode(`#bar-${safeId}`, fullID, { format: "CODE128", displayValue: false, height: 25, width: 1.2, margin: 0, background: "transparent" });
-            new QRCode(document.getElementById(`qr-${safeId}`), { text: qrText, width: 95, height: 95, correctLevel: QRCode.CorrectLevel.M });
+            new QRCode(document.getElementById(`qr-${safeId}`), { text: qrText, width: 90, height: 90, correctLevel: QRCode.CorrectLevel.M });
         }, 100);
     }
 
@@ -442,37 +423,46 @@
         const win = window.open('', '', 'width=900,height=600');
         win.document.write(`
             <html><head>
-            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700;800&family=Rozha+One&display=swap" rel="stylesheet">
+            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Rozha+One&display=swap" rel="stylesheet">
             <style>
                 @page { size: 85.6mm 54mm; margin: 0; }
                 body { margin: 0; padding: 0; background: white; font-family: 'Noto Sans Devanagari', sans-serif; -webkit-print-color-adjust: exact; }
                 .page-break { page-break-after: always; width: 85.6mm; height: 54mm; }
                 .id-card-inner { width: 85.6mm; height: 54mm; border: none; position: relative; overflow: hidden; display: flex; flex-direction: column; background:white; line-height: normal; }
                 
-                /* EXACT COPIES OF CSS FOR PRINT */
-                .h-header { height: 14.5mm; background: #fff; border-bottom: 1.5px solid #002347; display: flex; align-items: center; justify-content: space-between; padding: 0 1.5mm; position: relative; z-index: 5; }
-                .h-tag { position: absolute; top: 0.5mm; left: 50%; transform: translateX(-50%); font-size: 3.5pt; background: #002347; color: white; padding: 0.5px 5px; border-radius: 0 0 4px 4px; text-transform: uppercase; font-weight: 800; }
-                .h-logo { width: 9mm; } .h-cow { width: 11mm; }
+                /* COPY STYLES FOR PRINT */
+                .h-header { height: 15mm; background: #002347; display: flex; align-items: center; justify-content: space-between; padding: 0 2mm; position: relative; z-index: 5; border-bottom: 2mm solid #d62d20; }
+                .h-logo { width: 9mm; } .h-cow { width: 11mm; border-radius: 50%; border:1px solid white; }
                 .h-titles { flex: 1; text-align: center; }
-                .h-main-title { font-family: 'Rozha One', serif; font-size: 13pt; color: #d62d20; line-height: 0.9; margin-top: 2px; white-space: nowrap; }
-                .h-sub-title { font-size: 5.5pt; font-weight: 700; color: #002347; line-height: 1.2; margin-top: 0.8mm; }
-                .h-body { flex: 1; display: flex; padding: 2mm 3mm; position: relative; }
-                .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 35mm; opacity: 0.1; z-index: 0; }
+                .h-main-title { font-family: 'Rozha One', serif; font-size: 13pt; color: white; line-height: 0.9; margin-top: 1px; white-space: nowrap; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+                .h-sub-title { font-size: 5.5pt; font-weight: 700; color: #ffeb3b; line-height: 1.2; margin-top: 0.5mm; }
+                .h-tag { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 3.5pt; background: #d62d20; color: white; padding: 1px 6px; border-radius: 0 0 4px 4px; text-transform: uppercase; font-weight: 800; }
+                
+                .h-body { flex: 1; display: flex; padding: 2mm 3mm; position: relative; background: rgba(255,255,255,0.92); }
+                .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 35mm; opacity: 0.08; z-index: 0; }
+                
                 .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; }
-                .h-p-box { width: 20mm; height: 24mm; border: 1px solid #002347; position: relative; margin-top: 0; background: #f0f0f0; }
+                .h-p-box { width: 20mm; height: 24mm; background: #fff; margin-top: 0; position: relative; border: 1.5px solid #002347; border-radius: 4px; overflow:hidden; }
                 .h-p-img { width: 100%; height: 100%; object-fit: cover; }
-                .h-stamp { position: absolute; bottom: -3mm; right: -3mm; width: 15mm; opacity: 0.85; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
-                .h-bar-box { margin-top: 3mm; width: 100%; height: 6mm; display:flex; justify-content:center; align-items: flex-start; }
-                .h-right { flex: 1; padding-left: 3.5mm; display: flex; flex-direction: column; }
-                .h-row-id { font-size: 5pt; font-weight: 800; color: #002347; border-bottom: 1px solid #d62d20; margin-bottom: 1.5mm; padding-bottom: 0.5mm; display: inline-block; width: 100%; }
-                .h-grid { display: grid; grid-template-columns: 18mm 1fr; row-gap: 1.2mm; font-size: 5.8pt; }
-                .hl { color: #d62d20; font-weight: 700; } .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; }
-                .h-sign { position: absolute; bottom: 0; right: 2mm; text-align: center; } .h-sign span { font-size: 4pt; color: #002347; font-weight: 700; border-top: 0.8px solid #000; padding-top: 1px; }
-                .h-footer { height: 4mm; background: #002347; color: white; display: flex; align-items: center; justify-content: center; font-size: 3.5pt; font-weight: 700; text-align: center; line-height: 1.1; letter-spacing: 0.2px; }
+                .h-stamp { position: absolute; bottom: -3mm; right: -3mm; width: 15mm; opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
+                .h-bar-box { margin-top: 2.5mm; width: 100%; height: 6mm; display:flex; justify-content:center; align-items: flex-start; }
+                
+                .h-right { flex: 1; padding-left: 4mm; display: flex; flex-direction: column; }
+                .h-row-id { font-size: 5pt; font-weight: 800; color: #d62d20; border-bottom: 1px dashed #002347; margin-bottom: 1.5mm; padding-bottom: 0.5mm; display: inline-block; width: 100%; }
+                .h-grid { display: grid; grid-template-columns: 18mm 1fr; row-gap: 1.2mm; font-size: 6pt; }
+                .hl { color: #002347; font-weight: 800; text-transform: uppercase; } 
+                .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; }
+                
+                .h-sign { position: absolute; bottom: 0; right: 2mm; text-align: center; } 
+                .h-sign span { font-size: 4pt; color: #002347; font-weight: 700; border-top: 1px solid #000; padding-top: 1px; }
+                
+                .h-footer { height: 4mm; background: #002347; color: white; display: flex; align-items: center; justify-content: center; font-size: 3.5pt; font-weight: 700; text-align: center; line-height: 1.1; border-top: 1px solid #d62d20; }
+                
                 .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 3mm; text-align: center; }
-                .vb-qr { width: 25mm; height: 25mm; border: 1px solid #ccc; padding: 1px; margin-bottom: 2mm; }
+                .vb-qr { width: 25mm; height: 25mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 2mm; border-radius: 4px; }
                 .vb-qr img { width: 100%; height: 100%; }
-                .vb-t { font-size: 7.5pt; font-weight: 800; color: #002347; margin-bottom: 1mm; text-transform: uppercase; } .vb-s { font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; }
+                .vb-t { font-size: 8pt; font-weight: 800; color: #002347; margin-bottom: 1mm; text-transform: uppercase; } 
+                .vb-s { font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; }
             </style></head>
             <body>
                 <div class="page-break">${fHtml}</div>
