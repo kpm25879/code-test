@@ -56,7 +56,6 @@
     .id-card-inner {
         width: 85.6mm; height: 54mm;
         background-color: #ffffff;
-        /* Micro Pattern */
         background-image: radial-gradient(#002347 0.5px, transparent 0.5px), radial-gradient(#002347 0.5px, #ffffff 0.5px);
         background-size: 20px 20px; background-position: 0 0, 10px 10px; background-blend-mode: overlay;
         position: relative; overflow: hidden;
@@ -112,13 +111,19 @@
         opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; 
     }
 
-    /* Barcode Area - INCREASED SIZE */
     .h-bar-wrap { width: 100%; height: 8mm; display: flex; justify-content: center; margin-top: 1mm; }
     .h-bar-wrap svg { width: 100%; height: 100%; }
     
-    /* Signature Area */
-    .h-sign-box { width: 100%; text-align: center; margin-top: 0.5mm; }
-    .h-sign-img { height: 6mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
+    /* SIGNATURE FIX: Ensure it stays inside */
+    .h-sign-box { 
+        width: 100%; text-align: center; margin-top: 0.5mm; 
+        overflow: hidden; /* Prevent spillover */
+    }
+    .h-sign-img { 
+        height: 5mm; /* Reduced slightly to fit safely */
+        width: auto; max-width: 100%; 
+        display: block; margin: 0 auto; mix-blend-mode: multiply; 
+    }
     .h-sign-lbl { 
         font-size: 3.5pt; color: #002347; font-weight: 700; 
         border-top: 0.5px solid #000; padding-top: 0.5px; display: block; width: 100%;
@@ -172,7 +177,6 @@
 <script>
     // === CONFIGURATION ===
     const EXCEL_URL = "https://docs.google.com/spreadsheets/d/1ehEiwGskDIHwUHJMSWrbjpSsaA8fTSkJ6hfuFLV3jhI/export?format=csv";
-    
     const SIGN_URL = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj72nNAiChUf9ROOPiYDrwg4RSatVygGQEt7yW1lOmQosfBW9MB2V3qZAcYcOHH-0bAb_2QBZSUsL_9xdVIdpZdvVOha0czW1ssESptg8Mg3X6W8K1DuyPio_oh6X4DdNH2xUhRc2fX1AkpJh2RuPYl5b0a16nYSTgGrkQnKuwYvz3lsQ/s1600/Lokesh%20Stamp.jpg";
 
     const ASSETS = {
@@ -349,7 +353,6 @@
         `;
 
         setTimeout(() => {
-            // Increased Barcode Size
             JsBarcode(`#bar-${safeId}`, fullID, { format: "CODE128", displayValue: false, height: 35, width: 1.2, margin: 0, background: "transparent" });
             new QRCode(document.getElementById(`qr-${safeId}`), { text: qrText, width: 90, height: 90, correctLevel: QRCode.CorrectLevel.M });
         }, 100);
@@ -377,7 +380,7 @@
                     .id-card-inner { 
                         width: 85.6mm; height: 54mm; 
                         background: white; position: relative; overflow: hidden; 
-                        border: none; border-radius: 3mm; /* Ensure rounded corners */
+                        border: none; border-radius: 3mm; 
                         display: flex; flex-direction: column; line-height: normal;
                     }
 
@@ -396,11 +399,9 @@
                     .h-p-img { width: 100%; height: 100%; object-fit: cover; }
                     .h-stamp { position: absolute; bottom: 0; right: 0; width: 14mm; opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
                     
-                    /* BIGGER BARCODE FOR PRINT */
                     .h-bar-wrap { width: 100%; height: 8mm; display:flex; justify-content:center; margin-top:1mm; } .h-bar-wrap svg { width:100%; height:100%; }
-                    
                     .h-sign-box { width: 100%; text-align: center; margin-top: 0.5mm; }
-                    .h-sign-img { height: 6mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
+                    .h-sign-img { height: 5mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
                     .h-sign-lbl { font-size: 3.5pt; color: #002347; font-weight: 700; border-top: 0.5px solid #000; padding-top: 0.5px; display: block; width: 100%; }
                     
                     .h-right { flex: 1; padding-left: 4mm; display: flex; flex-direction: column; position: relative; }
