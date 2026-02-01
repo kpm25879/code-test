@@ -106,17 +106,15 @@
     }
     .h-p-img { width: 100%; height: 100%; object-fit: cover; }
     
-    /* UPDATED STAMP CSS - Visible & Not Cut */
+    /* STAMP - FIXED BOTTOM RIGHT INSIDE PHOTO */
     .h-stamp { 
         position: absolute; bottom: 0; right: 0; width: 14mm; 
         opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; 
     }
 
-    /* Barcode Area */
     .h-bar-wrap { width: 100%; height: 5mm; display: flex; justify-content: center; margin-top: 1mm; }
     .h-bar-wrap svg { width: 100%; height: 100%; }
     
-    /* Signature Area */
     .h-sign-box { width: 100%; text-align: center; margin-top: 0.5mm; }
     .h-sign-img { height: 6mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
     .h-sign-lbl { 
@@ -172,8 +170,6 @@
 <script>
     // === CONFIGURATION ===
     const EXCEL_URL = "https://docs.google.com/spreadsheets/d/1ehEiwGskDIHwUHJMSWrbjpSsaA8fTSkJ6hfuFLV3jhI/export?format=csv";
-    
-    // REPLACE THIS URL WITH YOUR SIGNATURE IMAGE
     const SIGN_URL = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj72nNAiChUf9ROOPiYDrwg4RSatVygGQEt7yW1lOmQosfBW9MB2V3qZAcYcOHH-0bAb_2QBZSUsL_9xdVIdpZdvVOha0czW1ssESptg8Mg3X6W8K1DuyPio_oh6X4DdNH2xUhRc2fX1AkpJh2RuPYl5b0a16nYSTgGrkQnKuwYvz3lsQ/s1600/Lokesh%20Stamp.jpg";
 
     const ASSETS = {
@@ -355,7 +351,7 @@
         }, 100);
     }
 
-    // === PRINT LOGIC ===
+    // === PRINT LOGIC FOR A4 EASY CUT ===
     function tysPrintNew(fid, bid) {
         const frontHTML = document.getElementById(fid).outerHTML;
         const backHTML = document.getElementById(bid).outerHTML;
@@ -368,10 +364,23 @@
                 <title>Print ID Card</title>
                 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Rozha+One&display=swap" rel="stylesheet">
                 <style>
-                    @page { size: 54mm 85.6mm; margin: 0; }
-                    html, body { margin: 0; padding: 0; background: #fff; font-family: 'Noto Sans Devanagari', sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                    @page { size: A4; margin: 10mm; }
+                    html, body { margin: 0; padding: 20px; background: #fff; font-family: 'Noto Sans Devanagari', sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                     
-                    .print-page { width: 85.6mm; height: 54mm; page-break-after: always; position: relative; overflow: hidden; }
+                    /* Print Container - Centered on A4 with Cut Lines */
+                    .print-container {
+                        width: 100%;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 10mm; /* Space between cards for cutting */
+                    }
+
+                    .cut-wrapper {
+                        border: 1px dashed #999; /* Easy to Cut Line */
+                        padding: 1px;
+                        display: inline-block;
+                    }
 
                     .id-card-inner { 
                         width: 85.6mm; height: 54mm; 
@@ -379,6 +388,7 @@
                         border: none; display: flex; flex-direction: column; line-height: normal;
                     }
 
+                    /* REPLICATE EXACT CSS CLASSES */
                     .h-header { height: 14mm; background: #002347; display: flex; align-items: center; justify-content: space-between; padding: 0 2mm; position: relative; z-index: 5; border-bottom: 1.8mm solid #d62d20; }
                     .h-logo, .h-cow { width: 9mm; height: 9mm; object-fit: contain; } .h-cow { border-radius: 50%; border: 1px solid white; }
                     .h-titles { flex: 1; text-align: center; padding-top: 3.5mm; }
@@ -407,7 +417,6 @@
                     
                     .h-footer { height: 4mm; background: #002347; color: white; display: flex; align-items: center; justify-content: center; font-size: 3pt; font-weight: 600; text-align: center; line-height: 1.1; border-top: 1px solid #d62d20; white-space: nowrap; }
                     
-                    /* Back Side */
                     .h-header-back-title { margin-top: 2mm; color: white; font-family: 'Noto Sans Devanagari'; font-size: 10pt; font-weight: 700; }
                     .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 3mm; text-align: center; }
                     .vb-qr { width: 25mm; height: 25mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 2mm; border-radius: 4px; } .vb-qr img { width: 100%; height: 100%; }
@@ -416,8 +425,10 @@
                 </style>
             </head>
             <body>
-                <div class="print-page">${frontHTML}</div>
-                <div class="print-page">${backHTML}</div>
+                <div class="print-container">
+                    <div class="cut-wrapper">${frontHTML}</div>
+                    <div class="cut-wrapper">${backHTML}</div>
+                </div>
             </body>
             </html>
         `);
