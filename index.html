@@ -1,6 +1,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -107,15 +108,22 @@
     .preview-col { display: flex; flex-direction: column; align-items: center; gap: 20px; }
     .preview-label { font-size: 12px; color: #002347; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
 
-    .print-btn {
-        background: #FF9933;
-        color: white; border: none; padding: 25px 35px;
-        border-radius: 16px; cursor: pointer; font-size: 18px; font-weight: 800;
-        display: flex; flex-direction: column; align-items: center; gap: 10px;
-        box-shadow: 5px 5px 15px rgba(0,0,0,0.2); transition: all 0.3s;
-        min-width: 160px; text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    .action-buttons {
+        display: flex; flex-direction: column; gap: 15px;
     }
+
+    .action-btn {
+        color: white; border: none; padding: 20px 25px;
+        border-radius: 16px; cursor: pointer; font-size: 16px; font-weight: 800;
+        display: flex; flex-direction: column; align-items: center; gap: 8px;
+        box-shadow: 5px 5px 15px rgba(0,0,0,0.2); transition: all 0.3s;
+        min-width: 150px; text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .print-btn { background: #FF9933; }
     .print-btn:hover { background: #e68a00; transform: translateY(-3px); }
+    
+    .dl-btn { background: #002347; }
+    .dl-btn:hover { background: #00152e; transform: translateY(-3px); }
 
     /* === ID CARD WRAPPER (54mm x 85.6mm) === */
     .id-card-wrapper { 
@@ -137,7 +145,7 @@
         font-family: 'Montserrat', sans-serif; 
         color: #333; 
         display: flex; flex-direction: column;
-        border: 2px solid #1a2a3a; 
+        border: 1px solid #ddd; 
         box-sizing: border-box; 
         border-radius: 3.18mm; 
     }
@@ -168,7 +176,7 @@
         width: 9mm; height: 9mm; 
         background: white; padding: 1px; 
         border-radius: 2px; flex-shrink: 0; 
-        margin-left: 1mm; margin-bottom: 3mm; /* Slight lift to stay within page */
+        margin-left: 1mm; margin-bottom: 3mm;
         display: flex; align-items: center; justify-content: center;
         margin-right: 1mm;
     }
@@ -177,21 +185,23 @@
     .v-body {
         flex: 1; position: relative;
         display: flex; flex-direction: column; align-items: center;
-        padding-top: 2mm; 
+        padding-top: 3mm; 
         background-image: 
             linear-gradient(#f1f1f1 1px, transparent 1px),
             linear-gradient(90deg, #f1f1f1 1px, transparent 1px);
         background-size: 4mm 4mm;
         padding-bottom: 6mm; 
+        background-color: white !important;
+        -webkit-print-color-adjust: exact;
     }
 
     .v-photo-frame {
-        width: 21mm; height: 25mm; 
+        width: 22mm; height: 26mm; 
         background: white;
         border-radius: 4px;
         position: relative; z-index: 2; margin-bottom: 2mm;
-        border: 1px solid #ddd;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        border: 1px solid #ccc;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     .v-user-photo { width: 100%; height: 100%; object-fit: cover; padding: 1px; border-radius: 3px; }
     
@@ -233,14 +243,8 @@
         border-top: 1px solid #FF9933;
     }
 
-    .v-stamp { 
-        position: absolute; top: 20mm; right: 5mm; 
-        width: 22mm; opacity: 0.8; mix-blend-mode: multiply; 
-        z-index: 10; transform: rotate(-20deg); pointer-events: none;
-    }
-
     /* === BACK SIDE === */
-    .vb-container { display: flex; flex-direction: column; height: 100%; width: 100%; position: relative; }
+    .vb-container { display: flex; flex-direction: column; height: 100%; width: 100%; position: relative; background:white; }
     
     .vb-header { 
         height: 12%; 
@@ -282,7 +286,40 @@
     .vb-icon-box { color: #FF9933; width: 3mm; font-size: 6pt; margin-top: 1px; }
     .vb-text-val { font-size: 5pt; color: #444; font-weight: 600; line-height: 1.2; text-align: left; }
 
-    .vb-terms { width: 100%; margin-top: auto; margin-bottom: 2mm; }
+    /* AUTH SECTION ON BACK */
+    .vb-auth-section {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end; /* Align to right */
+        justify-content: flex-end;
+        margin-top: auto;
+        margin-bottom: 1mm;
+        padding-right: 2mm;
+    }
+    .vb-stamp-container {
+        position: relative;
+        width: 16mm;
+        height: 16mm;
+        display: flex; align-items: center; justify-content: center;
+        margin-bottom: -2mm; /* Overlap with text slightly */
+    }
+    .vb-stamp-img {
+        width: 100%; height: auto;
+        opacity: 0.9;
+        mix-blend-mode: multiply;
+        transform: rotate(-15deg);
+    }
+    .vb-auth-title {
+        font-size: 4pt; font-weight: 800; color: #002347;
+        text-transform: uppercase; letter-spacing: 0.5px;
+        border-top: 1px solid #002347;
+        padding-top: 1px;
+        text-align: center;
+        min-width: 18mm;
+    }
+
+    .vb-terms { width: 100%; margin-bottom: 1mm; }
     .vb-terms-title { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; text-align: left; }
     .vb-terms-text { font-size: 3.5pt; color: #666; text-align: left; line-height: 1.1; margin-top: 1px; }
 
@@ -310,7 +347,7 @@
         <div class="controls">
             <div class="input-group">
                 <i class="fa-solid fa-id-card input-icon"></i>
-                <input type="text" id="inputId" class="secure-input" placeholder="Member ID (e.g. YM-101)">
+                <input type="text" id="inputId" class="secure-input" placeholder="Member ID (e.g. 101)">
             </div>
 
             <div class="input-group">
@@ -499,10 +536,9 @@
 
                             <div class="v-body">
                                 <div class="v-photo-frame">
-                                    <img src="${photo}" class="v-user-photo">
+                                    <img src="${photo}" class="v-user-photo" crossorigin="anonymous">
                                 </div>
-                                <img src="${CACHED_STAMP}" class="v-stamp">
-
+                                
                                 <div class="v-name-block">
                                     <div class="v-name-text">${fullName}</div>
                                     <div class="v-role-badge">${membershipType} Member</div>
@@ -555,10 +591,13 @@
                                             <div class="vb-icon-box"><i class="fa-solid fa-envelope"></i></div>
                                             <div class="vb-text-val">${CONFIG.contact.email}</div>
                                         </div>
-                                        <div class="vb-row-item">
-                                            <div class="vb-icon-box"><i class="fa-solid fa-globe"></i></div>
-                                            <div class="vb-text-val">${CONFIG.contact.web}</div>
+                                    </div>
+
+                                    <div class="vb-auth-section">
+                                        <div class="vb-stamp-container">
+                                            <img src="${CACHED_STAMP}" class="vb-stamp-img">
                                         </div>
+                                        <div class="vb-auth-title">Authorized Signatory</div>
                                     </div>
 
                                     <div class="vb-terms">
@@ -577,10 +616,16 @@
                     </div>
                 </div>
                  
-                <button class="print-btn" onclick="printDoubleSided('${frontId}', '${backId}')">
-                    <i class="fa-solid fa-print"></i>
-                    <span>PRINT<br>CARD</span>
-                </button>
+                <div class="action-buttons">
+                    <button class="action-btn print-btn" onclick="printDoubleSided('${frontId}', '${backId}')">
+                        <i class="fa-solid fa-print"></i>
+                        <span>PRINT<br>CARD</span>
+                    </button>
+                    <button class="action-btn dl-btn" onclick="downloadCard('${frontId}', '${backId}', '${fullName}')">
+                        <i class="fa-solid fa-download"></i>
+                        <span>DOWNLOAD<br>IMAGE</span>
+                    </button>
+                </div>
             </div>
             `;
             grid.innerHTML += html;
@@ -623,6 +668,51 @@
         return container;
     }
 
+    function downloadCard(frontId, backId, name) {
+        const frontEl = document.getElementById(frontId);
+        const backEl = document.getElementById(backId);
+        
+        // Create a temporary container to hold both side-by-side for the screenshot
+        const container = document.createElement('div');
+        container.style.display = 'flex';
+        container.style.gap = '20px';
+        container.style.padding = '20px';
+        container.style.background = '#fff';
+        container.style.position = 'absolute';
+        container.style.top = '-9999px';
+        container.style.left = '-9999px';
+        
+        // Clone nodes to not disturb the view
+        const frontClone = frontEl.cloneNode(true);
+        const backClone = backEl.cloneNode(true);
+        
+        // Fix scaling for download
+        frontClone.style.transform = 'none';
+        backClone.style.transform = 'none';
+        frontClone.style.boxShadow = 'none';
+        backClone.style.boxShadow = 'none';
+
+        container.appendChild(frontClone);
+        container.appendChild(backClone);
+        document.body.appendChild(container);
+
+        html2canvas(container, {
+            scale: 2, // High resolution
+            useCORS: true,
+            backgroundColor: "#ffffff"
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `ID-Card-${name.replace(/\s+/g, '-')}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+            document.body.removeChild(container);
+        }).catch(err => {
+            console.error("Download failed:", err);
+            alert("Could not generate image. Please check console.");
+            document.body.removeChild(container);
+        });
+    }
+
     function printDoubleSided(frontId, backId) {
         const frontHTML = document.getElementById(frontId).innerHTML;
         const backHTML = document.getElementById(backId).innerHTML;
@@ -634,11 +724,19 @@
             <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
             <style>
                 @page { size: 54mm 85.6mm; margin: 0; }
-                body { margin: 0; padding: 0; width: 54mm; height: 85.6mm; background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                .print-page { width: 54mm; height: 85.6mm; position: relative; overflow: hidden; font-family: 'Montserrat', sans-serif; page-break-after: always; display:flex; justify-content:center; align-items:center; }
-                .id-card { width: 54mm; height: 85.6mm; position: relative; background:white; display:flex; flex-direction:column; border: 1px solid #000; box-sizing: border-box; border-radius: 3.18mm; overflow: hidden; }
-                 
-                /* REPEAT CSS */
+                body { margin: 0; padding: 0; background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                
+                .print-page { 
+                    width: 54mm; height: 85.6mm; 
+                    position: relative; overflow: hidden; 
+                    font-family: 'Montserrat', sans-serif; 
+                    page-break-after: always; 
+                    display:flex; justify-content:center; align-items:center; 
+                }
+
+                /* Reuse core styles */
+                .id-card { width: 54mm; height: 85.6mm; position: relative; background:white; display:flex; flex-direction:column; border: 1px solid #ccc; box-sizing: border-box; border-radius: 3.18mm; overflow: hidden; }
+                
                 .v-header { height: 18%; background: #002347; width: 100%; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 5; padding: 0 2mm 0 3mm; clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%); border-bottom: 2px solid #FF9933; }
                 .v-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: #FF9933; z-index: 6; }
                 .v-header-left { display: flex; align-items: center; flex: 1; }
@@ -647,7 +745,7 @@
                 .v-header-qr-box { width: 9mm; height: 9mm; background: white; padding: 1px; border-radius: 2px; flex-shrink: 0; margin-left: 1mm; margin-bottom: 2mm; display: flex; align-items: center; justify-content: center; margin-right: 1mm; }
                 .v-header-qr-box img { width: 100%; height: 100%; }
 
-                .v-body { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 2mm; background-image: linear-gradient(#f1f1f1 1px, transparent 1px), linear-gradient(90deg, #f1f1f1 1px, transparent 1px); background-size: 4mm 4mm; padding-bottom: 5mm; }
+                .v-body { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 3mm; background-image: linear-gradient(#f1f1f1 1px, transparent 1px), linear-gradient(90deg, #f1f1f1 1px, transparent 1px); background-size: 4mm 4mm; padding-bottom: 5mm; -webkit-print-color-adjust: exact; }
                 .v-photo-frame { width: 21mm; height: 25mm; background: white; border-radius: 4px; position: relative; z-index: 2; margin-bottom: 2mm; border: 1px solid #ddd; }
                 .v-user-photo { width: 100%; height: 100%; object-fit: cover; padding: 1px; border-radius: 3px; }
                 
@@ -665,10 +763,9 @@
                 .v-barcode-area svg { width: 100%; height: 100%; }
 
                 .v-footer { position: absolute; bottom: 0; left: 0; height: 5mm; background: #002347; width: 100%; display: flex; align-items: center; justify-content: center; color: #FF9933; font-size: 5pt; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; z-index: 5; border-top: 1px solid #FF9933; }
-                .v-stamp { position: absolute; top: 20mm; right: 5mm; width: 22mm; opacity: 0.8; mix-blend-mode: multiply; z-index: 10; transform: rotate(-20deg); }
 
                 /* BACK */
-                .vb-container { display: flex; flex-direction: column; height: 100%; width: 100%; position: relative; }
+                .vb-container { display: flex; flex-direction: column; height: 100%; width: 100%; position: relative; background: white; -webkit-print-color-adjust: exact; }
                 .vb-header { height: 12%; background: #002347; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1px; z-index: 2; border-bottom: 2px solid #FF9933; }
                 .vb-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 4mm; text-align: center; position: relative; background: #fff; }
                 
@@ -683,7 +780,14 @@
                 .vb-row-item { display: flex; gap: 2mm; margin-bottom: 1.5mm; align-items: flex-start; }
                 .vb-icon-box { color: #FF9933; width: 3mm; font-size: 6pt; margin-top: 1px; }
                 .vb-text-val { font-size: 5pt; color: #444; font-weight: 600; line-height: 1.2; text-align: left; }
-                .vb-terms { width: 100%; margin-top: auto; margin-bottom: 2mm; }
+                
+                /* Auth Section on Back */
+                .vb-auth-section { width: 100%; display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; margin-top: auto; margin-bottom: 1mm; padding-right: 2mm; }
+                .vb-stamp-container { position: relative; width: 16mm; height: 16mm; display: flex; align-items: center; justify-content: center; margin-bottom: -2mm; }
+                .vb-stamp-img { width: 100%; height: auto; opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); }
+                .vb-auth-title { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; letter-spacing: 0.5px; border-top: 1px solid #002347; padding-top: 1px; text-align: center; min-width: 18mm; }
+
+                .vb-terms { width: 100%; margin-bottom: 1mm; }
                 .vb-terms-title { font-size: 4pt; font-weight: 800; color: #002347; text-transform: uppercase; text-align: left; }
                 .vb-terms-text { font-size: 3.5pt; color: #666; text-align: left; line-height: 1.1; margin-top: 1px; }
 
