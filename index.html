@@ -142,11 +142,6 @@
             transform: rotate(-15deg);
             z-index: 10;
         }
-
-        .h-id-no {
-            font-size: 4pt; font-weight: 700; color: #d62d20;
-            margin-top: 1mm; text-align: center; line-height: 1;
-        }
         
         .h-barcode-box {
             margin-top: auto;
@@ -217,8 +212,8 @@
 <div id="app-wrapper">
     <div class="controls">
         <h2><i class="fa-solid fa-address-card"></i> आईडी कार्ड सत्यापन</h2>
-        <input type="text" id="inputId" class="input-box" placeholder="Member ID (e.g. 101)">
-        <input type="text" id="inputPhone" class="input-box" placeholder="Phone (e.g. 9053575169)">
+        <input type="text" id="inputId" class="input-box" placeholder="Member ID (e.g. 1)">
+        <input type="text" id="inputPhone" class="input-box" placeholder="Phone (e.g. 9728765765)">
         <button class="btn-action" onclick="verifyAndGenerate()">
             <i class="fa-solid fa-check-circle"></i> Verify & Generate
         </button>
@@ -230,7 +225,6 @@
 
 <script>
     // === CONFIGURATION ===
-    // Updated with your NEW File URL
     const EXCEL_FILE_URL = "https://docs.google.com/spreadsheets/d/1ehEiwGskDIHwUHJMSWrbjpSsaA8fTSkJ6hfuFLV3jhI/export?format=csv";
     
     // Resource URLs
@@ -241,6 +235,7 @@
     };
 
     // === FIELD MAPPING ===
+    // Matches your provided Excel headers
     const FIELDS = {
         id: "id",
         first: "firstname",
@@ -284,13 +279,16 @@
     function formatDate(val) {
         if (!val) return "";
         const d = new Date(val);
-        if (isNaN(d.getTime())) return val;
+        // If the date parses as Invalid (e.g. "12th Oct"), use the raw string from Excel
+        if (isNaN(d.getTime())) return val; 
+        
+        // Otherwise format it nicely
         return `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
     }
 
     function verifyAndGenerate() {
-        const inId = document.getElementById('inputId').value.trim().toLowerCase().replace('tym-','');
-        const inPhone = document.getElementById('inputPhone').value.trim();
+        let inId = document.getElementById('inputId').value.trim().toLowerCase();
+        let inPhone = document.getElementById('inputPhone').value.trim();
         const grid = document.getElementById('grid-area');
         const status = document.getElementById('status-msg');
 
@@ -299,10 +297,13 @@
             return;
         }
 
+        // Search Logic: 
+        // 1. Matches if Excel ID *includes* the input ID (e.g. input "1" finds "TYS...-1")
+        // 2. Matches Phone exactly (or included)
         const found = ALL_DATA.find(m => {
-            const mId = String(m[FIELDS.id]||'').trim();
+            const mId = String(m[FIELDS.id]||'').trim().toLowerCase();
             const mPh = String(m[FIELDS.phone]||'').trim();
-            return mId == inId && mPh.includes(inPhone);
+            return mId.includes(inId) && mPh.includes(inPhone);
         });
 
         if (!found) {
@@ -319,8 +320,9 @@
         const grid = document.getElementById('grid-area');
         
         // --- Data Extraction ---
-        const memID = data[FIELDS.id] || "000";
-        const fullID = `TYS-HR-GRD-TYM-${memID}`;
+        // Directly use the Full ID from the sheet
+        const fullID = data[FIELDS.id] || "000"; 
+        
         const name = `${data[FIELDS.first] || ''} ${data[FIELDS.last] || ''}`.trim();
         const father = data[FIELDS.father] || "";
         const phone = data[FIELDS.phone] || "";
@@ -333,7 +335,7 @@
         // --- QR Logic ---
         let qrText = data[FIELDS.qr_data];
         if (!qrText) {
-            qrText = `https://www.tirangayuvasamiti.org/verify?id=${memID}`;
+            qrText = `https://www.tirangayuvasamiti.org/verify?id=${fullID}`;
         }
 
         // --- Images ---
@@ -342,8 +344,10 @@
         const cowUrl = getProxy(ASSETS.cow);
         const stampUrl = getProxy(ASSETS.stamp);
 
-        const frontId = `cf-${memID}`;
-        const backId = `cb-${memID}`;
+        // Sanitize ID for HTML IDs
+        const safeId = fullID.replace(/[^a-zA-Z0-9]/g, ''); 
+        const frontId = `cf-${safeId}`;
+        const backId = `cb-${safeId}`;
 
         grid.innerHTML = `
             <div class="card-preview-row">
@@ -370,7 +374,7 @@
                                         <img src="${stampUrl}" class="h-stamp-overlay" crossorigin="anonymous">
                                     </div>
                                     <div class="h-barcode-box">
-                                        <svg id="bar-${memID}"></svg>
+                                        <svg id="bar-${safeId}"></svg>
                                     </div>
                                 </div>
 
@@ -427,7 +431,7 @@
                             </div>
                             <div class="vb-body">
                                 <div class="vb-text">सदस्यता सत्यापित करने के लिए स्कैन करें</div>
-                                <div id="qr-${memID}" class="vb-qr-box"></div>
+                                <div id="qr-${safeId}" class="vb-qr-box"></div>
                                 <div class="vb-sub">
                                     यह कार्ड तिरंगा युवा समिति की संपत्ति है।<br>
                                     गुम होने पर कृपया उपरोक्त पते पर लौटाएं।
@@ -452,11 +456,11 @@
         `;
 
         setTimeout(() => {
-            JsBarcode(`#bar-${memID}`, memID, {
+            JsBarcode(`#bar-${safeId}`, fullID, {
                 format: "CODE128", displayValue: false, height: 30, width: 1.5, margin: 0, background: "transparent"
             });
 
-            const qrDiv = document.getElementById(`qr-${memID}`);
+            const qrDiv = document.getElementById(`qr-${safeId}`);
             new QRCode(qrDiv, {
                 text: qrText,
                 width: 100, height: 100,
