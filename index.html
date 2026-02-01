@@ -1,6 +1,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <script>
@@ -13,308 +13,308 @@
 </script>
 
 <style>
-    /* === GLOBAL FLUID LAYOUT === */
+    /* === GLOBAL SETUP === */
     html, body { 
-        margin: 0; 
-        padding: 0; 
-        width: 100%; 
-        overflow-x: hidden; 
-        background-color: #ffffff; 
-        -webkit-print-color-adjust: exact; 
-        print-color-adjust: exact;
+        margin: 0; padding: 0; width: 100%; overflow-x: hidden; 
+        background-color: #f4f7f6; 
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
     }
 
     #tys-wrapper {
         font-family: 'Segoe UI', sans-serif;
-        background: #ffffff;
-        padding: 0;
-        margin: 0;
-        width: 100%;
+        background: #f4f7f6;
         min-height: 100vh;
         color: #333;
-        line-height: 1.6;
         box-sizing: border-box;
     }
     #tys-wrapper * { box-sizing: border-box; }
 
-    /* === MAIN CONTAINER === */
+    /* === UI CONTAINER === */
     #tys-wrapper .app-box {
-        width: 100%;
-        max-width: 100%;
-        margin: 0;
-        background: transparent;
-        padding: 20px;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        width: 100%; max-width: 1200px; margin: 0 auto;
+        padding: 40px 20px;
+        display: flex; flex-direction: column; align-items: center;
     }
 
     #tys-wrapper h2 {
-        margin-top: 10px; color: #2c3e50; margin-bottom: 5px; text-align: center;
-        font-weight: 700; font-family: 'Montserrat', sans-serif; font-size: 26px;
-        width: 100%;
+        color: #2c3e50; margin: 0 0 10px 0; text-align: center;
+        font-weight: 800; font-family: 'Montserrat', sans-serif; font-size: 32px;
+        text-transform: uppercase; letter-spacing: -0.5px;
     }
 
-    #tys-wrapper p.desc { color: #666; margin-bottom: 25px; text-align: center; font-size: 15px; width: 100%; }
+    #tys-wrapper p.desc { color: #7f8c8d; margin-bottom: 30px; text-align: center; font-size: 16px; font-weight: 500; }
 
-    /* === SEARCH INPUTS AREA === */
+    /* === CONTROLS === */
     #tys-wrapper .controls {
-        background: #2c3e50; 
-        padding: 20px; 
-        border-radius: 8px; 
-        color: white;
-        display: flex; 
-        flex-direction: column; 
-        gap: 15px; 
+        background: white;
+        padding: 30px; 
+        border-radius: 16px; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        display: flex; flex-direction: column; gap: 20px; 
         align-items: center;
-        border-bottom: 4px solid #FF9933; /* Saffron Accent */
-        margin-bottom: 40px;
-        width: 100%; 
-        max-width: 600px;
+        border-top: 6px solid #FF9933; 
+        width: 100%; max-width: 500px;
+        margin-bottom: 50px;
     }
 
     #tys-wrapper .input-group { width: 100%; position: relative; }
-      
     #tys-wrapper .input-icon {
-        position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
-        color: #777; z-index: 2; font-size: 16px;
+        position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+        color: #FF9933; font-size: 18px; z-index: 2;
     }
 
     #tys-wrapper .secure-input {
-        width: 100%; padding: 14px 15px 14px 45px; 
-        border: none; border-radius: 4px;
-        font-size: 16px; color: #333; background: #f8f9fa; border: 2px solid transparent;
-        transition: 0.3s; height: auto;
-        -webkit-appearance: none;
+        width: 100%; padding: 16px 16px 16px 50px; 
+        border: 2px solid #eee; border-radius: 8px;
+        font-size: 16px; color: #333; background: #fdfdfd; 
+        transition: all 0.3s ease;
+        font-family: 'Montserrat', sans-serif; font-weight: 600;
     }
-    #tys-wrapper .secure-input:focus { outline: none; border-color: #FF9933; background: white; }
+    #tys-wrapper .secure-input:focus { outline: none; border-color: #FF9933; background: white; box-shadow: 0 4px 12px rgba(255, 153, 51, 0.1); }
 
     #tys-wrapper .btn-verify {
-        background: #FF9933; color: white; border: none; padding: 14px 30px;
-        border-radius: 4px; cursor: pointer; font-weight: 700; text-transform: uppercase;
-        font-size: 16px; width: 100%; transition: 0.2s; margin-top: 5px;
+        background: linear-gradient(135deg, #FF9933 0%, #FF6600 100%);
+        color: white; border: none; padding: 16px;
+        border-radius: 8px; cursor: pointer; font-weight: 800; text-transform: uppercase;
+        font-size: 16px; width: 100%; transition: all 0.3s ease; letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
     }
-    #tys-wrapper .btn-verify:hover { background: #d35400; transform: translateY(-1px); }
+    #tys-wrapper .btn-verify:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 102, 0, 0.4); }
 
     #tys-wrapper #status-msg { 
-        font-weight: 600; font-size: 14px; color: #ecf0f1; margin-top: 5px;
+        font-weight: 700; font-size: 14px; color: #95a5a6; margin-top: 5px;
         min-height: 20px; text-align: center; width: 100%;
     }
 
-    /* === RESULT GRID === */
+    /* === GRID === */
     #tys-wrapper #grid-area {
         display: flex; flex-direction: column; gap: 40px; align-items: center; width: 100%;
     }
 
     .member-row {
-        display: flex; 
-        gap: 40px; 
-        align-items: center; 
-        justify-content: center;
-        background: #fdfdfd;
-        padding: 20px; 
-        border-top: 1px solid #eee;
-        border-bottom: 1px solid #eee;
-        animation: fadeIn 0.5s ease-in-out; 
-        flex-wrap: wrap; 
-        width: 100%;
+        display: flex; gap: 50px; align-items: center; justify-content: center;
+        background: white; padding: 40px; border-radius: 20px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+        animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        flex-wrap: wrap; width: 100%;
     }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
 
-    .preview-col { display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; }
-    .preview-label { font-size: 13px; color: #999; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
+    .preview-col { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+    .preview-label { font-size: 12px; color: #aaa; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; }
 
-    /* === PRINT BUTTON === */
     .print-btn {
-        background: #138808; color: white; border: none; padding: 15px 25px;
-        border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 700;
-        display: flex; flex-direction: column; align-items: center; gap: 8px;
-        box-shadow: 0 4px 10px rgba(19, 136, 8, 0.3); transition: 0.2s;
-        height: 100%; min-height: 160px; justify-content: center; width: auto;
+        background: linear-gradient(135deg, #138808 0%, #006400 100%);
+        color: white; border: none; padding: 20px 30px;
+        border-radius: 12px; cursor: pointer; font-size: 18px; font-weight: 800;
+        display: flex; flex-direction: column; align-items: center; gap: 10px;
+        box-shadow: 0 10px 25px rgba(19, 136, 8, 0.3); transition: all 0.3s;
+        min-width: 140px;
     }
-    .print-btn:hover { background: #0e6b05; transform: scale(1.05); }
+    .print-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 35px rgba(19, 136, 8, 0.4); }
 
-    /* === ID CARD WRAPPER (VERTICAL) === */
+    /* === ID CARD CONTAINER (54mm x 85.6mm) === */
     .id-card-wrapper { 
-        width: 54mm;  /* VERTICAL WIDTH */
-        height: 85.6mm; /* VERTICAL HEIGHT */
+        width: 54mm; height: 85.6mm; 
         position: relative; 
-        box-shadow: 0 5px 15px rgba(0,0,0,0.15); 
         background: white;
+        /* THE SHADOW FOR DISPLAY ONLY */
+        box-shadow: 0 20px 50px rgba(0,0,0,0.2); 
+        border-radius: 8px; /* External radius */
         transition: transform 0.3s ease;
-        max-width: 90vw; 
     }
-     
+    .id-card-wrapper:hover { transform: scale(1.02); }
+
+    /* === INTERNAL CARD STRUCTURE === */
     .id-card { 
-        width: 54mm; 
-        height: 85.6mm; 
+        width: 54mm; height: 85.6mm; 
         background: #fff; 
         position: relative; 
         overflow: hidden; 
         font-family: 'Montserrat', sans-serif; 
         color: #333; 
-        line-height: 1; 
-        display: flex;
-        flex-direction: column;
+        display: flex; flex-direction: column;
+        /* BOUNDARY OUTLINE */
+        border: 1px solid #dcdcdc; 
+        border-radius: 8px; /* Card Rounded Corners */
     }
 
-    /* === RESPONSIVE BREAKPOINTS === */
-    @media (max-width: 992px) {
-        .member-row { flex-direction: column; gap: 40px; background: transparent; border: none; padding: 0; }
-        .print-btn { 
-            width: 100%; max-width: 100%; min-height: auto; padding: 15px;
-            flex-direction: row; justify-content: center; 
-        }
-        .print-btn i { font-size: 20px; }
-        .print-btn span br { display: none; }
-        .print-btn span:after { content: " NOW"; }
-    }
-
-    @media (max-width: 480px) {
-        #tys-wrapper .app-box { padding: 15px 10px; }
-        .controls { border-radius: 0; width: 100vw; margin-left: -10px; margin-right: -10px; border-radius: 0; }
-        .id-card-wrapper {
-            transform: scale(0.95); transform-origin: top center; margin-bottom: -5px;
-        }
-    }
-
-    @media (max-width: 380px) {
-        .id-card-wrapper {
-            transform: scale(0.90); transform-origin: top center; margin-bottom: -20px;
-        }
-        h2 { font-size: 22px !important; }
-    }
-
-    /* === CARD CSS INTERNALS (VERTICAL DESIGN) === */
-    
-    /* --- FRONT DESIGN --- */
+    /* === FRONT SIDE DESIGN === */
     .v-header {
         height: 18%;
-        background: #FF9933; /* Saffron */
+        /* 3D HEADER GRADIENT */
+        background: linear-gradient(180deg, #FF9933 0%, #FF8800 80%, #E67300 100%);
         width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        z-index: 2;
-        padding-top: 2px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        position: relative; z-index: 5;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.15); /* 3D Drop Shadow */
+        padding-top: 1mm;
     }
-    .v-header-logo { width: 8mm; height: auto; margin-bottom: 2px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); }
-    .v-org-name { font-size: 8pt; font-weight: 800; color: white; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.2); margin: 0; line-height: 1.1; text-align: center; width: 90%; }
+    .v-header-logo { width: 8mm; height: auto; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1)); margin-bottom: 1px; }
+    .v-org-name { 
+        font-size: 8pt; font-weight: 900; color: white; 
+        text-transform: uppercase; margin: 0; line-height: 1; 
+        text-align: center; width: 92%; 
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
     
     .v-body {
-        flex: 1;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        flex: 1; position: relative;
+        display: flex; flex-direction: column; align-items: center;
         padding-top: 4mm;
+        /* SUBTLE MESH BACKGROUND */
+        background-image: radial-gradient(#eee 1px, transparent 1px);
+        background-size: 5mm 5mm;
     }
-    
-    .v-watermark-big {
-        position: absolute;
-        top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        width: 40mm;
-        opacity: 0.06;
-        filter: grayscale(100%);
-        z-index: 0;
-    }
+
+    /* Side Accents */
+    .v-body::before { content:''; position: absolute; left: 0; top:0; bottom:0; width: 1mm; background: linear-gradient(to bottom, #FF9933, #ffffff, #138808); }
+    .v-body::after { content:''; position: absolute; right: 0; top:0; bottom:0; width: 1mm; background: linear-gradient(to bottom, #FF9933, #ffffff, #138808); }
 
     .v-photo-frame {
-        width: 22mm;
-        height: 26mm;
-        border: 1.5px solid #FF9933;
-        padding: 1px;
+        width: 22mm; height: 26mm;
         background: white;
         border-radius: 4px;
-        position: relative;
-        z-index: 2;
-        margin-bottom: 3mm;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        position: relative; z-index: 2; margin-bottom: 2mm;
+        /* 3D BORDER EFFECT */
+        box-shadow: 0 0 0 2px white, 0 0 0 3px #FF9933, 0 5px 10px rgba(0,0,0,0.2);
+        overflow: hidden;
     }
-    .v-user-photo { width: 100%; height: 100%; object-fit: cover; border-radius: 3px; }
+    .v-user-photo { width: 100%; height: 100%; object-fit: cover; }
     
-    .v-name-block { text-align: center; margin-bottom: 4mm; z-index: 2; width: 90%; }
-    .v-name-text { font-size: 11pt; font-weight: 800; color: #000080; text-transform: uppercase; line-height: 1.2; }
+    /* NAME & ROLE */
+    .v-name-block { text-align: center; margin-bottom: 3mm; z-index: 2; width: 85%; }
+    .v-name-text { 
+        font-size: 10pt; font-weight: 800; color: #000080; 
+        text-transform: uppercase; line-height: 1.1; margin-bottom: 1px;
+    }
     .v-role-badge { 
         background: #000080; color: white; 
-        font-size: 5pt; font-weight: 700; 
-        padding: 1.5px 6px; border-radius: 10px; 
-        display: inline-block; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px;
+        font-size: 4.5pt; font-weight: 700; 
+        padding: 2px 8px; border-radius: 50px; 
+        display: inline-block; text-transform: uppercase; letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
-    .v-details-table { width: 85%; font-size: 6.5pt; z-index: 2; margin-bottom: auto; }
-    .v-row { display: flex; margin-bottom: 2px; border-bottom: 0.5px dotted #ddd; padding-bottom: 1px; }
-    .v-row:last-child { border-bottom: none; }
-    .v-lbl { width: 40%; font-weight: 700; color: #666; }
-    .v-val { width: 60%; font-weight: 700; color: #000; text-align: right; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    /* GLASSMORPHISM DATA TABLE */
+    .v-details-table { 
+        width: 86%; z-index: 2; margin-bottom: auto; 
+        background: rgba(255,255,255,0.85); 
+        backdrop-filter: blur(2px);
+        border: 1px solid rgba(0,0,0,0.05);
+        border-radius: 6px; padding: 3px 6px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .v-row { display: flex; align-items: center; margin-bottom: 2px; border-bottom: 1px solid rgba(0,0,0,0.06); padding: 1.5px 0; }
+    .v-row:last-child { border: none; }
+    /* FULL WORD LABELS */
+    .v-lbl { 
+        width: 45%; font-weight: 700; color: #666; 
+        font-size: 5pt; text-transform: uppercase; letter-spacing: 0.2px; 
+    }
+    .v-val { 
+        width: 55%; font-weight: 700; color: #000; text-align: right; 
+        font-size: 5.5pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+    }
 
-    .v-qr-area { margin-bottom: 3mm; z-index: 2; }
-    .v-qr-box { width: 14mm; height: 14mm; padding: 1px; background: white; border: 1px solid #ccc; }
+    .v-qr-area { margin-bottom: 3mm; z-index: 2; position: relative; }
+    .v-qr-box { 
+        width: 14mm; height: 14mm; 
+        padding: 1px; background: white; 
+        border: 1px solid #ddd; border-radius: 2px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.1); 
+    }
     .v-qr-box img { width: 100%; height: 100%; }
 
     .v-footer {
         height: 6%;
-        background: #138808; /* Green */
+        /* 3D GREEN FOOTER */
+        background: linear-gradient(180deg, #138808 0%, #0D6605 100%);
         width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 5pt;
-        font-weight: 600;
-        letter-spacing: 1px;
-        text-transform: uppercase;
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 5pt; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+        box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+        z-index: 5;
     }
 
-    .v-stamp { position: absolute; top: 22mm; right: 10mm; width: 22mm; height: 11mm; transform: rotate(-25deg); opacity: 0.85; mix-blend-mode: multiply; z-index: 10; pointer-events: none; }
+    .v-stamp { position: absolute; top: 20mm; right: 6mm; width: 22mm; opacity: 0.9; mix-blend-mode: multiply; z-index: 10; transform: rotate(-20deg); pointer-events: none;}
 
-    /* --- BACK DESIGN --- */
-    .vb-container { display: flex; flex-direction: column; height: 100%; width: 100%; }
-    .vb-header { height: 12%; background: #FF9933; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 8pt; text-transform: uppercase; }
+    /* === BACK SIDE DESIGN === */
+    .vb-container { display: flex; flex-direction: column; height: 100%; width: 100%; position: relative; }
     
-    .vb-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 5mm; text-align: center; position: relative; }
+    .vb-header { 
+        height: 12%; 
+        background: linear-gradient(180deg, #FF9933, #e68a00); 
+        display: flex; align-items: center; justify-content: center; 
+        color: white; font-weight: 800; font-size: 7.5pt; 
+        text-transform: uppercase; letter-spacing: 0.5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 2;
+    }
     
-    .vb-logo-faint { width: 30mm; opacity: 0.05; margin-bottom: 5mm; filter: grayscale(100%); }
+    .vb-body { 
+        flex: 1; display: flex; flex-direction: column; align-items: center; 
+        padding: 5mm; text-align: center; position: relative; background: #fff; 
+    }
     
-    .vb-text-group { z-index: 2; width: 100%; }
-    .vb-label { font-size: 5pt; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-    .vb-ngo-name { font-size: 9pt; font-weight: 800; color: #FF9933; text-transform: uppercase; margin-bottom: 5mm; line-height: 1.2; }
+    /* FULL LOGO */
+    .vb-logo-main { 
+        width: 24mm; height: auto; 
+        margin-bottom: 4mm; margin-top: 3mm; 
+        opacity: 1.0; /* FULL VISIBILITY */
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+    }
     
-    .vb-contact-row { display: flex; align-items: flex-start; gap: 2mm; font-size: 6pt; color: #444; margin-bottom: 3mm; text-align: left; }
+    .vb-text-group { z-index: 2; width: 100%; margin-top: auto; margin-bottom: auto; }
+    .vb-label { font-size: 4.5pt; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1px; }
+    .vb-ngo-name { font-size: 8.5pt; font-weight: 900; color: #FF9933; text-transform: uppercase; margin-bottom: 4mm; line-height: 1.2; text-shadow: 0 1px 1px rgba(0,0,0,0.05); }
+    
+    .vb-contact-row { 
+        display: flex; align-items: flex-start; gap: 3mm; 
+        font-size: 6pt; color: #555; margin-bottom: 2.5mm; text-align: left; 
+        border-bottom: 1px dotted #eee; padding-bottom: 1mm;
+    }
+    .vb-contact-row:last-child { border: none; }
     .vb-icon { color: #138808; width: 4mm; text-align: center; font-size: 7pt; }
-    .vb-data { flex: 1; line-height: 1.3; }
+    .vb-data { flex: 1; line-height: 1.3; font-weight: 600; }
 
-    .vb-footer { height: auto; padding-bottom: 3mm; text-align: center; }
-    .vb-disclaimer { font-size: 4pt; color: #aaa; font-style: italic; padding: 0 4mm; margin-bottom: 2mm; }
-    .vb-strip { height: 4mm; background: #138808; width: 100%; }
+    .vb-footer { height: auto; padding-bottom: 2mm; text-align: center; z-index: 2; background: white; }
+    .vb-disclaimer { font-size: 4pt; color: #aaa; font-weight: 500; font-style: italic; padding: 0 4mm; margin-bottom: 2mm; line-height: 1.2; }
+    .vb-strip { 
+        height: 4mm; 
+        background: linear-gradient(180deg, #138808, #0B5E05); 
+        width: 100%; 
+    }
 
+    /* Responsive */
+    @media (max-width: 768px) {
+        .member-row { flex-direction: column; gap: 40px; padding: 20px; }
+        .controls { width: 100%; border-radius: 0; }
+        #tys-wrapper .app-box { padding: 10px 0; }
+        .id-card-wrapper { transform: scale(0.9); }
+    }
 </style>
 
 <div id="tys-wrapper">
     <div class="app-box">
         <h2>ID Card Verification</h2>
-        <p class="desc">System connects automatically. Enter <b>BOTH</b> details below.</p>
+        <p class="desc">Secure Database Access System</p>
 
         <div class="controls">
             <div class="input-group">
                 <i class="fa-solid fa-id-card input-icon"></i>
-                <input type="text" id="inputId" class="secure-input" placeholder="Member ID (e.g. YM-125)">
+                <input type="text" id="inputId" class="secure-input" placeholder="Enter Member ID">
             </div>
 
             <div class="input-group">
                 <i class="fa-solid fa-phone input-icon"></i>
-                <input type="text" id="inputPhone" class="secure-input" placeholder="Phone Number (e.g. 9053575169)">
+                <input type="text" id="inputPhone" class="secure-input" placeholder="Enter Phone Number">
             </div>
 
             <button class="btn-verify" onclick="verifyAndSearch()">
-                <i class="fa-solid fa-check-circle"></i> Verify & Get Card
+                <i class="fa-solid fa-shield-halved"></i> Verify Identity
             </button>
 
-            <div id="status-msg">Initializing database connection...</div>
+            <div id="status-msg">System Ready. Waiting for input...</div>
         </div>
 
         <div id="grid-area"></div>
@@ -322,7 +322,7 @@
 </div>
 
 <script>
-    // === GOOGLE SHEETS LINK ===
+    // === CONFIGURATION ===
     const EXCEL_FILE_URL = "https://docs.google.com/spreadsheets/d/1p1ynKWyRErPwczTcMkffZfQ7dhOiV9buv_gIVRK3uh0/export?format=csv&gid=85144492";
 
     const CONFIG = {
@@ -342,7 +342,7 @@
     let CACHED_STAMP = CONFIG.stampUrl;
     let ALL_MEMBERS = [];
 
-    // Preload Images
+    // Preload Logic
     function preloadImage(url, callback) {
         var xhr = new XMLHttpRequest();
         xhr.onload = function() {
@@ -366,8 +366,7 @@
         role: "membership", 
         issueDate: "joined", 
         phone: "phone",
-        photo: "photo_url", 
-        qr: "qr_code_url"
+        photo: "photo_url"
     };
 
     function formatDate(raw) {
@@ -398,24 +397,22 @@
 
     async function loadFromConfiguredUrl() {
         const msg = document.querySelector('#tys-wrapper #status-msg');
-        msg.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Establishing a secure connection to our database. Kindly wait.';
+        msg.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Connecting to Secure Server...';
 
         try {
             const response = await fetch(EXCEL_FILE_URL + "&t=" + new Date().getTime());
-            
             if (!response.ok) throw new Error("Network Error");
             const arrayBuffer = await response.arrayBuffer();
             const data = new Uint8Array(arrayBuffer);
             const wb = XLSX.read(data, {type: 'array', cellDates: true});
-            
             ALL_MEMBERS = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
             
             if(ALL_MEMBERS.length) {
-                msg.innerHTML = `✅ Database Connected. Secure Verification Ready.`;
+                msg.innerHTML = `<span style="color:#138808">✅ Connection Established. Database Loaded.</span>`;
             } else { msg.innerHTML = "Database is empty."; }
         } catch (error) {
             console.error(error);
-            msg.innerHTML = `<span style="color:#ff6b6b">❌ Failed to connect. Check internet connection.</span>`;
+            msg.innerHTML = `<span style="color:#e74c3c">❌ Connection Failed.</span>`;
         }
     }
 
@@ -426,12 +423,12 @@
         const grid = document.querySelector('#tys-wrapper #grid-area');
 
         if(!idInput || !phoneInput) {
-            msg.innerHTML = '<span style="color:#e67e22">⚠ Error: Both Member ID and Phone are required.</span>';
+            msg.innerHTML = '<span style="color:#e67e22">⚠ Please provide both credentials.</span>';
             grid.innerHTML = "";
             return;
         }
 
-        msg.innerHTML = "Verifying credentials...";
+        msg.innerHTML = "Authenticating...";
 
         const filtered = ALL_MEMBERS.filter(member => {
             const mID = String(member[FIELD.id] || '').toLowerCase().trim();
@@ -440,10 +437,10 @@
         });
 
         if(filtered.length === 0) {
-            msg.innerHTML = '<span style="color:#ff6b6b">❌ Access Denied: Invalid ID or Phone Number.</span>';
+            msg.innerHTML = '<span style="color:#e74c3c">❌ Verification Failed: Invalid Credentials.</span>';
             grid.innerHTML = "";
         } else {
-            msg.innerHTML = `✅ Verified! Found ${filtered.length} member(s).`;
+            msg.innerHTML = `✅ Identity Verified. Generating Card...`;
             drawCards(filtered);
         }
     }
@@ -464,14 +461,12 @@
             const memberPhone = row[FIELD.phone] || '_______________'; 
             const photo = row[FIELD.photo] || 'https://via.placeholder.com/150x200?text=PHOTO';
 
-            // --- QR URL LOGIC ---
+            // QR Logic
             let slugName = fName;
             if (lName) { slugName += " " + lName; } 
             else if (father) { slugName += " " + father; }
-
             const slug = slugName.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
             const finalQrUrl = `https://www.tirangayuvasamiti.org/tiranga-yuva-members/${slug}/`;
-            // --------------------
 
             const frontId = `card-front-${i}`;
             const backId = `card-back-${i}`;
@@ -481,7 +476,7 @@
             const html = `
             <div class="member-row" id="${wrapperId}">
                 <div class="preview-col">
-                    <div class="preview-label">Front Side (Vertical)</div>
+                    <div class="preview-label">Front (Vertical)</div>
                     <div class="id-card-wrapper" id="${frontId}">
                         <div class="id-card">
                             <div class="v-header">
@@ -490,8 +485,6 @@
                             </div>
 
                             <div class="v-body">
-                                <img src="${CACHED_LOGO}" class="v-watermark-big">
-                                
                                 <div class="v-photo-frame">
                                     <img src="${photo}" class="v-user-photo">
                                 </div>
@@ -503,10 +496,10 @@
                                 </div>
 
                                 <div class="v-details-table">
-                                    <div class="v-row"><div class="v-lbl">FATHER</div><div class="v-val">${fatherDisplay}</div></div>
-                                    <div class="v-row"><div class="v-lbl">ID NO.</div><div class="v-val">TYS-${memID}</div></div>
-                                    <div class="v-row"><div class="v-lbl">PHONE</div><div class="v-val">${memberPhone}</div></div>
-                                    <div class="v-row"><div class="v-lbl">ISSUED</div><div class="v-val">${issueDate}</div></div>
+                                    <div class="v-row"><div class="v-lbl">Father's Name</div><div class="v-val">${fatherDisplay}</div></div>
+                                    <div class="v-row"><div class="v-lbl">Membership ID</div><div class="v-val">TYS-${memID}</div></div>
+                                    <div class="v-row"><div class="v-lbl">Contact Number</div><div class="v-val">${memberPhone}</div></div>
+                                    <div class="v-row"><div class="v-lbl">Date of Issue</div><div class="v-val">${issueDate}</div></div>
                                 </div>
 
                                 <div class="v-qr-area">
@@ -522,15 +515,16 @@
                 </div>
 
                 <div class="preview-col">
-                    <div class="preview-label">Back Side (Vertical)</div>
+                    <div class="preview-label">Back (Vertical)</div>
                     <div class="id-card-wrapper" id="${backId}">
                         <div class="id-card">
                             <div class="vb-container">
                                 <div class="vb-header">
-                                    OFFICIAL IDENTIFICATION
+                                    Official Identification
                                 </div>
                                 <div class="vb-body">
-                                    <img src="${CACHED_LOGO}" class="vb-logo-faint">
+                                    <img src="${CACHED_LOGO}" class="vb-logo-main">
+                                    
                                     <div class="vb-text-group">
                                         <div class="vb-label">If found, please return to:</div>
                                         <div class="vb-ngo-name">${CONFIG.ngoName}</div>
@@ -563,43 +557,25 @@
                 </div>
                  
                 <button class="print-btn" onclick="printDoubleSided('${frontId}', '${backId}')">
-                    <i class="fa-solid fa-print" style="font-size:24px;"></i>
+                    <i class="fa-solid fa-print"></i>
                     <span>PRINT<br>CARD</span>
                 </button>
             </div>
             `;
             grid.innerHTML += html;
 
-            // === CRITICAL FIX: CONVERT CANVAS TO IMAGE ON LOAD ===
             setTimeout(() => { 
                 const qrDiv = document.getElementById(qrId);
-                qrDiv.innerHTML = ""; // Clear existing
-                
-                // 1. Create temporary container to hold canvas
+                qrDiv.innerHTML = ""; 
                 const tempContainer = document.createElement('div');
-                
-                // 2. Generate QR on temp container
                 new QRCode(tempContainer, { 
-                    text: finalQrUrl, 
-                    width: 128, // Generate high res
-                    height: 128, 
-                    correctLevel: QRCode.CorrectLevel.H 
+                    text: finalQrUrl, width: 128, height: 128, correctLevel: QRCode.CorrectLevel.H 
                 });
-
-                // 3. Extract the canvas
                 const canvas = tempContainer.querySelector('canvas');
                 if(canvas) {
-                    // 4. Convert to PNG Image Data URL
-                    const imgUrl = canvas.toDataURL("image/png");
-                    
-                    // 5. Create real IMG tag (Printers love IMG tags, hate Canvas)
                     const img = document.createElement('img');
-                    img.src = imgUrl;
-                    img.style.width = '100%';
-                    img.style.height = 'auto';
-                    img.style.display = 'block'; // Remove inline spacing
-                    
-                    // 6. Append Image to the Card
+                    img.src = canvas.toDataURL("image/png");
+                    img.style.width = '100%'; img.style.height = 'auto'; img.style.display = 'block';
                     qrDiv.appendChild(img);
                 }
             }, 100);
@@ -614,48 +590,60 @@
         win.document.write('<html><head><title>Print ID Card</title>');
         win.document.write(`
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-            <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+            <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
             <style>
                 @page { size: 54mm 85.6mm; margin: 0; }
                 body { margin: 0; padding: 0; background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                 .print-page { width: 54mm; height: 85.6mm; position: relative; overflow: hidden; font-family: 'Montserrat', sans-serif; page-break-after: always; }
-                .id-card { width: 100%; height: 100%; position: relative; background:white; display:flex; flex-direction:column;}
+                .id-card { width: 100%; height: 100%; position: relative; background:white; display:flex; flex-direction:column; border: 1px solid #ddd; border-radius: 8px; }
                  
-                /* REPEAT CSS FROM MAIN STYLE TO ENSURE PRINT HAS IT */
-                .v-header { height: 18%; background: #FF9933; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 2; padding-top: 2px; }
-                .v-header-logo { width: 8mm; height: auto; margin-bottom: 2px; }
-                .v-org-name { font-size: 8pt; font-weight: 800; color: white; text-transform: uppercase; margin: 0; line-height: 1.1; text-align: center; width: 90%; }
-                .v-body { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 4mm; }
-                .v-watermark-big { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40mm; opacity: 0.06; filter: grayscale(100%); z-index: 0; }
-                .v-photo-frame { width: 22mm; height: 26mm; border: 1.5px solid #FF9933; padding: 1px; background: white; border-radius: 4px; position: relative; z-index: 2; margin-bottom: 3mm; }
-                .v-user-photo { width: 100%; height: 100%; object-fit: cover; border-radius: 3px; }
-                .v-stamp { position: absolute; top: 22mm; right: 10mm; width: 22mm; height: 11mm; transform: rotate(-25deg); opacity: 0.85; mix-blend-mode: multiply; z-index: 10; }
-                .v-name-block { text-align: center; margin-bottom: 4mm; z-index: 2; width: 90%; }
-                .v-name-text { font-size: 11pt; font-weight: 800; color: #000080; text-transform: uppercase; line-height: 1.2; }
-                .v-role-badge { background: #000080; color: white; font-size: 5pt; font-weight: 700; padding: 1.5px 6px; border-radius: 10px; display: inline-block; margin-top: 2px; text-transform: uppercase; }
-                .v-details-table { width: 85%; font-size: 6.5pt; z-index: 2; margin-bottom: auto; }
-                .v-row { display: flex; margin-bottom: 2px; border-bottom: 0.5px dotted #ddd; padding-bottom: 1px; }
-                .v-lbl { width: 40%; font-weight: 700; color: #666; }
-                .v-val { width: 60%; font-weight: 700; color: #000; text-align: right; }
-                .v-qr-area { margin-bottom: 3mm; z-index: 2; }
-                .v-qr-box { width: 14mm; height: 14mm; padding: 1px; background: white; border: 1px solid #ccc; }
-                .v-qr-box img { width: 100%; height: 100%; }
-                .v-footer { height: 6%; background: #138808; width: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 5pt; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+                /* REPEAT CSS FROM MAIN STYLE */
+                .v-header { height: 18%; background: linear-gradient(180deg, #FF9933 0%, #FF8800 80%, #E67300 100%); width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 5; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding-top: 1mm; }
+                .v-header-logo { width: 8mm; height: auto; margin-bottom: 1px; }
+                .v-org-name { font-size: 8pt; font-weight: 900; color: white; text-transform: uppercase; margin: 0; line-height: 1; text-align: center; width: 92%; }
+                
+                .v-body { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 4mm; background-image: radial-gradient(#eee 1px, transparent 1px); background-size: 5mm 5mm; }
+                .v-body::before { content:''; position: absolute; left: 0; top:0; bottom:0; width: 1mm; background: linear-gradient(to bottom, #FF9933, #ffffff, #138808); }
+                .v-body::after { content:''; position: absolute; right: 0; top:0; bottom:0; width: 1mm; background: linear-gradient(to bottom, #FF9933, #ffffff, #138808); }
 
-                /* BACK SIDE PRINT CSS */
-                .vb-container { display: flex; flex-direction: column; height: 100%; width: 100%; }
-                .vb-header { height: 12%; background: #FF9933; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 8pt; text-transform: uppercase; }
-                .vb-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 5mm; text-align: center; position: relative; }
-                .vb-logo-faint { width: 30mm; opacity: 0.05; margin-bottom: 5mm; filter: grayscale(100%); }
-                .vb-text-group { z-index: 2; width: 100%; }
-                .vb-label { font-size: 5pt; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-                .vb-ngo-name { font-size: 9pt; font-weight: 800; color: #FF9933; text-transform: uppercase; margin-bottom: 5mm; line-height: 1.2; }
-                .vb-contact-row { display: flex; align-items: flex-start; gap: 2mm; font-size: 6pt; color: #444; margin-bottom: 3mm; text-align: left; }
+                .v-photo-frame { width: 22mm; height: 26mm; background: white; border-radius: 4px; position: relative; z-index: 2; margin-bottom: 2mm; box-shadow: 0 0 0 2px white, 0 0 0 3px #FF9933; overflow: hidden; }
+                .v-user-photo { width: 100%; height: 100%; object-fit: cover; }
+                
+                .v-name-block { text-align: center; margin-bottom: 3mm; z-index: 2; width: 85%; }
+                .v-name-text { font-size: 10pt; font-weight: 800; color: #000080; text-transform: uppercase; line-height: 1.1; margin-bottom: 1px; }
+                .v-role-badge { background: #000080; color: white; font-size: 4.5pt; font-weight: 700; padding: 2px 8px; border-radius: 50px; display: inline-block; text-transform: uppercase; }
+                
+                .v-details-table { width: 86%; z-index: 2; margin-bottom: auto; background: rgba(255,255,255,0.85); border: 1px solid rgba(0,0,0,0.05); border-radius: 6px; padding: 3px 6px; }
+                .v-row { display: flex; align-items: center; margin-bottom: 2px; border-bottom: 1px solid rgba(0,0,0,0.06); padding: 1.5px 0; }
+                .v-lbl { width: 45%; font-weight: 700; color: #666; font-size: 5pt; text-transform: uppercase; letter-spacing: 0.2px; }
+                .v-val { width: 55%; font-weight: 700; color: #000; text-align: right; font-size: 5.5pt; }
+                
+                .v-qr-area { margin-bottom: 3mm; z-index: 2; position: relative; }
+                .v-qr-box { width: 14mm; height: 14mm; padding: 1px; background: white; border: 1px solid #ddd; border-radius: 2px; }
+                .v-qr-box img { width: 100%; height: 100%; }
+                
+                .v-footer { height: 6%; background: linear-gradient(180deg, #138808 0%, #0D6605 100%); width: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 5pt; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; border-top: 1px solid #0b5004; z-index: 5; }
+                .v-stamp { position: absolute; top: 20mm; right: 6mm; width: 22mm; opacity: 0.9; mix-blend-mode: multiply; z-index: 10; transform: rotate(-20deg); }
+
+                /* BACK SIDE */
+                .vb-container { display: flex; flex-direction: column; height: 100%; width: 100%; position: relative; }
+                
+                .vb-header { height: 12%; background: linear-gradient(180deg, #FF9933, #e68a00); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.5px; z-index: 2; }
+                .vb-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 5mm; text-align: center; position: relative; background: #fff; }
+                
+                .vb-logo-main { width: 24mm; height: auto; margin-bottom: 4mm; margin-top: 3mm; opacity: 1.0; }
+                
+                .vb-text-group { z-index: 2; width: 100%; margin-top: auto; margin-bottom: auto; }
+                .vb-label { font-size: 4.5pt; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1px; }
+                .vb-ngo-name { font-size: 8.5pt; font-weight: 900; color: #FF9933; text-transform: uppercase; margin-bottom: 4mm; line-height: 1.2; }
+                
+                .vb-contact-row { display: flex; align-items: flex-start; gap: 3mm; font-size: 6pt; color: #555; margin-bottom: 2.5mm; text-align: left; border-bottom: 1px dotted #eee; padding-bottom: 1mm; }
                 .vb-icon { color: #138808; width: 4mm; text-align: center; font-size: 7pt; }
-                .vb-data { flex: 1; line-height: 1.3; }
-                .vb-footer { height: auto; padding-bottom: 3mm; text-align: center; }
-                .vb-disclaimer { font-size: 4pt; color: #aaa; font-style: italic; padding: 0 4mm; margin-bottom: 2mm; }
-                .vb-strip { height: 4mm; background: #138808; width: 100%; }
+                .vb-data { flex: 1; line-height: 1.3; font-weight: 600; }
+                
+                .vb-footer { height: auto; padding-bottom: 2mm; text-align: center; z-index: 2; background: white; }
+                .vb-disclaimer { font-size: 4pt; color: #aaa; font-weight: 500; font-style: italic; padding: 0 4mm; margin-bottom: 2mm; line-height: 1.2; }
+                .vb-strip { height: 4mm; background: linear-gradient(180deg, #138808, #0B5E05); width: 100%; }
             </style>
         `);
         win.document.write('</head><body>');
