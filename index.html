@@ -129,16 +129,24 @@
     .btn-download { background: #002347; }
     .btn-download:hover { background: #00152e; transform: translateY(-3px); }
 
-    /* === ID CARD WRAPPER (54mm x 85.6mm) === */
+    /* === ID CARD WRAPPER & 3D EFFECT === */
     .id-card-wrapper { 
         width: 54mm; height: 85.6mm; 
         position: relative; 
-        box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+        /* 3D Touch Shadows */
+        box-shadow: 
+            0 1px 2px rgba(0,0,0,0.07), 
+            0 2px 4px rgba(0,0,0,0.07), 
+            0 4px 8px rgba(0,0,0,0.07), 
+            0 8px 16px rgba(0,0,0,0.07),
+            0 16px 32px rgba(0,0,0,0.07), 
+            0 32px 64px rgba(0,0,0,0.07);
         background: transparent; 
         border-radius: 3.18mm; 
         transition: transform 0.3s ease;
+        transform-style: preserve-3d;
     }
-    .id-card-wrapper:hover { transform: scale(1.05); z-index: 10; }
+    .id-card-wrapper:hover { transform: scale(1.02) translateY(-5px); z-index: 10; }
 
     /* === INTERNAL CARD STRUCTURE === */
     .id-card { 
@@ -149,9 +157,16 @@
         font-family: 'Montserrat', sans-serif; 
         color: #333; 
         display: flex; flex-direction: column;
-        border: 2px solid #1a2a3a; 
+        border: 1px solid #ddd; /* Subtle border */
         box-sizing: border-box; 
         border-radius: 3.18mm; 
+    }
+    
+    /* 3D Glossy Overlay */
+    .id-card::after {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 40%);
+        pointer-events: none; z-index: 20;
     }
 
     /* === FRONT SIDE === */
@@ -167,18 +182,20 @@
     }
     .v-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: #FF9933; z-index: 6; }
 
-    .v-header-left { display: flex; align-items: center; flex: 1; }
+    .v-header-left { display: flex; align-items: center; flex: 1; overflow: hidden; }
     .v-header-logo { width: 8.5mm; height: auto; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); margin-right: 1.5mm; }
+    
+    /* HEADER TEXT FIX: Larger & One Line */
     .v-org-name { 
-        font-size: 7.5pt; font-weight: 800; color: white; 
-        text-transform: uppercase; margin: 0; line-height: 1.1; 
+        font-size: 8.5pt; font-weight: 900; color: white; 
+        text-transform: uppercase; margin: 0; line-height: 1; 
         font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;
-        text-align: left;
+        text-align: left; white-space: nowrap;
     }
 
-    /* FRONT QR BOX SIZE (Adjusted) */
+    /* FRONT QR BOX SIZE FIX: Smaller (7.5mm) */
     .v-header-qr-box { 
-        width: 10.5mm; height: 10.5mm; 
+        width: 7.5mm; height: 7.5mm; 
         background: white; padding: 1px; 
         border-radius: 2px; flex-shrink: 0; 
         margin-left: 1mm; margin-bottom: 3.5mm; 
@@ -284,18 +301,19 @@
     }
     .vb-qr-container img { width: 100%; height: 100%; }
 
+    /* Compact Info Block to make room for Terms */
     .vb-info-block { width: 100%; text-align: left; margin-top: 0; }
-    .vb-row-item { display: flex; gap: 2mm; margin-bottom: 1.2mm; align-items: flex-start; }
+    .vb-row-item { display: flex; gap: 2mm; margin-bottom: 1mm; align-items: flex-start; }
     .vb-icon-box { color: #FF9933; width: 3mm; font-size: 6pt; margin-top: 1px; }
-    .vb-text-val { font-size: 5pt; color: #444; font-weight: 600; line-height: 1.2; text-align: left; }
+    .vb-text-val { font-size: 4.8pt; color: #444; font-weight: 600; line-height: 1.2; text-align: left; }
 
-    /* SIGNATURE SECTION */
+    /* Compact Signature Section */
     .vb-sign-section {
         width: 100%; display: flex; flex-direction: column; align-items: flex-end;
         margin-top: auto; margin-bottom: 0.5mm; padding-right: 1mm;
     }
     .vb-stamp { 
-        width: 15mm; opacity: 0.8; mix-blend-mode: multiply; 
+        width: 14mm; opacity: 0.8; mix-blend-mode: multiply; 
         transform: rotate(-10deg); margin-bottom: 1px;
     }
     .vb-sign-label {
@@ -304,10 +322,10 @@
         padding-top: 1px;
     }
 
-    /* TERMS SECTION ADJUSTED */
-    .vb-terms { width: 100%; margin-bottom: 0.5mm; margin-top: 0.5mm; }
-    .vb-terms-title { font-size: 4.5pt; font-weight: 900; color: #002347; text-transform: uppercase; text-align: left; text-decoration: underline; margin-bottom: 1px; }
-    .vb-terms-text { font-size: 4.5pt; color: #444; text-align: left; line-height: 1.2; font-weight: 500; }
+    /* TERMS VISIBILITY FIX: Adjust Margins & Size */
+    .vb-terms { width: 100%; margin-bottom: 1mm; margin-top: 0.5mm; }
+    .vb-terms-title { font-size: 4pt; font-weight: 900; color: #002347; text-transform: uppercase; text-align: left; text-decoration: underline; margin-bottom: 1px; }
+    .vb-terms-text { font-size: 4pt; color: #444; text-align: left; line-height: 1.1; font-weight: 500; }
 
     .vb-footer { 
         position: absolute; bottom: 0; left: 0;
@@ -331,18 +349,25 @@
             position: relative;
             overflow: hidden;
             border: none;
-            /* Ensure it sticks to top left */
             top: 0; left: 0;
         }
 
-        .id-card { border: none !important; } /* Remove border for cleaner print */
+        .id-card { border: none !important; box-shadow: none !important; } /* Clean print */
     }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-        .member-row { flex-direction: column; gap: 40px; padding: 20px; }
+    /* === RESPONSIVE SCALE FIX FOR MOBILE & PC PREVIEW === */
+    @media (max-width: 600px) {
+        .member-row { flex-direction: column; gap: 30px; padding: 20px 10px; }
         .controls { width: 100%; border-radius: 0; }
         #tys-wrapper .app-box { padding: 10px 0; }
+        
+        /* Auto Scale Preview down to fit screen width */
+        .id-card-wrapper {
+            transform-origin: center top;
+            transform: scale(0.85); /* 85% scale on mobile */
+            margin-bottom: -15mm; /* Remove dead space from scaling */
+        }
+        .id-card-wrapper:hover { transform: scale(0.85); } /* Disable hover zoom on mobile */
     }
 </style>
 
@@ -392,25 +417,13 @@
         }
     };
 
-    let CACHED_LOGO = CONFIG.logoUrl;
-    let CACHED_STAMP = CONFIG.stampUrl;
     let ALL_MEMBERS = [];
 
-    // Preload Logic (Basic for Logos)
-    function preloadImage(url, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.onload = function() {
-            var reader = new FileReader();
-            reader.onloadend = function() { callback(reader.result); }
-            reader.readAsDataURL(xhr.response);
-        };
-        xhr.onerror = function() { callback(url); };
-        xhr.open('GET', url);
-        xhr.responseType = 'blob';
-        xhr.send();
+    // Proxy Helper for Images (Fixes "Logo Not Showing" and CORS)
+    function getProxyUrl(url) {
+        if(!url) return "";
+        return `https://wsrv.nl/?url=${encodeURIComponent(url)}&output=png`;
     }
-    preloadImage(CONFIG.logoUrl, (data) => CACHED_LOGO = data);
-    preloadImage(CONFIG.stampUrl, (data) => CACHED_STAMP = data);
 
     const FIELD = {
         first: "firstname", 
@@ -514,9 +527,11 @@
             const issueDate = formatDate(row[FIELD.issueDate]);
             const memberPhone = row[FIELD.phone] || '_______________'; 
             
-            // PROXY FIX: Route image via wsrv.nl to enable CORS and Visibility
+            // PROXY EVERYTHING to fix download/print visibility
             let rawPhoto = row[FIELD.photo] || 'https://via.placeholder.com/150x200?text=PHOTO';
-            let photoUrl = `https://wsrv.nl/?url=${encodeURIComponent(rawPhoto)}&output=jpg`;
+            let photoUrl = getProxyUrl(rawPhoto);
+            let logoUrl = getProxyUrl(CONFIG.logoUrl);
+            let stampUrl = getProxyUrl(CONFIG.stampUrl);
 
             // Slug
             let slugName = fName;
@@ -540,7 +555,7 @@
                         <div class="id-card">
                             <div class="v-header">
                                 <div class="v-header-left">
-                                    <img src="${CACHED_LOGO}" class="v-header-logo">
+                                    <img src="${logoUrl}" class="v-header-logo" crossorigin="anonymous">
                                     <div class="v-org-name">${CONFIG.ngoName}</div>
                                 </div>
                                 <div id="${headerQrId}" class="v-header-qr-box"></div>
@@ -584,7 +599,7 @@
                                     Official Identification
                                 </div>
                                 <div class="vb-body">
-                                    <img src="${CACHED_LOGO}" class="vb-logo-main">
+                                    <img src="${logoUrl}" class="vb-logo-main" crossorigin="anonymous">
                                     <div class="vb-ngo-title">${CONFIG.ngoName}</div>
 
                                     <div class="vb-qr-label">SCAN TO VERIFY MEMBER</div>
@@ -610,7 +625,7 @@
                                     </div>
 
                                     <div class="vb-sign-section">
-                                        <img src="${CACHED_STAMP}" class="vb-stamp">
+                                        <img src="${stampUrl}" class="vb-stamp" crossorigin="anonymous">
                                         <div class="vb-sign-label">Authorized Signatory</div>
                                     </div>
 
@@ -690,7 +705,7 @@
 
         const opts = { 
             scale: 4, 
-            useCORS: true, // Crucial for proxy images
+            useCORS: true, 
             backgroundColor: "#ffffff" 
         };
 
@@ -727,8 +742,5 @@
 
         // Trigger Browser Print
         window.print();
-
-        // Clear after print (optional, but cleaner)
-        // setTimeout(() => printArea.innerHTML = '', 1000);
     }
 </script>
