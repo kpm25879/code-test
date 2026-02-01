@@ -61,7 +61,6 @@
             width: 85.6mm; height: 54mm;
             position: relative;
             background: transparent;
-            /* 3D effect for preview */
             perspective: 1000px;
         }
 
@@ -73,7 +72,7 @@
             border: 1px solid #ddd;
             border-radius: 3mm;
             box-sizing: border-box;
-            font-family: 'Tiro Devanagari Hindi', serif; /* HINDI FONT */
+            font-family: 'Tiro Devanagari Hindi', serif;
             display: flex; flex-direction: column;
             color: #000;
         }
@@ -95,12 +94,12 @@
         
         /* Red Main Title */
         .h-title-main { 
-            font-size: 10pt; font-weight: 700; color: #d62d20; /* Red */
+            font-size: 10pt; font-weight: 700; color: #d62d20; 
             line-height: 1.1; white-space: nowrap; margin-top: 1px;
         }
         /* Blue Subtitle */
         .h-title-sub { 
-            font-size: 4.5pt; font-weight: 600; color: #002347; /* Blue */
+            font-size: 4.5pt; font-weight: 600; color: #002347; 
             line-height: 1.1; margin-top: 0.5mm;
         }
         
@@ -171,12 +170,12 @@
 
         .h-field-grid {
             display: grid;
-            grid-template-columns: 16mm 1fr; /* Label width | Value width */
+            grid-template-columns: 16mm 1fr;
             row-gap: 0.8mm;
             font-size: 5.5pt;
         }
         
-        .h-lbl { color: #d62d20; font-weight: 700; } /* Red Labels */
+        .h-lbl { color: #d62d20; font-weight: 700; }
         .h-val { color: #000; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .h-sign-area {
@@ -189,7 +188,7 @@
         /* --- FRONT FOOTER --- */
         .h-footer {
             height: 4mm;
-            background: #002347; /* Blue Background */
+            background: #002347;
             color: white;
             display: flex; align-items: center; justify-content: center;
             font-size: 3.5pt; font-weight: 600;
@@ -197,7 +196,7 @@
             white-space: pre-wrap;
         }
 
-        /* --- BACK SIDE (Verification) --- */
+        /* --- BACK SIDE --- */
         .vb-body {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 100%; padding: 3mm; text-align: center;
@@ -206,8 +205,6 @@
         .vb-qr-box img { width: 100%; height: 100%; }
         .vb-text { font-size: 7pt; font-weight: bold; color: #002347; margin-bottom: 1mm; }
         .vb-sub { font-size: 5pt; color: #555; width: 80%; }
-        
-        /* Watermark */
         .bg-watermark {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 30mm; opacity: 0.08; pointer-events: none; z-index: 0;
@@ -233,35 +230,33 @@
 
 <script>
     // === CONFIGURATION ===
-    // Update this URL if your sheet changes
-    const EXCEL_FILE_URL = "https://docs.google.com/spreadsheets/d/1p1ynKWyRErPwczTcMkffZfQ7dhOiV9buv_gIVRK3uh0/export?format=csv&gid=85144492";
+    // Updated with your NEW File URL
+    const EXCEL_FILE_URL = "https://docs.google.com/spreadsheets/d/1ehEiwGskDIHwUHJMSWrbjpSsaA8fTSkJ6hfuFLV3jhI/export?format=csv";
     
     // Resource URLs
     const ASSETS = {
         logo: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhCaJCRPLvQgi9REoAvb9b4H4Vvh6RhAmMRGwGEolXIqS2nxxCa9-jS7qexF2JL5puwPOEk-2q7ubDKeL-m-BM0_7_uHrI5EnBXue7deGtgta4UyCDnI43AkB1KBN8PV4G00fg1vW2La338AyzZkHvXpzt49papqeYLt9NDXMcTnvsceg/s1600/TYS-White.png",
         cow: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj4jRFVp4bz-d45e1q-rgRwa4yOre7RBcKtS-dxVu9ayVmpGTs8rHNx6M8xnO5zLkvS7_MOU2_l6k5i6J56mN5FymgLK9IE5eIDdfp2aNEB3xmrAHp8YzzRJ-5OZeT0-uRI_eeo3gE-ZQNFK-FuHmr9Cl_gYVVeFE7bHljkejal8S2LBw/s1600/cow-calf-image.jpg",
-        stamp: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj72nNAiChUf9ROOPiYDrwg4RSatVygGQEt7yW1lOmQosfBW9MB2V3qZAcYcOHH-0bAb_2QBZSUsL_9xdVIdpZdvVOha0czW1ssESptg8Mg3X6W8K1DuyPio_oh6X4DdNH2xUhRc2fX1AkpJh2RuPYl5b0a16nYSTgGrkQnKuwYvz3lsQ/s1600/Lokesh%20Stamp.jpg",
-        sign: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj72nNAiChUf9ROOPiYDrwg4RSatVygGQEt7yW1lOmQosfBW9MB2V3qZAcYcOHH-0bAb_2QBZSUsL_9xdVIdpZdvVOha0czW1ssESptg8Mg3X6W8K1DuyPio_oh6X4DdNH2xUhRc2fX1AkpJh2RuPYl5b0a16nYSTgGrkQnKuwYvz3lsQ/s1600/Lokesh%20Stamp.jpg" // Using stamp as signature placeholder if actual sign column missing
+        stamp: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj72nNAiChUf9ROOPiYDrwg4RSatVygGQEt7yW1lOmQosfBW9MB2V3qZAcYcOHH-0bAb_2QBZSUsL_9xdVIdpZdvVOha0czW1ssESptg8Mg3X6W8K1DuyPio_oh6X4DdNH2xUhRc2fX1AkpJh2RuPYl5b0a16nYSTgGrkQnKuwYvz3lsQ/s1600/Lokesh%20Stamp.jpg"
     };
 
-    // Excel Column Mappings (Adjust strictly to your Excel header names)
+    // === FIELD MAPPING ===
     const FIELDS = {
         id: "id",
         first: "firstname",
         last: "lastname",
         father: "father_name",
         phone: "phone",
-        photo: "photo_url",
-        joined: "joined",
-        // New fields inferred from prompt
-        dob: "dob", 
+        dob: "dob",
+        blood: "blood_group",
         address: "address",
-        blood: "blood_group"
+        validity: "validity",
+        photo: "photo_url",
+        qr_data: "qr_url",
+        designation: "designation"
     };
 
     let ALL_DATA = [];
-
-    // Initialize
     window.onload = loadData;
 
     function getProxy(url) {
@@ -294,7 +289,7 @@
     }
 
     function verifyAndGenerate() {
-        const inId = document.getElementById('inputId').value.trim().toLowerCase().replace('tym-',''); // handle if user types prefix
+        const inId = document.getElementById('inputId').value.trim().toLowerCase().replace('tym-','');
         const inPhone = document.getElementById('inputPhone').value.trim();
         const grid = document.getElementById('grid-area');
         const status = document.getElementById('status-msg');
@@ -323,25 +318,29 @@
     function renderCard(data) {
         const grid = document.getElementById('grid-area');
         
-        // Prepare Data
+        // --- Data Extraction ---
         const memID = data[FIELDS.id] || "000";
         const fullID = `TYS-HR-GRD-TYM-${memID}`;
         const name = `${data[FIELDS.first] || ''} ${data[FIELDS.last] || ''}`.trim();
         const father = data[FIELDS.father] || "";
         const phone = data[FIELDS.phone] || "";
         const dob = formatDate(data[FIELDS.dob]) || "________";
-        const issueDate = formatDate(data[FIELDS.joined]) || formatDate(new Date());
-        const address = data[FIELDS.address] || "गांव खांडा, सोनीपत"; // Default if empty
+        const validityDate = formatDate(data[FIELDS.validity]) || "Lifetime";
+        const address = data[FIELDS.address] || "गांव खांडा, सोनीपत";
         const blood = data[FIELDS.blood] || "";
+        const designation = data[FIELDS.designation] || "सदस्य";
         
-        // Images
+        // --- QR Logic ---
+        let qrText = data[FIELDS.qr_data];
+        if (!qrText) {
+            qrText = `https://www.tirangayuvasamiti.org/verify?id=${memID}`;
+        }
+
+        // --- Images ---
         const photoUrl = getProxy(data[FIELDS.photo]);
         const logoUrl = getProxy(ASSETS.logo);
         const cowUrl = getProxy(ASSETS.cow);
         const stampUrl = getProxy(ASSETS.stamp);
-        
-        // Verification Link
-        const verifyLink = `https://www.tirangayuvasamiti.org/verify?id=${memID}`;
 
         const frontId = `cf-${memID}`;
         const backId = `cb-${memID}`;
@@ -370,7 +369,6 @@
                                         <img src="${photoUrl}" class="h-photo-img" crossorigin="anonymous">
                                         <img src="${stampUrl}" class="h-stamp-overlay" crossorigin="anonymous">
                                     </div>
-                                    
                                     <div class="h-barcode-box">
                                         <svg id="bar-${memID}"></svg>
                                     </div>
@@ -392,7 +390,9 @@
                                         <div class="h-val">${dob}</div>
 
                                         <div class="h-lbl">पद:</div>
-                                        <div class="h-val" style="background:#d62d20; color:white; padding:0 3px; border-radius:2px; display:inline-block; font-size:5pt;">गोरक्षक</div>
+                                        <div class="h-val">
+                                            <span style="background:#d62d20; color:white; padding:0 3px; border-radius:2px; display:inline-block; font-size:5pt;">${designation}</span>
+                                        </div>
 
                                         <div class="h-lbl">मोबाइल:</div>
                                         <div class="h-val">${phone}</div>
@@ -400,8 +400,8 @@
                                         <div class="h-lbl">पता:</div>
                                         <div class="h-val" style="font-size:4.5pt; line-height:1;">${address}</div>
                                         
-                                        <div class="h-lbl">जारी तिथि:</div>
-                                        <div class="h-val">${issueDate} &nbsp; <span style="color:#d62d20">B.G:</span> ${blood}</div>
+                                        <div class="h-lbl">वैधता:</div>
+                                        <div class="h-val">${validityDate} &nbsp; <span style="color:#d62d20">B.G:</span> ${blood}</div>
                                     </div>
 
                                     <div class="h-sign-area">
@@ -451,32 +451,23 @@
             </div>
         `;
 
-        // Generate Barcode (Front)
         setTimeout(() => {
             JsBarcode(`#bar-${memID}`, memID, {
-                format: "CODE128",
-                displayValue: false,
-                height: 30,
-                width: 1.5,
-                margin: 0,
-                background: "transparent"
+                format: "CODE128", displayValue: false, height: 30, width: 1.5, margin: 0, background: "transparent"
             });
 
-            // Generate QR (Back)
             const qrDiv = document.getElementById(`qr-${memID}`);
             new QRCode(qrDiv, {
-                text: verifyLink,
-                width: 100,
-                height: 100
+                text: qrText,
+                width: 100, height: 100,
+                correctLevel: QRCode.CorrectLevel.M
             });
         }, 100);
     }
 
-    // Print Function specific to Horizontal ID Card
     function printCard(fid, bid) {
         const fHtml = document.getElementById(fid).outerHTML;
         const bHtml = document.getElementById(bid).outerHTML;
-
         const win = window.open('', '', 'width=900,height=600');
         win.document.write(`
             <html>
@@ -484,12 +475,11 @@
                 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet">
                 <style>
                     @page { size: 85.6mm 54mm; margin: 0; }
-                    body { margin: 0; padding: 0; background: white; -webkit-print-color-adjust: exact; font-family: 'Tiro Devanagari Hindi', serif; }
-                    .page-break { page-break-after: always; width: 85.6mm; height: 54mm; position: relative; overflow: hidden; }
+                    body { margin: 0; padding: 0; background: white; font-family: 'Tiro Devanagari Hindi', serif; -webkit-print-color-adjust: exact; }
+                    .page-break { page-break-after: always; width: 85.6mm; height: 54mm; }
                     
-                    /* Copy minimal CSS needed for rendering */
+                    /* Copy Styles */
                     .id-card { width: 85.6mm; height: 54mm; border: none; position: relative; overflow: hidden; display: flex; flex-direction: column; background:white; }
-                    
                     .h-header { height: 14mm; background: #fff; border-bottom: 1px solid #002347; display: flex; align-items: center; justify-content: space-between; padding: 0 2mm; position: relative; z-index: 5; }
                     .h-tag-top { position: absolute; top: 0.5mm; left: 50%; transform: translateX(-50%); font-size: 3.5pt; background: #002347; color: white; padding: 0.5px 4px; border-radius: 2px; text-transform: uppercase; font-weight: bold; }
                     .h-logo-left { width: 10mm; } .h-cow-right { width: 11mm; }
@@ -517,7 +507,6 @@
                     
                     .h-footer { height: 4mm; background: #002347; color: white; display: flex; align-items: center; justify-content: center; font-size: 3.5pt; font-weight: 600; text-align: center; line-height: 1.1; }
 
-                    /* Back Side specifics */
                     .vb-body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 3mm; text-align: center; }
                     .vb-qr-box { width: 25mm; height: 25mm; border: 1px solid #ccc; padding: 1px; margin-bottom: 2mm; }
                     .vb-qr-box img { width: 100%; height: 100%; }
@@ -532,11 +521,7 @@
             </html>
         `);
         win.document.close();
-        setTimeout(() => {
-            win.focus();
-            win.print();
-            setTimeout(() => win.close(), 1000);
-        }, 1000);
+        setTimeout(() => { win.focus(); win.print(); setTimeout(() => win.close(), 1000); }, 1000);
     }
 </script>
 </body>
