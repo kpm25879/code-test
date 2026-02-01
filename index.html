@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <script>
+    // Ensure Viewport for Mobile
     if (!document.querySelector('meta[name="viewport"]')) {
         const meta = document.createElement('meta');
         meta.name = "viewport";
@@ -28,6 +29,7 @@
         min-height: 100vh;
         color: #333;
         box-sizing: border-box;
+        padding-bottom: 50px;
     }
     #tys-wrapper * { box-sizing: border-box; }
 
@@ -43,7 +45,7 @@
 
     #tys-wrapper h2 {
         color: #1a2a3a; margin: 0 0 10px 0; text-align: center;
-        font-weight: 900; font-family: 'Montserrat', sans-serif; font-size: 36px;
+        font-weight: 900; font-family: 'Montserrat', sans-serif; font-size: 32px; /* Adjusted for mobile */
         text-transform: uppercase; letter-spacing: -1px;
         text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
     }
@@ -60,7 +62,7 @@
         align-items: center;
         border: 1px solid rgba(255,255,255,0.5);
         width: 100%; max-width: 450px;
-        margin-bottom: 50px;
+        margin-bottom: 40px;
     }
 
     #tys-wrapper .input-group { width: 100%; position: relative; }
@@ -100,19 +102,19 @@
     }
 
     .member-row {
-        display: flex; gap: 60px; align-items: center; justify-content: center;
-        background: #e8ecf1; padding: 50px; border-radius: 30px;
+        display: flex; gap: 40px; align-items: flex-start; justify-content: center;
+        background: #e8ecf1; padding: 40px; border-radius: 30px;
         box-shadow:  20px 20px 60px #c5cbd3, -20px -20px 60px #ffffff;
         animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         flex-wrap: wrap; width: 100%; max-width: 1000px;
     }
     @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
 
-    .preview-col { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    .preview-col { display: flex; flex-direction: column; align-items: center; gap: 15px; }
     .preview-label { font-size: 12px; color: #002347; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
 
     .action-buttons {
-        display: flex; flex-direction: column; gap: 15px;
+        display: flex; flex-direction: column; gap: 15px; justify-content: center;
     }
 
     .action-btn {
@@ -120,34 +122,27 @@
         border-radius: 16px; cursor: pointer; font-size: 16px; font-weight: 800;
         display: flex; flex-direction: column; align-items: center; gap: 8px;
         box-shadow: 5px 5px 15px rgba(0,0,0,0.2); transition: all 0.3s;
-        min-width: 160px; text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        min-width: 180px; text-shadow: 0 1px 2px rgba(0,0,0,0.1);
         text-transform: uppercase;
     }
     .btn-print { background: #FF9933; }
-    .btn-print:hover { background: #e68a00; transform: translateY(-3px); }
+    .btn-print:active { transform: scale(0.95); }
     
     .btn-download { background: #002347; }
-    .btn-download:hover { background: #00152e; transform: translateY(-3px); }
+    .btn-download:active { transform: scale(0.95); }
 
     /* === ID CARD WRAPPER & 3D EFFECT === */
     .id-card-wrapper { 
         width: 54mm; height: 85.6mm; 
         position: relative; 
-        /* 3D Touch Shadows */
-        box-shadow: 
-            0 1px 2px rgba(0,0,0,0.07), 
-            0 2px 4px rgba(0,0,0,0.07), 
-            0 4px 8px rgba(0,0,0,0.07), 
-            0 8px 16px rgba(0,0,0,0.07),
-            0 16px 32px rgba(0,0,0,0.07), 
-            0 32px 64px rgba(0,0,0,0.07);
+        /* 3D Shadows */
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15), 0 3px 6px rgba(0,0,0,0.10);
         background: transparent; 
         border-radius: 3.18mm; 
         transition: transform 0.3s ease;
         transform-style: preserve-3d;
     }
-    .id-card-wrapper:hover { transform: scale(1.02) translateY(-5px); z-index: 10; }
-
+    
     /* === INTERNAL CARD STRUCTURE === */
     .id-card { 
         width: 54mm; height: 85.6mm; 
@@ -157,15 +152,15 @@
         font-family: 'Montserrat', sans-serif; 
         color: #333; 
         display: flex; flex-direction: column;
-        border: 1px solid #ddd; /* Subtle border */
+        border: 1px solid #ddd;
         box-sizing: border-box; 
         border-radius: 3.18mm; 
     }
     
-    /* 3D Glossy Overlay */
+    /* Glossy Overlay */
     .id-card::after {
         content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 40%);
+        background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%);
         pointer-events: none; z-index: 20;
     }
 
@@ -174,35 +169,24 @@
         height: 18%; 
         background: #002347;
         width: 100%;
-        display: flex; align-items: center; justify-content: space-between;
+        display: flex; align-items: center; justify-content: center; /* Centered now */
         position: relative; z-index: 5;
-        padding: 0 2mm 0 3mm; 
+        padding: 0 3mm; 
         clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
         border-bottom: 2px solid #FF9933;
     }
     .v-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: #FF9933; z-index: 6; }
 
-    .v-header-left { display: flex; align-items: center; flex: 1; overflow: hidden; }
-    .v-header-logo { width: 8.5mm; height: auto; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); margin-right: 1.5mm; }
+    .v-header-content { display: flex; align-items: center; justify-content: center; width: 100%; }
+    .v-header-logo { width: 9mm; height: auto; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); margin-right: 2mm; }
     
-    /* HEADER TEXT FIX: Larger & One Line */
+    /* Org Name Large & One Line */
     .v-org-name { 
-        font-size: 8.5pt; font-weight: 900; color: white; 
+        font-size: 9pt; font-weight: 900; color: white; 
         text-transform: uppercase; margin: 0; line-height: 1; 
         font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;
-        text-align: left; white-space: nowrap;
+        white-space: nowrap;
     }
-
-    /* FRONT QR BOX SIZE FIX: Smaller (7.5mm) */
-    .v-header-qr-box { 
-        width: 7.5mm; height: 7.5mm; 
-        background: white; padding: 1px; 
-        border-radius: 2px; flex-shrink: 0; 
-        margin-left: 1mm; margin-bottom: 3.5mm; 
-        display: flex; align-items: center; justify-content: center;
-        margin-right: 1mm;
-    }
-    .v-header-qr-box img { width: 100%; height: 100%; }
 
     .v-body {
         flex: 1; position: relative;
@@ -277,15 +261,15 @@
     
     .vb-body { 
         flex: 1; display: flex; flex-direction: column; align-items: center; 
-        padding: 2mm 3mm; text-align: center; position: relative; background: #fff; 
+        padding: 3mm 3mm; text-align: center; position: relative; background: #fff; 
     }
     
-    .vb-logo-main { width: 14mm; height: auto; margin-top: 1mm; opacity: 1.0; }
+    .vb-logo-main { width: 14mm; height: auto; margin-top: 2mm; opacity: 1.0; }
     
     .vb-ngo-title { 
         font-size: 8pt; font-weight: 900; color: #002347; 
         text-transform: uppercase; text-align: center; 
-        margin-top: 0.5mm; margin-bottom: 1.5mm; 
+        margin-top: 0.5mm; margin-bottom: 3mm; 
         width: 90%;
     }
 
@@ -296,21 +280,21 @@
     }
     .vb-qr-container {
         width: 13mm; height: 13mm;
-        margin-bottom: 1.5mm;
+        margin-bottom: 3mm;
         border: 1px solid #ccc; padding: 1px; background: white;
     }
     .vb-qr-container img { width: 100%; height: 100%; }
 
-    /* Compact Info Block to make room for Terms */
     .vb-info-block { width: 100%; text-align: left; margin-top: 0; }
-    .vb-row-item { display: flex; gap: 2mm; margin-bottom: 1mm; align-items: flex-start; }
+    .vb-row-item { display: flex; gap: 2mm; margin-bottom: 1.5mm; align-items: flex-start; }
     .vb-icon-box { color: #FF9933; width: 3mm; font-size: 6pt; margin-top: 1px; }
-    .vb-text-val { font-size: 4.8pt; color: #444; font-weight: 600; line-height: 1.2; text-align: left; }
+    .vb-text-val { font-size: 5pt; color: #444; font-weight: 600; line-height: 1.2; text-align: left; }
 
-    /* Compact Signature Section */
+    /* Pushed to bottom since Terms are gone */
     .vb-sign-section {
         width: 100%; display: flex; flex-direction: column; align-items: flex-end;
-        margin-top: auto; margin-bottom: 0.5mm; padding-right: 1mm;
+        margin-top: auto; /* Pushes to bottom */
+        margin-bottom: 1mm; padding-right: 1mm;
     }
     .vb-stamp { 
         width: 14mm; opacity: 0.8; mix-blend-mode: multiply; 
@@ -322,11 +306,6 @@
         padding-top: 1px;
     }
 
-    /* TERMS VISIBILITY FIX: Adjust Margins & Size */
-    .vb-terms { width: 100%; margin-bottom: 1mm; margin-top: 0.5mm; }
-    .vb-terms-title { font-size: 4pt; font-weight: 900; color: #002347; text-transform: uppercase; text-align: left; text-decoration: underline; margin-bottom: 1px; }
-    .vb-terms-text { font-size: 4pt; color: #444; text-align: left; line-height: 1.1; font-weight: 500; }
-
     .vb-footer { 
         position: absolute; bottom: 0; left: 0;
         height: 5mm; width: 100%;
@@ -335,39 +314,36 @@
         color: white; font-size: 4.5pt; font-weight: 600; text-transform: uppercase;
     }
 
-    /* === PRINT MEDIA QUERY (THE FIX) === */
+    /* === MOBILE & PRINT OPTIMIZATIONS === */
     @media print {
         @page { size: 54mm 85.6mm; margin: 0; }
         
         body, html { margin: 0; padding: 0; height: 100%; background: white; }
-        #tys-wrapper { display: none !important; } /* Hide App */
-        #print-area { display: block !important; } /* Show Print Area */
+        #tys-wrapper { display: none !important; }
+        #print-area { display: block !important; }
         
         .print-page {
             width: 54mm; height: 85.6mm;
             page-break-after: always;
-            position: relative;
-            overflow: hidden;
+            position: relative; overflow: hidden;
             border: none;
-            top: 0; left: 0;
+            /* Ensures Top-Left alignment to avoid floating centers on mobile print previews */
+            position: absolute; top: 0; left: 0;
         }
-
-        .id-card { border: none !important; box-shadow: none !important; } /* Clean print */
+        .id-card { border: none !important; box-shadow: none !important; }
     }
 
-    /* === RESPONSIVE SCALE FIX FOR MOBILE & PC PREVIEW === */
-    @media (max-width: 600px) {
-        .member-row { flex-direction: column; gap: 30px; padding: 20px 10px; }
-        .controls { width: 100%; border-radius: 0; }
-        #tys-wrapper .app-box { padding: 10px 0; }
+    /* Smart Scale for Mobile Screens (Prevents Horizontal Scroll) */
+    @media (max-width: 450px) {
+        .app-box { padding: 20px 10px !important; }
+        .member-row { flex-direction: column; gap: 40px; padding: 20px 10px; width: 100%; }
         
-        /* Auto Scale Preview down to fit screen width */
+        /* Scale down the preview card if screen is too narrow */
         .id-card-wrapper {
             transform-origin: center top;
-            transform: scale(0.85); /* 85% scale on mobile */
-            margin-bottom: -15mm; /* Remove dead space from scaling */
+            transform: scale(0.9); /* Slight reduction */
+            margin-bottom: -10mm;
         }
-        .id-card-wrapper:hover { transform: scale(0.85); } /* Disable hover zoom on mobile */
     }
 </style>
 
@@ -419,7 +395,7 @@
 
     let ALL_MEMBERS = [];
 
-    // Proxy Helper for Images (Fixes "Logo Not Showing" and CORS)
+    // Proxy Helper for Images (Fixes Image Blocking Issues)
     function getProxyUrl(url) {
         if(!url) return "";
         return `https://wsrv.nl/?url=${encodeURIComponent(url)}&output=png`;
@@ -542,7 +518,7 @@
 
             const frontId = `card-front-${i}`;
             const backId = `card-back-${i}`;
-            const headerQrId = `qr-header-${i}`;
+            const headerQrId = `qr-header-${i}`; // ID preserved for JS, but div removed
             const backQrId = `qr-back-${i}`;
             const barcodeId = `barcode-${i}`;
             const wrapperId = `wrapper-${i}`;
@@ -550,15 +526,14 @@
             const html = `
             <div class="member-row" id="${wrapperId}">
                 <div class="preview-col">
-                    <div class="preview-label">Front (Vertical)</div>
+                    <div class="preview-label">Front Side</div>
                     <div class="id-card-wrapper" id="${frontId}">
                         <div class="id-card">
                             <div class="v-header">
-                                <div class="v-header-left">
+                                <div class="v-header-content">
                                     <img src="${logoUrl}" class="v-header-logo" crossorigin="anonymous">
                                     <div class="v-org-name">${CONFIG.ngoName}</div>
                                 </div>
-                                <div id="${headerQrId}" class="v-header-qr-box"></div>
                             </div>
 
                             <div class="v-body">
@@ -591,7 +566,7 @@
                 </div>
 
                 <div class="preview-col">
-                    <div class="preview-label">Back (Vertical)</div>
+                    <div class="preview-label">Back Side</div>
                     <div class="id-card-wrapper" id="${backId}">
                         <div class="id-card">
                             <div class="vb-container">
@@ -628,15 +603,7 @@
                                         <img src="${stampUrl}" class="vb-stamp" crossorigin="anonymous">
                                         <div class="vb-sign-label">Authorized Signatory</div>
                                     </div>
-
-                                    <div class="vb-terms">
-                                        <div class="vb-terms-title">Terms & Conditions:</div>
-                                        <div class="vb-terms-text">
-                                            1. This card is non-transferable property.<br>
-                                            2. If found, please return to the address above.
-                                        </div>
                                     </div>
-                                </div>
                                 <div class="vb-footer">
                                     Together We Serve • Jai Hind
                                 </div>
@@ -661,19 +628,13 @@
             grid.innerHTML += html;
 
             setTimeout(() => { 
-                // 1. Generate Donate QR
-                const headerQrDiv = document.getElementById(headerQrId);
-                const temp1 = document.createElement('div');
-                new QRCode(temp1, { text: CONFIG.donateUrl, width: 64, height: 64, correctLevel: QRCode.CorrectLevel.L });
-                headerQrDiv.appendChild(convertCanvasToImg(temp1));
-
-                // 2. Generate Member QR
+                // 1. Generate Member QR (Back Only)
                 const backQrDiv = document.getElementById(backQrId);
                 const temp2 = document.createElement('div');
                 new QRCode(temp2, { text: finalQrUrl, width: 128, height: 128, correctLevel: QRCode.CorrectLevel.H });
                 backQrDiv.appendChild(convertCanvasToImg(temp2));
 
-                // 3. Generate Barcode
+                // 2. Generate Barcode
                 JsBarcode("#"+barcodeId, "TYS-"+memID, {
                     format: "CODE128",
                     displayValue: false,
@@ -698,7 +659,7 @@
         return container;
     }
 
-    // === NEW DOWNLOAD FUNCTION with CORS Proxy Support ===
+    // === DOWNLOAD FUNCTION ===
     function downloadCards(frontId, backId, filename) {
         const frontEl = document.querySelector(`#${frontId} .id-card`);
         const backEl = document.querySelector(`#${backId} .id-card`);
@@ -728,13 +689,13 @@
         }, 500);
     }
 
-    // === NEW PRINT STRATEGY (IN-PAGE PRINT) ===
+    // === MOBILE-FRIENDLY PRINTING ===
     function printPage(frontId, backId) {
         const printArea = document.getElementById('print-area');
         const frontHTML = document.getElementById(frontId).innerHTML;
         const backHTML = document.getElementById(backId).innerHTML;
 
-        // Populate hidden print area
+        // Populate hidden print area with RAW HTML to ensure it looks exactly like the preview
         printArea.innerHTML = `
             <div class="print-page">${frontHTML}</div>
             <div class="print-page">${backHTML}</div>
