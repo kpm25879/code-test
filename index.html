@@ -123,9 +123,6 @@
     }
     .btn-print { background: #FF9933; }
     .btn-print:active { transform: scale(0.95); }
-    
-    .btn-download { background: #002347; }
-    .btn-download:active { transform: scale(0.95); }
 
     /* === ID CARD WRAPPER & 3D EFFECT === */
     .id-card-wrapper { 
@@ -224,15 +221,14 @@
     .v-lbl { width: 40%; font-weight: 700; color: #666; font-size: 5pt; text-transform: uppercase; letter-spacing: 0.2px; }
     .v-val { width: 60%; font-weight: 800; color: #000; text-align: right; font-size: 6pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* === SIDE-BY-SIDE CONTAINER (GAP REDUCED) === */
+    /* === SIDE-BY-SIDE CONTAINER === */
     .v-codes-row {
         display: flex;
         justify-content: center;
         align-items: center;
         width: 95%;
         margin-top: auto;
-        /* REDUCED GAP TO 1mm */
-        margin-bottom: 1mm; 
+        margin-bottom: 1mm; /* 1mm GAP */
         gap: 3mm;
         z-index: 2;
     }
@@ -384,7 +380,7 @@
     const CONFIG = {
         ngoName: "Tiranga Yuva Samiti",
         logoUrl: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhCaJCRPLvQgi9REoAvb9b4H4Vvh6RhAmMRGwGEolXIqS2nxxCa9-jS7qexF2JL5puwPOEk-2q7ubDKeL-m-BM0_7_uHrI5EnBXue7deGtgta4UyCDnI43AkB1KBN8PV4G00fg1vW2La338AyzZkHvXpzt49papqeYLt9NDXMcTnvsceg/s1600/TYS-White.png",
-        stampUrl: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEif3QsddJJfS7s0DWat3m-JGugl9Jf3PHlxuPenO9wCWmjqiqV2UZ2IBMA_0b2ID8Uk1Ukwozo206pIjMGCEm5rK6e24u33ZDaSUUvnVzfsMQX6aY4BoleEeCGB3PMBfh4VER_I5Qsac0CHXkwtvVu5kuefZWrr9qr5MEOPyL8_tpkKow/s1600/Naveen%20Stamp.jpg",
+        stampUrl: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj72nNAiChUf9ROOPiYDrwg4RSatVygGQEt7yW1lOmQosfBW9MB2V3qZAcYcOHH-0bAb_2QBZSUsL_9xdVIdpZdvVOha0czW1ssESptg8Mg3X6W8K1DuyPio_oh6X4DdNH2xUhRc2fX1AkpJh2RuPYl5b0a16nYSTgGrkQnKuwYvz3lsQ/s1600/Lokesh%20Stamp.jpg",
         donateUrl: "https://www.tirangayuvasamiti.org/donate/",
         contact: {
             phone: "+91 90535 75169",
@@ -547,7 +543,7 @@
                                 </div>
 
                                 <div class="v-details-table">
-                                    <div class="v-row"><div class="v-lbl">Father's Name</div><div class="v-val">${fatherDisplay}</div></div>
+                                    <div class="v-row"><div class="v-lbl">Father Name</div><div class="v-val">${fatherDisplay}</div></div>
                                     <div class="v-row"><div class="v-lbl">Membership ID</div><div class="v-val">TYS-${memID}</div></div>
                                     <div class="v-row"><div class="v-lbl">Contact Number</div><div class="v-val">${memberPhone}</div></div>
                                     <div class="v-row"><div class="v-lbl">Date of Issue</div><div class="v-val">${issueDate}</div></div>
@@ -581,7 +577,7 @@
                                         <div class="vb-terms-title">Terms & Conditions:</div>
                                         <div class="vb-terms-text">
                                             1. This card is non-transferable property.<br>
-                                            2. If found, please return to the address above.
+                                            2. If found, please return to the address below.
                                         </div>
                                     </div>
 
@@ -628,11 +624,6 @@
                         <i class="fa-solid fa-print"></i>
                         <span>PRINT<br>CARD</span>
                     </button>
-                    
-                    <button class="action-btn btn-download" onclick="downloadCards('${frontId}', '${backId}', 'TYS-${memID}')">
-                        <i class="fa-solid fa-download"></i>
-                        <span>DOWNLOAD<br>IMAGES</span>
-                    </button>
                 </div>
             </div>
             `;
@@ -674,28 +665,6 @@
             return img;
         }
         return container;
-    }
-
-    function downloadCards(frontId, backId, filename) {
-        const frontEl = document.querySelector(`#${frontId} .id-card`);
-        const backEl = document.querySelector(`#${backId} .id-card`);
-        const opts = { scale: 4, useCORS: true, backgroundColor: "#ffffff" };
-
-        html2canvas(frontEl, opts).then(canvas => {
-            const link = document.createElement('a');
-            link.download = `${filename}_FRONT.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        });
-
-        setTimeout(() => {
-            html2canvas(backEl, opts).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `${filename}_BACK.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            });
-        }, 500);
     }
 
     function printCard(frontId, backId) {
