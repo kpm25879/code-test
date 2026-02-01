@@ -1,532 +1,418 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Go Raksha Dal ID Card System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* Scope everything to this ID to protect WP Theme */
+    #tys-app-container {
+        /* Using Poppins for inputs, but card will use Hindi fonts */
+        font-family: 'Poppins', sans-serif;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 20px 0;
+        box-sizing: border-box;
+    }
+
+    #tys-app-container * { box-sizing: border-box; }
+
+    /* Controls Section */
+    #tys-app-container .controls-box {
+        background: #f9f9f9; 
+        padding: 25px; 
+        border-radius: 10px;
+        border: 1px solid #eee;
+        width: 100%; 
+        max-width: 450px; 
+        margin: 0 auto 40px auto;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    #tys-app-container h2 { 
+        color: #002347; 
+        margin: 0 0 20px 0; 
+        font-size: 24px;
+        font-family: 'Poppins', sans-serif; 
+    }
 
-    <style>
-        /* === GLOBAL RESET === */
-        html, body { 
-            margin: 0; padding: 0; width: 100%; 
-            background-color: #f0f2f5; 
-            font-family: 'Poppins', 'Tiro Devanagari Hindi', sans-serif;
-            -webkit-print-color-adjust: exact; print-color-adjust: exact;
-        }
+    #tys-app-container .input-field { 
+        width: 100%; 
+        padding: 12px; 
+        margin-bottom: 15px; 
+        border: 1px solid #ccc; 
+        border-radius: 6px; 
+        font-size: 16px; 
+    }
 
-        #app-wrapper {
-            max-width: 1200px; margin: 0 auto; padding: 20px;
-            display: flex; flex-direction: column; align-items: center;
-        }
+    #tys-app-container .btn-verify {
+        background: #d62d20; 
+        color: white; 
+        border: none; 
+        padding: 12px 25px;
+        border-radius: 6px; 
+        font-size: 16px; 
+        font-weight: 600; 
+        cursor: pointer; 
+        width: 100%;
+        transition: background 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    #tys-app-container .btn-verify:hover { background: #b01c11; color: white; }
 
-        /* === INPUT SECTION === */
-        .controls {
-            background: white; padding: 25px; border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            width: 100%; max-width: 400px; margin-bottom: 40px;
-            text-align: center;
-        }
-        .controls h2 { color: #002347; margin-top: 0; font-family: 'Poppins', sans-serif; }
-        .input-box { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
-        .btn-action {
-            background: #d62d20; color: white; border: none; padding: 12px 25px;
-            border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%;
-            transition: background 0.3s;
-        }
-        .btn-action:hover { background: #b01c11; }
-        #status-msg { margin-top: 10px; font-size: 14px; color: #555; min-height: 20px; }
+    #tys-status { margin-top: 15px; font-size: 14px; color: #555; font-weight: 500; }
 
-        /* === PREVIEW AREA === */
-        #grid-area { display: flex; flex-direction: column; gap: 30px; align-items: center; width: 100%; }
-        .card-preview-row {
-            display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;
-            background: white; padding: 30px; border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        
-        .print-btn-container { width: 100%; display: flex; justify-content: center; margin-top: 20px; }
-        .btn-print { background: #002347; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+    /* Results Grid */
+    #tys-grid { display: flex; flex-direction: column; gap: 30px; align-items: center; width: 100%; }
+    
+    .card-row {
+        display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;
+        background: #fff; padding: 20px; border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        width: 100%;
+    }
 
-        /* =========================================
-           ID CARD CSS (HORIZONTAL ISO ID-1)
-           Size: 85.6mm x 54mm
-        ========================================= */
-        .id-card-wrapper {
-            width: 85.6mm; height: 54mm;
-            position: relative;
-            background: transparent;
-            perspective: 1000px;
-        }
+    /* --- ID CARD STYLES (Fixed Size 85.6mm x 54mm) --- */
+    .id-card-wrapper {
+        width: 85.6mm; height: 54mm;
+        position: relative;
+        background: transparent;
+        margin: 0 auto;
+    }
 
-        .id-card {
-            width: 85.6mm; height: 54mm;
-            background: white;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid #ddd;
-            border-radius: 3mm;
-            box-sizing: border-box;
-            font-family: 'Tiro Devanagari Hindi', serif;
-            display: flex; flex-direction: column;
-            color: #000;
-        }
+    .id-card-inner {
+        width: 85.6mm; height: 54mm;
+        background: white;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #ddd;
+        border-radius: 3mm;
+        /* FONT STACK UPDATED: Google font first, then system Hindi fonts for better compatibility */
+        font-family: 'Tiro Devanagari Hindi', 'Nirmala UI', 'Arial Unicode MS', sans-serif;
+        display: flex; flex-direction: column;
+        color: #000;
+        line-height: normal;
+    }
 
-        /* --- FRONT HEADER --- */
-        .h-header {
-            height: 14mm;
-            background: #fff;
-            border-bottom: 1px solid #002347;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 2mm;
-            position: relative; z-index: 5;
-        }
-        
-        .h-logo-left { width: 10mm; height: auto; }
-        .h-cow-right { width: 11mm; height: auto; }
-        
-        .h-titles { flex: 1; text-align: center; display: flex; flex-direction: column; justify-content: center; }
-        
-        /* Red Main Title */
-        .h-title-main { 
-            font-size: 10pt; font-weight: 700; color: #d62d20; 
-            line-height: 1.1; white-space: nowrap; margin-top: 1px;
-        }
-        /* Blue Subtitle */
-        .h-title-sub { 
-            font-size: 4.5pt; font-weight: 600; color: #002347; 
-            line-height: 1.1; margin-top: 0.5mm;
-        }
-        
-        /* "Pehchan Patra" Tag */
-        .h-tag-top {
-            position: absolute; top: 0.5mm; left: 50%; transform: translateX(-50%);
-            font-size: 3.5pt; background: #002347; color: white; padding: 0.5px 4px;
-            border-radius: 2px; text-transform: uppercase; font-weight: bold;
-        }
+    /* Header - Adjusted sizes and fitting */
+    .h-header { 
+        height: 14mm; 
+        background: #fff; 
+        border-bottom: 1px solid #002347; 
+        display: flex; align-items: center; justify-content: space-between; 
+        padding: 0 1mm; /* Reduced horizontal padding slightly for more text space */
+        position: relative; z-index: 5; 
+    }
+    .h-logo { width: 10mm; height: auto; display: block; }
+    .h-cow { width: 11mm; height: auto; display: block; }
+    
+    .h-titles { flex: 1; text-align: center; display: flex; flex-direction: column; justify-content: center; }
+    /* Increased Header Text Sizes */
+    .h-main-title { 
+        font-size: 12pt; /* Increased from 10pt */
+        font-weight: 700; color: #d62d20; /* Red */
+        line-height: 1; margin-top: 2px; white-space: nowrap; 
+    }
+    .h-sub-title { 
+        font-size: 5.5pt; /* Increased from 4.5pt */
+        font-weight: 600; color: #002347; /* Blue */
+        line-height: 1.1; margin-top: 0.5mm; 
+    }
+    
+    .h-tag { position: absolute; top: 0.5mm; left: 50%; transform: translateX(-50%); font-size: 3.5pt; background: #002347; color: white; padding: 0.5px 4px; border-radius: 2px; text-transform: uppercase; font-weight: bold; }
 
-        /* --- FRONT BODY --- */
-        .h-body {
-            flex: 1; display: flex;
-            padding: 1mm 2mm;
-            position: relative;
-        }
+    /* Body - Improved margins */
+    .h-body { 
+        flex: 1; display: flex; 
+        padding: 2mm 3mm; /* Increased padding for better fitting */
+        position: relative; 
+    }
+    .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30mm; opacity: 0.08; pointer-events: none; z-index: 0; }
 
-        /* Left Side: Photo & Sign */
-        .h-col-left {
-            width: 22mm;
-            display: flex; flex-direction: column; align-items: center;
-        }
-        
-        .h-photo-box {
-            width: 20mm; height: 24mm;
-            border: 1px solid #ccc;
-            background: #eee;
-            margin-top: 1mm;
-            position: relative;
-        }
-        .h-photo-img { width: 100%; height: 100%; object-fit: cover; }
+    /* Left Col - Image and Barcode */
+    .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; }
+    .h-p-box { width: 20mm; height: 24mm; border: 1px solid #ccc; background: #eee; margin-top: 0; position: relative; }
+    .h-p-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    
+    /* Stamp adjusted to sit nicely on corner */
+    .h-stamp { 
+        position: absolute; 
+        bottom: -2mm; right: -2mm; /* Adjusted coordinates */
+        width: 14mm; opacity: 0.8; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; display: block; 
+    }
+    
+    /* Barcode with proper margin below image */
+    .h-bar-box { 
+        margin-top: 3mm; /* Specific margin instead of auto */
+        width: 100%; height: 6mm; display: flex; justify-content: center; align-items: flex-start; 
+    }
+    .h-bar-box svg { height: 100%; width: 100%; display: block; }
 
-        /* Stamp overlay on Photo */
-        .h-stamp-overlay {
-            position: absolute;
-            bottom: -4mm; right: -4mm;
-            width: 14mm;
-            opacity: 0.8;
-            mix-blend-mode: multiply;
-            transform: rotate(-15deg);
-            z-index: 10;
-        }
-        
-        .h-barcode-box {
-            margin-top: auto;
-            width: 100%; height: 6mm;
-            display: flex; justify-content: center; align-items: flex-end;
-        }
-        .h-barcode-box svg { height: 100%; width: 100%; }
+    /* Right Col - Details */
+    .h-right { flex: 1; padding-left: 3mm; display: flex; flex-direction: column; }
+    .h-row-id { font-size: 5pt; font-weight: bold; color: #002347; border-bottom: 0.5px solid #d62d20; margin-bottom: 1.5mm; }
+    
+    .h-grid { display: grid; grid-template-columns: 16mm 1fr; row-gap: 1mm; font-size: 5.5pt; }
+    .hl { color: #d62d20; font-weight: 700; margin: 0; padding: 0; }
+    .hv { color: #000; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; padding: 0; }
 
-        /* Right Side: Details */
-        .h-col-right {
-            flex: 1;
-            padding-left: 2mm;
-            display: flex; flex-direction: column;
-        }
+    .h-sign { position: absolute; bottom: 0; right: 2mm; text-align: center; }
+    .h-sign img { height: 6mm; width: auto; display: block; margin: 0 auto; opacity: 0; } /* Placeholder for spacing */
+    .h-sign span { font-size: 4pt; color: #002347; font-weight: 700; border-top: 0.5px solid #000; padding-top: 0.5px; display: block; }
 
-        .h-id-header {
-            font-size: 5pt; font-weight: bold; color: #002347;
-            border-bottom: 0.5px solid #d62d20; margin-bottom: 1mm;
-            display: flex; justify-content: space-between;
-        }
+    /* Footer */
+    .h-footer { height: 4mm; background: #002347; color: white; display: flex; align-items: center; justify-content: center; font-size: 3.5pt; font-weight: 600; text-align: center; line-height: 1.1; white-space: pre-wrap; }
 
-        .h-field-grid {
-            display: grid;
-            grid-template-columns: 16mm 1fr;
-            row-gap: 0.8mm;
-            font-size: 5.5pt;
-        }
-        
-        .h-lbl { color: #d62d20; font-weight: 700; }
-        .h-val { color: #000; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* Back Side */
+    .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 3mm; text-align: center; }
+    .vb-qr { width: 25mm; height: 25mm; border: 1px solid #ccc; padding: 1px; margin-bottom: 2mm; display: block; }
+    .vb-qr img { width: 100%; height: 100%; display: block; }
+    .vb-t { font-size: 7pt; font-weight: bold; color: #002347; margin-bottom: 1mm; }
+    .vb-s { font-size: 5pt; color: #555; width: 80%; }
+    
+    .btn-print-wrap { width: 100%; display: flex; justify-content: center; margin-top: 20px; }
+    .btn-print { background: #002347; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; text-decoration: none; }
+    .btn-print:hover { background: #00152e; }
+</style>
 
-        .h-sign-area {
-            position: absolute; bottom: 0; right: 2mm;
-            text-align: center;
-        }
-        .h-sign-img { height: 6mm; width: auto; display: block; margin: 0 auto; }
-        .h-sign-lbl { font-size: 4pt; color: #002347; font-weight: 700; border-top: 0.5px solid #000; padding-top: 0.5px; }
-
-        /* --- FRONT FOOTER --- */
-        .h-footer {
-            height: 4mm;
-            background: #002347;
-            color: white;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 3.5pt; font-weight: 600;
-            text-align: center; line-height: 1.1;
-            white-space: pre-wrap;
-        }
-
-        /* --- BACK SIDE --- */
-        .vb-body {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100%; padding: 3mm; text-align: center;
-        }
-        .vb-qr-box { width: 25mm; height: 25mm; border: 1px solid #ccc; padding: 1px; margin-bottom: 2mm; }
-        .vb-qr-box img { width: 100%; height: 100%; }
-        .vb-text { font-size: 7pt; font-weight: bold; color: #002347; margin-bottom: 1mm; }
-        .vb-sub { font-size: 5pt; color: #555; width: 80%; }
-        .bg-watermark {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 30mm; opacity: 0.08; pointer-events: none; z-index: 0;
-        }
-
-    </style>
-</head>
-<body>
-
-<div id="app-wrapper">
-    <div class="controls">
+<div id="tys-app-container">
+    <div class="controls-box">
         <h2><i class="fa-solid fa-address-card"></i> आईडी कार्ड सत्यापन</h2>
-        <input type="text" id="inputId" class="input-box" placeholder="Member ID (e.g. 1)">
-        <input type="text" id="inputPhone" class="input-box" placeholder="Phone (e.g. 9728765765)">
-        <button class="btn-action" onclick="verifyAndGenerate()">
+        <input type="text" id="tysInputId" class="input-field" placeholder="Member ID (e.g. 1)">
+        <input type="text" id="tysInputPhone" class="input-field" placeholder="Phone (e.g. 9728765765)">
+        <button class="btn-verify" onclick="tysVerify()">
             <i class="fa-solid fa-check-circle"></i> Verify & Generate
         </button>
-        <div id="status-msg">सिस्टम तैयार है...</div>
+        <div id="tys-status">सिस्टम तैयार है...</div>
     </div>
 
-    <div id="grid-area"></div>
+    <div id="tys-grid"></div>
 </div>
 
 <script>
     // === CONFIGURATION ===
-    const EXCEL_FILE_URL = "https://docs.google.com/spreadsheets/d/1ehEiwGskDIHwUHJMSWrbjpSsaA8fTSkJ6hfuFLV3jhI/export?format=csv";
+    const EXCEL_URL = "https://docs.google.com/spreadsheets/d/1ehEiwGskDIHwUHJMSWrbjpSsaA8fTSkJ6hfuFLV3jhI/export?format=csv";
     
-    // Resource URLs
     const ASSETS = {
         logo: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhCaJCRPLvQgi9REoAvb9b4H4Vvh6RhAmMRGwGEolXIqS2nxxCa9-jS7qexF2JL5puwPOEk-2q7ubDKeL-m-BM0_7_uHrI5EnBXue7deGtgta4UyCDnI43AkB1KBN8PV4G00fg1vW2La338AyzZkHvXpzt49papqeYLt9NDXMcTnvsceg/s1600/TYS-White.png",
         cow: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj4jRFVp4bz-d45e1q-rgRwa4yOre7RBcKtS-dxVu9ayVmpGTs8rHNx6M8xnO5zLkvS7_MOU2_l6k5i6J56mN5FymgLK9IE5eIDdfp2aNEB3xmrAHp8YzzRJ-5OZeT0-uRI_eeo3gE-ZQNFK-FuHmr9Cl_gYVVeFE7bHljkejal8S2LBw/s1600/cow-calf-image.jpg",
         stamp: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj72nNAiChUf9ROOPiYDrwg4RSatVygGQEt7yW1lOmQosfBW9MB2V3qZAcYcOHH-0bAb_2QBZSUsL_9xdVIdpZdvVOha0czW1ssESptg8Mg3X6W8K1DuyPio_oh6X4DdNH2xUhRc2fX1AkpJh2RuPYl5b0a16nYSTgGrkQnKuwYvz3lsQ/s1600/Lokesh%20Stamp.jpg"
     };
 
-    // === FIELD MAPPING ===
-    // Matches your provided Excel headers
     const FIELDS = {
-        id: "id",
-        first: "firstname",
-        last: "lastname",
-        father: "father_name",
-        phone: "phone",
-        dob: "dob",
-        blood: "blood_group",
-        address: "address",
-        validity: "validity",
-        photo: "photo_url",
-        qr_data: "qr_url",
-        designation: "designation"
+        id: "id", first: "firstname", last: "lastname", father: "father_name",
+        phone: "phone", dob: "dob", blood: "blood_group", address: "address",
+        validity: "validity", photo: "photo_url", qr_data: "qr_url", designation: "designation"
     };
 
-    let ALL_DATA = [];
-    window.onload = loadData;
+    let TYS_DATA = [];
+
+    // Safe load for WordPress
+    document.addEventListener("DOMContentLoaded", function() {
+        loadTysData();
+    });
 
     function getProxy(url) {
         if(!url) return "https://via.placeholder.com/150";
         return `https://wsrv.nl/?url=${encodeURIComponent(url)}&output=png`;
     }
 
-    async function loadData() {
-        const status = document.getElementById('status-msg');
+    async function loadTysData() {
+        const status = document.getElementById('tys-status');
+        if(!status) return;
         status.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> डेटा लोड हो रहा है...';
         
         try {
-            const resp = await fetch(EXCEL_FILE_URL + "&t=" + Date.now());
+            const resp = await fetch(EXCEL_URL + "&t=" + Date.now());
             const buffer = await resp.arrayBuffer();
             const workbook = XLSX.read(new Uint8Array(buffer), {type: 'array', cellDates: true});
             const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            ALL_DATA = XLSX.utils.sheet_to_json(sheet);
-            status.innerHTML = `<span style="color:green">✅ डेटाबेस कनेक्ट हो गया। (${ALL_DATA.length} सदस्य)</span>`;
+            TYS_DATA = XLSX.utils.sheet_to_json(sheet);
+            status.innerHTML = `<span style="color:green">✅ डेटाबेस कनेक्ट हो गया।</span>`;
         } catch (e) {
             console.error(e);
-            status.innerHTML = '<span style="color:red">❌ कनेक्शन विफल। इंटरनेट जांचें।</span>';
+            status.innerHTML = '<span style="color:red">❌ कनेक्शन विफल।</span>';
         }
     }
 
     function formatDate(val) {
         if (!val) return "";
         const d = new Date(val);
-        // If the date parses as Invalid (e.g. "12th Oct"), use the raw string from Excel
         if (isNaN(d.getTime())) return val; 
-        
-        // Otherwise format it nicely
         return `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
     }
 
-    function verifyAndGenerate() {
-        let inId = document.getElementById('inputId').value.trim().toLowerCase();
-        let inPhone = document.getElementById('inputPhone').value.trim();
-        const grid = document.getElementById('grid-area');
-        const status = document.getElementById('status-msg');
+    function tysVerify() {
+        let inId = document.getElementById('tysInputId').value.trim().toLowerCase();
+        let inPhone = document.getElementById('tysInputPhone').value.trim();
+        const grid = document.getElementById('tys-grid');
+        const status = document.getElementById('tys-status');
 
         if (!inId || !inPhone) {
             status.innerText = "कृपया दोनों विवरण भरें।";
             return;
         }
 
-        // Search Logic: 
-        // 1. Matches if Excel ID *includes* the input ID (e.g. input "1" finds "TYS...-1")
-        // 2. Matches Phone exactly (or included)
-        const found = ALL_DATA.find(m => {
+        const found = TYS_DATA.find(m => {
             const mId = String(m[FIELDS.id]||'').trim().toLowerCase();
             const mPh = String(m[FIELDS.phone]||'').trim();
             return mId.includes(inId) && mPh.includes(inPhone);
         });
 
         if (!found) {
-            status.innerHTML = '<span style="color:red">❌ सदस्य नहीं मिला या विवरण गलत है।</span>';
+            status.innerHTML = '<span style="color:red">❌ विवरण गलत है।</span>';
             grid.innerHTML = '';
             return;
         }
 
-        status.innerHTML = '<span style="color:green">✅ सत्यापन सफल! कार्ड बन रहा है...</span>';
-        renderCard(found);
+        status.innerHTML = '<span style="color:green">✅ सत्यापन सफल!</span>';
+        tysRender(found);
     }
 
-    function renderCard(data) {
-        const grid = document.getElementById('grid-area');
-        
-        // --- Data Extraction ---
-        // Directly use the Full ID from the sheet
+    function tysRender(data) {
+        const grid = document.getElementById('tys-grid');
         const fullID = data[FIELDS.id] || "000"; 
-        
         const name = `${data[FIELDS.first] || ''} ${data[FIELDS.last] || ''}`.trim();
         const father = data[FIELDS.father] || "";
         const phone = data[FIELDS.phone] || "";
         const dob = formatDate(data[FIELDS.dob]) || "________";
         const validityDate = formatDate(data[FIELDS.validity]) || "Lifetime";
-        const address = data[FIELDS.address] || "गांव खांडा, सोनीपत";
+        const address = data[FIELDS.address] || "गांव खांडा";
         const blood = data[FIELDS.blood] || "";
         const designation = data[FIELDS.designation] || "सदस्य";
         
-        // --- QR Logic ---
         let qrText = data[FIELDS.qr_data];
-        if (!qrText) {
-            qrText = `https://www.tirangayuvasamiti.org/verify?id=${fullID}`;
-        }
+        if (!qrText) qrText = `https://www.tirangayuvasamiti.org/verify?id=${fullID}`;
 
-        // --- Images ---
         const photoUrl = getProxy(data[FIELDS.photo]);
         const logoUrl = getProxy(ASSETS.logo);
         const cowUrl = getProxy(ASSETS.cow);
         const stampUrl = getProxy(ASSETS.stamp);
 
-        // Sanitize ID for HTML IDs
         const safeId = fullID.replace(/[^a-zA-Z0-9]/g, ''); 
         const frontId = `cf-${safeId}`;
         const backId = `cb-${safeId}`;
 
         grid.innerHTML = `
-            <div class="card-preview-row">
+            <div class="card-row">
                 <div>
                     <div style="text-align:center; font-weight:bold; color:#002347; margin-bottom:5px;">FRONT SIDE</div>
                     <div class="id-card-wrapper">
-                        <div class="id-card" id="${frontId}">
+                        <div class="id-card-inner" id="${frontId}">
                             <div class="h-header">
-                                <div class="h-tag-top">पहचान पत्र</div>
-                                <img src="${logoUrl}" class="h-logo-left" crossorigin="anonymous">
+                                <div class="h-tag">पहचान पत्र</div>
+                                <img src="${logoUrl}" class="h-logo" crossorigin="anonymous">
                                 <div class="h-titles">
-                                    <div class="h-title-main">गो रक्षा दल (हरियाणा)</div>
-                                    <div class="h-title-sub">तिरंगा युवा समिति (पंजी. सं. 01820)<br>गांव खांडा, तहसील खरखौदा, सोनीपत (हरियाणा)</div>
+                                    <div class="h-main-title">गो रक्षा दल (हरियाणा)</div>
+                                    <div class="h-sub-title">तिरंगा युवा समिति (पंजी. सं. 01820)<br>गांव खांडा, तहसील खरखौदा, सोनीपत (हरियाणा)</div>
                                 </div>
-                                <img src="${cowUrl}" class="h-cow-right" crossorigin="anonymous">
+                                <img src="${cowUrl}" class="h-cow" crossorigin="anonymous">
                             </div>
-
                             <div class="h-body">
-                                <img src="${logoUrl}" class="bg-watermark" crossorigin="anonymous">
-                                
-                                <div class="h-col-left">
-                                    <div class="h-photo-box">
-                                        <img src="${photoUrl}" class="h-photo-img" crossorigin="anonymous">
-                                        <img src="${stampUrl}" class="h-stamp-overlay" crossorigin="anonymous">
+                                <img src="${logoUrl}" class="bg-wm" crossorigin="anonymous">
+                                <div class="h-left">
+                                    <div class="h-p-box">
+                                        <img src="${photoUrl}" class="h-p-img" crossorigin="anonymous">
+                                        <img src="${stampUrl}" class="h-stamp" crossorigin="anonymous">
                                     </div>
-                                    <div class="h-barcode-box">
-                                        <svg id="bar-${safeId}"></svg>
-                                    </div>
+                                    <div class="h-bar-box"><svg id="bar-${safeId}"></svg></div>
                                 </div>
-
-                                <div class="h-col-right">
-                                    <div class="h-id-header">
-                                        <span>क्रमांक: ${fullID}</span>
+                                <div class="h-right">
+                                    <div class="h-row-id">क्रमांक: ${fullID}</div>
+                                    <div class="h-grid">
+                                        <div class="hl">नाम:</div><div class="hv" style="font-size:7pt; color:#002347;">${name}</div>
+                                        <div class="hl">पिता का नाम:</div><div class="hv">${father}</div>
+                                        <div class="hl">जन्म तिथि:</div><div class="hv">${dob}</div>
+                                        <div class="hl">पद:</div><div class="hv"><span style="background:#d62d20; color:white; padding:0 3px; border-radius:2px; display:inline-block; font-size:5pt;">${designation}</span></div>
+                                        <div class="hl">मोबाइल:</div><div class="hv">${phone}</div>
+                                        <div class="hl">पता:</div><div class="hv" style="font-size:4.5pt; line-height:1;">${address}</div>
+                                        <div class="hl">वैधता:</div><div class="hv">${validityDate} &nbsp; <span style="color:#d62d20">B.G:</span> ${blood}</div>
                                     </div>
-                                    
-                                    <div class="h-field-grid">
-                                        <div class="h-lbl">नाम:</div>
-                                        <div class="h-val" style="font-size:7pt; color:#002347;">${name}</div>
-
-                                        <div class="h-lbl">पिता का नाम:</div>
-                                        <div class="h-val">${father}</div>
-
-                                        <div class="h-lbl">जन्म तिथि:</div>
-                                        <div class="h-val">${dob}</div>
-
-                                        <div class="h-lbl">पद:</div>
-                                        <div class="h-val">
-                                            <span style="background:#d62d20; color:white; padding:0 3px; border-radius:2px; display:inline-block; font-size:5pt;">${designation}</span>
-                                        </div>
-
-                                        <div class="h-lbl">मोबाइल:</div>
-                                        <div class="h-val">${phone}</div>
-
-                                        <div class="h-lbl">पता:</div>
-                                        <div class="h-val" style="font-size:4.5pt; line-height:1;">${address}</div>
-                                        
-                                        <div class="h-lbl">वैधता:</div>
-                                        <div class="h-val">${validityDate} &nbsp; <span style="color:#d62d20">B.G:</span> ${blood}</div>
-                                    </div>
-
-                                    <div class="h-sign-area">
-                                        <img src="${stampUrl}" class="h-sign-img" style="opacity:0;" crossorigin="anonymous"> 
-                                        <div class="h-sign-lbl">(अधिकृत हस्ताक्षर)</div>
+                                    <div class="h-sign">
+                                        <img src="${stampUrl}" crossorigin="anonymous"> 
+                                        <span>(अधिकृत हस्ताक्षर)</span>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="h-footer">
-                                संपर्क सूत्र: +91 90535 75169 | info@tirangayuvasamiti.org | www.tirangayuvasamiti.org
-                            </div>
+                            <div class="h-footer">संपर्क सूत्र: +91 90535 75169 | info@tirangayuvasamiti.org | www.tirangayuvasamiti.org</div>
                         </div>
                     </div>
                 </div>
-
                 <div>
                     <div style="text-align:center; font-weight:bold; color:#002347; margin-bottom:5px;">BACK SIDE</div>
                     <div class="id-card-wrapper">
-                        <div class="id-card" id="${backId}">
+                        <div class="id-card-inner" id="${backId}">
                             <div class="h-header" style="justify-content:center; background:#002347;">
-                                <div class="h-title-main" style="color:white;">सत्यापन और नियम</div>
+                                <div class="h-main-title" style="color:white;">सत्यापन और नियम</div>
                             </div>
-                            <div class="vb-body">
-                                <div class="vb-text">सदस्यता सत्यापित करने के लिए स्कैन करें</div>
-                                <div id="qr-${safeId}" class="vb-qr-box"></div>
-                                <div class="vb-sub">
-                                    यह कार्ड तिरंगा युवा समिति की संपत्ति है।<br>
-                                    गुम होने पर कृपया उपरोक्त पते पर लौटाएं।
-                                </div>
-                                <div style="margin-top:10px; font-weight:bold; color:#d62d20;">
-                                    JAI HIND - JAI BHARAT - JAI GAU MATA
-                                </div>
+                            <div class="h-body vb-c">
+                                <div class="vb-t">सदस्यता सत्यापित करने के लिए स्कैन करें</div>
+                                <div id="qr-${safeId}" class="vb-qr"></div>
+                                <div class="vb-s">यह कार्ड तिरंगा युवा समिति की संपत्ति है।<br>गुम होने पर कृपया उपरोक्त पते पर लौटाएं।</div>
+                                <div style="margin-top:10px; font-weight:bold; color:#d62d20;">JAI HIND - JAI BHARAT - JAI GAU MATA</div>
                             </div>
-                            <div class="h-footer">
-                                Together We Serve • Go Raksha Dal Haryana
-                            </div>
+                            <div class="h-footer">Together We Serve • Go Raksha Dal Haryana</div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="print-btn-container">
-                <button class="btn-print" onclick="printCard('${frontId}', '${backId}')">
-                    <i class="fa-solid fa-print"></i> प्रिंट आईडी कार्ड
-                </button>
+            <div class="btn-print-wrap">
+                <button class="btn-print" onclick="tysPrint('${frontId}', '${backId}')"><i class="fa-solid fa-print"></i> प्रिंट आईडी कार्ड</button>
             </div>
         `;
 
         setTimeout(() => {
-            JsBarcode(`#bar-${safeId}`, fullID, {
-                format: "CODE128", displayValue: false, height: 30, width: 1.5, margin: 0, background: "transparent"
-            });
-
-            const qrDiv = document.getElementById(`qr-${safeId}`);
-            new QRCode(qrDiv, {
-                text: qrText,
-                width: 100, height: 100,
-                correctLevel: QRCode.CorrectLevel.M
-            });
+            JsBarcode(`#bar-${safeId}`, fullID, { format: "CODE128", displayValue: false, height: 30, width: 1.5, margin: 0, background: "transparent" });
+            new QRCode(document.getElementById(`qr-${safeId}`), { text: qrText, width: 100, height: 100, correctLevel: QRCode.CorrectLevel.M });
         }, 100);
     }
 
-    function printCard(fid, bid) {
+    function tysPrint(fid, bid) {
         const fHtml = document.getElementById(fid).outerHTML;
         const bHtml = document.getElementById(bid).outerHTML;
         const win = window.open('', '', 'width=900,height=600');
         win.document.write(`
-            <html>
-            <head>
-                <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet">
-                <style>
-                    @page { size: 85.6mm 54mm; margin: 0; }
-                    body { margin: 0; padding: 0; background: white; font-family: 'Tiro Devanagari Hindi', serif; -webkit-print-color-adjust: exact; }
-                    .page-break { page-break-after: always; width: 85.6mm; height: 54mm; }
-                    
-                    /* Copy Styles */
-                    .id-card { width: 85.6mm; height: 54mm; border: none; position: relative; overflow: hidden; display: flex; flex-direction: column; background:white; }
-                    .h-header { height: 14mm; background: #fff; border-bottom: 1px solid #002347; display: flex; align-items: center; justify-content: space-between; padding: 0 2mm; position: relative; z-index: 5; }
-                    .h-tag-top { position: absolute; top: 0.5mm; left: 50%; transform: translateX(-50%); font-size: 3.5pt; background: #002347; color: white; padding: 0.5px 4px; border-radius: 2px; text-transform: uppercase; font-weight: bold; }
-                    .h-logo-left { width: 10mm; } .h-cow-right { width: 11mm; }
-                    .h-titles { flex: 1; text-align: center; }
-                    .h-title-main { font-size: 10pt; font-weight: 700; color: #d62d20; line-height: 1.1; margin-top: 1px; white-space: nowrap; }
-                    .h-title-sub { font-size: 4.5pt; font-weight: 600; color: #002347; line-height: 1.1; margin-top: 0.5mm; }
-
-                    .h-body { flex: 1; display: flex; padding: 1mm 2mm; position: relative; }
-                    .bg-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30mm; opacity: 0.1; z-index: 0; }
-                    
-                    .h-col-left { width: 22mm; display: flex; flex-direction: column; align-items: center; }
-                    .h-photo-box { width: 20mm; height: 24mm; border: 1px solid #ccc; position: relative; margin-top: 1mm; }
-                    .h-photo-img { width: 100%; height: 100%; object-fit: cover; }
-                    .h-stamp-overlay { position: absolute; bottom: -4mm; right: -4mm; width: 14mm; opacity: 0.8; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
-                    .h-barcode-box { margin-top: auto; width: 100%; height: 6mm; display:flex; justify-content:center; }
-                    
-                    .h-col-right { flex: 1; padding-left: 2mm; display: flex; flex-direction: column; }
-                    .h-id-header { font-size: 5pt; font-weight: bold; color: #002347; border-bottom: 0.5px solid #d62d20; margin-bottom: 1mm; }
-                    .h-field-grid { display: grid; grid-template-columns: 16mm 1fr; row-gap: 0.8mm; font-size: 5.5pt; }
-                    .h-lbl { color: #d62d20; font-weight: 700; }
-                    .h-val { color: #000; font-weight: 600; white-space: nowrap; overflow: hidden; }
-                    
-                    .h-sign-area { position: absolute; bottom: 0; right: 2mm; text-align: center; }
-                    .h-sign-lbl { font-size: 4pt; color: #002347; font-weight: 700; border-top: 0.5px solid #000; padding-top: 0.5px; }
-                    
-                    .h-footer { height: 4mm; background: #002347; color: white; display: flex; align-items: center; justify-content: center; font-size: 3.5pt; font-weight: 600; text-align: center; line-height: 1.1; }
-
-                    .vb-body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 3mm; text-align: center; }
-                    .vb-qr-box { width: 25mm; height: 25mm; border: 1px solid #ccc; padding: 1px; margin-bottom: 2mm; }
-                    .vb-qr-box img { width: 100%; height: 100%; }
-                    .vb-text { font-size: 7pt; font-weight: bold; color: #002347; }
-                    .vb-sub { font-size: 5pt; color: #555; }
-                </style>
-            </head>
+            <html><head>
+            <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet">
+            <style>
+                @page { size: 85.6mm 54mm; margin: 0; }
+                body { margin: 0; padding: 0; background: white; font-family: 'Tiro Devanagari Hindi', 'Nirmala UI', 'Arial Unicode MS', sans-serif; -webkit-print-color-adjust: exact; }
+                .page-break { page-break-after: always; width: 85.6mm; height: 54mm; }
+                .id-card-inner { width: 85.6mm; height: 54mm; border: none; position: relative; overflow: hidden; display: flex; flex-direction: column; background:white; line-height: normal; }
+                /* Re-use Main Styles with Updates */
+                .h-header { height: 14mm; background: #fff; border-bottom: 1px solid #002347; display: flex; align-items: center; justify-content: space-between; padding: 0 1mm; position: relative; z-index: 5; }
+                .h-tag { position: absolute; top: 0.5mm; left: 50%; transform: translateX(-50%); font-size: 3.5pt; background: #002347; color: white; padding: 0.5px 4px; border-radius: 2px; text-transform: uppercase; font-weight: bold; }
+                .h-logo { width: 10mm; } .h-cow { width: 11mm; }
+                .h-titles { flex: 1; text-align: center; }
+                .h-main-title { font-size: 12pt; font-weight: 700; color: #d62d20; line-height: 1; margin-top: 2px; white-space: nowrap; }
+                .h-sub-title { font-size: 5.5pt; font-weight: 600; color: #002347; line-height: 1.1; margin-top: 0.5mm; }
+                .h-body { flex: 1; display: flex; padding: 2mm 3mm; position: relative; }
+                .bg-wm { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30mm; opacity: 0.1; z-index: 0; }
+                .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; }
+                .h-p-box { width: 20mm; height: 24mm; border: 1px solid #ccc; position: relative; margin-top: 0; }
+                .h-p-img { width: 100%; height: 100%; object-fit: cover; }
+                .h-stamp { position: absolute; bottom: -2mm; right: -2mm; width: 14mm; opacity: 0.8; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; }
+                .h-bar-box { margin-top: 3mm; width: 100%; height: 6mm; display:flex; justify-content:center; align-items: flex-start; }
+                .h-right { flex: 1; padding-left: 3mm; display: flex; flex-direction: column; }
+                .h-row-id { font-size: 5pt; font-weight: bold; color: #002347; border-bottom: 0.5px solid #d62d20; margin-bottom: 1.5mm; }
+                .h-grid { display: grid; grid-template-columns: 16mm 1fr; row-gap: 1mm; font-size: 5.5pt; }
+                .hl { color: #d62d20; font-weight: 700; } .hv { color: #000; font-weight: 600; white-space: nowrap; overflow: hidden; }
+                .h-sign { position: absolute; bottom: 0; right: 2mm; text-align: center; } .h-sign span { font-size: 4pt; color: #002347; font-weight: 700; border-top: 0.5px solid #000; padding-top: 0.5px; }
+                .h-footer { height: 4mm; background: #002347; color: white; display: flex; align-items: center; justify-content: center; font-size: 3.5pt; font-weight: 600; text-align: center; line-height: 1.1; }
+                .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 3mm; text-align: center; }
+                .vb-qr { width: 25mm; height: 25mm; border: 1px solid #ccc; padding: 1px; margin-bottom: 2mm; }
+                .vb-qr img { width: 100%; height: 100%; }
+                .vb-t { font-size: 7pt; font-weight: bold; color: #002347; } .vb-s { font-size: 5pt; color: #555; }
+            </style></head>
             <body>
                 <div class="page-break">${fHtml}</div>
                 <div class="page-break">${bHtml}</div>
-            </body>
-            </html>
+            </body></html>
         `);
         win.document.close();
         setTimeout(() => { win.focus(); win.print(); setTimeout(() => win.close(), 1000); }, 1000);
     }
 </script>
-</body>
-</html>
