@@ -164,16 +164,16 @@
         height: 18%; 
         background: #002347;
         width: 100%;
-        display: flex; align-items: center; justify-content: center;
+        display: flex; align-items: center; justify-content: space-between; /* Adjusted for QR */
         position: relative; z-index: 5;
-        padding: 0 3mm; 
+        padding: 0 2mm 0 3mm; 
         clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
         border-bottom: 2px solid #FF9933;
     }
     .v-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: #FF9933; z-index: 6; }
 
-    .v-header-content { display: flex; align-items: center; justify-content: center; width: 100%; }
-    .v-header-logo { width: 9mm; height: auto; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); margin-right: 2mm; }
+    .v-header-content { display: flex; align-items: center; flex: 1; }
+    .v-header-logo { width: 9mm; height: auto; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); margin-right: 1.5mm; }
     
     .v-org-name { 
         font-size: 9pt; font-weight: 900; color: white; 
@@ -181,6 +181,16 @@
         font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;
         white-space: nowrap;
     }
+
+    /* FRONT HEADER QR BOX */
+    .v-header-qr-box { 
+        width: 7.5mm; height: 7.5mm; 
+        background: white; padding: 1px; 
+        border-radius: 2px; flex-shrink: 0; 
+        display: flex; align-items: center; justify-content: center;
+        margin-left: 1mm; margin-bottom: 3.5mm;
+    }
+    .v-header-qr-box img { width: 100%; height: 100%; }
 
     .v-body {
         flex: 1; position: relative;
@@ -288,7 +298,7 @@
     .vb-sign-section {
         width: 100%; display: flex; flex-direction: column; align-items: flex-end;
         margin-top: auto; 
-        margin-bottom: 3.5mm; /* INCREASED GAP FROM BOTTOM FOOTER */
+        margin-bottom: 3.5mm; 
         padding-right: 1mm;
     }
     .vb-stamp { 
@@ -475,7 +485,6 @@
             const issueDate = formatDate(row[FIELD.issueDate]);
             const memberPhone = row[FIELD.phone] || '_______________'; 
             
-            // PROXY EVERYTHING to fix download/print visibility
             let rawPhoto = row[FIELD.photo] || 'https://via.placeholder.com/150x200?text=PHOTO';
             let photoUrl = getProxyUrl(rawPhoto);
             let logoUrl = getProxyUrl(CONFIG.logoUrl);
@@ -490,6 +499,7 @@
 
             const frontId = `card-front-${i}`;
             const backId = `card-back-${i}`;
+            const headerQrId = `qr-header-${i}`;
             const backQrId = `qr-back-${i}`;
             const barcodeId = `barcode-${i}`;
             const wrapperId = `wrapper-${i}`;
@@ -505,6 +515,7 @@
                                     <img src="${logoUrl}" class="v-header-logo" crossorigin="anonymous">
                                     <div class="v-org-name">${CONFIG.ngoName}</div>
                                 </div>
+                                <div id="${headerQrId}" class="v-header-qr-box"></div>
                             </div>
 
                             <div class="v-body">
@@ -599,11 +610,19 @@
             grid.innerHTML += html;
 
             setTimeout(() => { 
+                // Header QR
+                const headerQrDiv = document.getElementById(headerQrId);
+                const tempHeaderQr = document.createElement('div');
+                new QRCode(tempHeaderQr, { text: finalQrUrl, width: 64, height: 64, correctLevel: QRCode.CorrectLevel.L });
+                headerQrDiv.appendChild(convertCanvasToImg(tempHeaderQr));
+
+                // Back QR
                 const backQrDiv = document.getElementById(backQrId);
                 const temp2 = document.createElement('div');
                 new QRCode(temp2, { text: finalQrUrl, width: 128, height: 128, correctLevel: QRCode.CorrectLevel.H });
                 backQrDiv.appendChild(convertCanvasToImg(temp2));
 
+                // Barcode
                 JsBarcode("#"+barcodeId, "TYS-"+memID, {
                     format: "CODE128",
                     displayValue: false,
@@ -650,12 +669,11 @@
         }, 500);
     }
 
-    // === NEW IFRAME PRINT SYSTEM (Standard for ID Cards) ===
+    // === NEW IFRAME PRINT SYSTEM (Clean Print) ===
     function printCard(frontId, backId) {
         const frontHTML = document.getElementById(frontId).innerHTML;
         const backHTML = document.getElementById(backId).innerHTML;
 
-        // Create an iframe to print cleanly without UI interference
         let printFrame = document.createElement('iframe');
         printFrame.style.position = 'fixed';
         printFrame.style.top = '-9999px';
@@ -676,30 +694,26 @@
                     @page { size: 54mm 85.6mm; margin: 0; }
                     body { margin: 0; padding: 0; background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                     
-                    /* The page container ensures the card is exactly the size of the paper */
-                    .print-page {
-                        width: 54mm; height: 85.6mm;
-                        position: relative; overflow: hidden;
-                        page-break-after: always;
-                    }
+                    .print-page { width: 54mm; height: 85.6mm; position: relative; overflow: hidden; page-break-after: always; }
 
                     .id-card { 
                         width: 54mm; height: 85.6mm; 
                         position: relative; background:white; 
                         display:flex; flex-direction:column; 
-                        /* Thin border for print cut lines */
                         border: 1px dotted #ccc;
                         box-sizing: border-box; 
                         border-radius: 3.18mm; 
                         overflow: hidden; 
                     }
 
-                    /* --- COPY CSS STYLES --- */
-                    .v-header { height: 18%; background: #002347; width: 100%; display: flex; align-items: center; justify-content: center; position: relative; z-index: 5; padding: 0 3mm; clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%); border-bottom: 2px solid #FF9933; }
+                    /* --- COPY CSS --- */
+                    .v-header { height: 18%; background: #002347; width: 100%; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 5; padding: 0 2mm 0 3mm; clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%); border-bottom: 2px solid #FF9933; }
                     .v-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: #FF9933; z-index: 6; }
-                    .v-header-content { display: flex; align-items: center; justify-content: center; width: 100%; }
-                    .v-header-logo { width: 9mm; height: auto; margin-right: 2mm; }
+                    .v-header-content { display: flex; align-items: center; flex: 1; }
+                    .v-header-logo { width: 9mm; height: auto; margin-right: 1.5mm; }
                     .v-org-name { font-size: 9pt; font-weight: 900; color: white; text-transform: uppercase; margin: 0; line-height: 1; font-family: 'Oswald', sans-serif; letter-spacing: 0.5px; white-space: nowrap; }
+                    .v-header-qr-box { width: 7.5mm; height: 7.5mm; background: white; padding: 1px; border-radius: 2px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-left: 1mm; margin-bottom: 3.5mm; }
+                    .v-header-qr-box img { width: 100%; height: 100%; }
 
                     .v-body { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 2mm; background-image: linear-gradient(#f1f1f1 1px, transparent 1px), linear-gradient(90deg, #f1f1f1 1px, transparent 1px); background-size: 4mm 4mm; padding-bottom: 5mm; }
                     .v-photo-frame { width: 21mm; height: 25mm; background: white; border-radius: 4px; position: relative; z-index: 2; margin-bottom: 2mm; border: 1px solid #ddd; }
@@ -752,11 +766,9 @@
         `);
         frameDoc.close();
         
-        // Wait for images to load in the iframe before printing
         setTimeout(() => {
             printFrame.contentWindow.focus();
             printFrame.contentWindow.print();
-            // Remove frame after printing
             setTimeout(() => { document.body.removeChild(printFrame); }, 2000);
         }, 800);
     }
