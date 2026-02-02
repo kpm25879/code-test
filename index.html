@@ -170,7 +170,7 @@
         box-shadow: 0 4px 10px rgba(214, 45, 32, 0.3);
     }
 
-    /* === ID CARD CSS (PRESERVED EXACTLY AS REQUESTED) === */
+    /* === ID CARD CSS === */
     .id-card-wrapper {
         width: 85.6mm; height: 54mm;
         position: relative; margin: 0 auto;
@@ -228,11 +228,10 @@
         position: relative; background: rgba(255,255,255,0.94); 
     }
     
-    /* === UPDATED WATERMARK === */
-    /* Reduced width to 26mm and kept centered in the body */
+    /* === UPDATED WATERMARK (POSITION FIXED AS REQUESTED) === */
     .bg-wm { 
         position: absolute; 
-        top: 40%; 
+        top: 40%;  /* CHANGED: Moved up to 40% */
         left: 50%; 
         transform: translate(-50%, -50%); 
         width: 26mm; /* Reduced size */
@@ -278,9 +277,10 @@
         display: block; width: 100%; text-align: center; font-family: 'Poppins', sans-serif;
     }
     
-    .h-grid { display: grid; grid-template-columns: 18mm 1fr; row-gap: 1mm; font-size: 6.2pt; }
+    /* CHANGED: Increased row-gap to 2.5mm for better line height/spacing */
+    .h-grid { display: grid; grid-template-columns: 18mm 1fr; row-gap: 2.5mm; font-size: 6.2pt; }
     .hl { color: #002347; font-weight: 800; margin: 0; padding: 0; }
-    .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; padding: 0; }
+    .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; padding: 0; line-height: 1.3; }
 
     /* BOTTOM ROW: Barcode */
     .h-barcode-row {
@@ -486,9 +486,9 @@
                                             <div class="hl">नाम:</div><div class="hv" style="font-size:8pt; color:#002347;">${name}</div>
                                             <div class="hl">पिता का नाम:</div><div class="hv">${father}</div>
                                             <div class="hl">जन्म तिथि:</div><div class="hv">${dob}</div>
-                                            <div class="hl">पद:</div><div class="hv"><span style="background:#d62d20; color:white; padding:1px 5px; border-radius:0; display:inline-block; font-size:6pt; line-height:1.3;">${designation}</span></div>
+                                            <div class="hl">पद:</div><div class="hv"><span style="background:#d62d20; color:white; padding:1px 5px; border-radius:0; display:inline-block; font-size:6pt; line-height:1.2;">${designation}</span></div>
                                             <div class="hl">मोबाइल:</div><div class="hv">${phone}</div>
-                                            <div class="hl">पता:</div><div class="hv" style="font-size:5pt; line-height:1.3; white-space:normal;">${address}</div>
+                                            <div class="hl">पता:</div><div class="hv" style="font-size:5pt; line-height:1.2; white-space:normal;">${address}</div>
                                             <div class="hl">वैधता:</div>
                                             <div class="hv" style="display:flex; justify-content:space-between;">
                                                 <span>${validityDate}</span>
@@ -632,8 +632,8 @@
                     .h-right { flex: 1; padding-left: 4mm; display: flex; flex-direction: column; position: relative; }
                     .h-row-id { font-size: 9pt; font-weight: 800; color: #d62d20; border-bottom: 1px dashed #002347; margin-bottom: 1.5mm; padding-bottom: 0.5mm; display: block; width: 100%; text-align: center; }
                     
-                    .h-grid { display: grid; grid-template-columns: 18mm 1fr; row-gap: 1mm; font-size: 6.2pt; }
-                    .hl { color: #002347; font-weight: 800; } .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; }
+                    .h-grid { display: grid; grid-template-columns: 18mm 1fr; row-gap: 2.5mm; font-size: 6.2pt; }
+                    .hl { color: #002347; font-weight: 800; } .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; line-height: 1.3; }
                     
                     .h-barcode-row { width: 100%; height: 8mm; display: flex; justify-content: center; align-items: center; margin-top: 1mm; border-top: 0.5px dotted #ccc; }
                     .h-bar-wrap { width: 95%; height: 100%; display:flex; justify-content:center; } 
