@@ -49,8 +49,11 @@ body {
 .btn-gen:hover { background-color: #d35400; }
 .btn-excel { background-color: #27ae60; }
 .btn-excel:hover { background-color: #219150; }
+.btn-reset { background-color: #c0392b; }
+.btn-reset:hover { background-color: #a93226; }
 
 .panel-group { display: inline-block; margin: 0 10px; }
+.status-bar { margin-top: 8px; font-size: 0.85em; color: #bdc3c7; }
 
 /* --- Original Page Styling --- */
 .page {
@@ -307,24 +310,39 @@ body {
     <div class="panel-group">
         <button class="btn-gen" onclick="generateAndPrint()">Generate & Print</button>
         <button class="btn-excel" onclick="downloadExcel()">Download ID List (Excel)</button>
+        <button class="btn-reset" onclick="resetSession()">Reset Session</button>
     </div>
-    <div style="margin-top:5px; font-size: 0.8em; color: #aaa;">
-        Generates 6-digit random numbers after TYSYGM2026.
+    <div class="status-bar" id="statusMsg">
+        Session Status: 0 IDs generated.
     </div>
 </div>
 
 <div id="print-container"></div>
 
 <script>
-// Store generated data for Excel export
-let generatedData = [];
+// --- Global State to track Used IDs across the session ---
+let usedIdsGlobal = new Set();
+let excelDataGlobal = [];
+
+function updateStatus() {
+    const msg = document.getElementById('statusMsg');
+    msg.textContent = `Session Status: ${usedIdsGlobal.size} IDs generated so far.`;
+}
+
+function resetSession() {
+    if(confirm("Are you sure? This will clear the Excel download history for this session.")) {
+        usedIdsGlobal = new Set();
+        excelDataGlobal = [];
+        document.getElementById('print-container').innerHTML = '';
+        updateStatus();
+    }
+}
 
 function generateRandomSuffix() {
-    // Generate a random number between 100000 and 999999
     return Math.floor(100000 + Math.random() * 900000);
 }
 
-// Logic to generate QR code URL with unique ID
+// Logic to generate QR code URL
 function getQRUrl(uniqueID) {
     const baseUrl = 'https://www.tirangayuvasamiti.org/omr-verify/?id=' + uniqueID;
     return `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(baseUrl)}`;
@@ -373,27 +391,38 @@ function generateAndPrint() {
     const container = document.getElementById('print-container');
     const count = parseInt(document.getElementById('sheetCount').value);
     
-    // Clear previous data
+    // Clear only visual container, NOT the global history
     container.innerHTML = '';
-    generatedData = [];
     
-    // Set for collision detection in this batch
-    const batchIds = new Set();
+    // Safety break loop
+    let attempts = 0;
+    const maxAttempts = 50000; 
 
     for (let i = 0; i < count; i++) {
         let suffix;
         let uniqueID;
-        
-        // Ensure uniqueness
-        do {
+        let isUnique = false;
+
+        // Try to find a unique ID
+        while (!isUnique) {
+            attempts++;
+            if (attempts > maxAttempts) {
+                alert("Error: Could not generate unique ID after many attempts.");
+                return;
+            }
+
             suffix = generateRandomSuffix();
             uniqueID = 'TYSYGM2026' + suffix;
-        } while (batchIds.has(uniqueID));
-        
-        batchIds.add(uniqueID);
+            
+            // Check against GLOBAL history
+            if (!usedIdsGlobal.has(uniqueID)) {
+                isUnique = true;
+                usedIdsGlobal.add(uniqueID);
+            }
+        }
         
         // Save to global data for Excel
-        generatedData.push({
+        excelDataGlobal.push({
             id: uniqueID,
             url: 'https://www.tirangayuvasamiti.org/omr-verify/?id=' + uniqueID
         });
@@ -521,12 +550,14 @@ function generateAndPrint() {
             </div>
         `;
 
-        // Inject the grid questions into the newly created grid div
+        // Inject the grid questions
         const gridContainer = pageDiv.querySelector('.omr-grid');
         buildGrid(gridContainer);
         
         container.appendChild(pageDiv);
     }
+    
+    updateStatus();
 
     // Trigger Print
     setTimeout(() => {
@@ -536,28 +567,28 @@ function generateAndPrint() {
 
 // Function to generate CSV file for Excel
 function downloadExcel() {
-    if (generatedData.length === 0) {
-        alert("Please generate some OMR sheets first!");
+    if (excelDataGlobal.length === 0) {
+        alert("No IDs generated yet!");
         return;
     }
 
     let csvContent = "data:text/csv;charset=utf-8,";
     csvContent += "Sheet ID,Verification URL\n"; // Header row
 
-    generatedData.forEach(function(row) {
+    excelDataGlobal.forEach(function(row) {
         csvContent += row.id + "," + row.url + "\n";
     });
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "omr_sheet_ids.csv");
+    link.setAttribute("download", "omr_sheet_ids_full_session.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 }
 
-// Generate 1 sheet on initial load
+// Initial gen
 window.onload = function() {
     generateAndPrint();
 };
