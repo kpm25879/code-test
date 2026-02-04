@@ -1,672 +1,567 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Rozha+One&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OMR Sheet - Yuva Gyan Mahotsav 2026</title>
 
 <style>
-    /* === GLOBAL RESET === */
-    html, body {
-        margin: 0; padding: 0;
-        background-color: #f0f2f5;
-        -webkit-print-color-adjust: exact; print-color-adjust: exact;
-    }
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; }
 
-    /* === NEW FULL WIDTH UI STYLES === */
-    #tys-app-container {
-        font-family: 'Poppins', sans-serif;
-        width: 100%;
-        padding: 40px 20px;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    #tys-app-container * { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-    /* Wide Control Box */
-    #tys-app-container .controls-box {
-        background: #ffffff;
-        width: 100%;
-        max-width: 1000px; /* WIDE LAYOUT */
-        padding: 30px 40px;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,35,71,0.08);
-        border-top: 5px solid #002347;
-        margin-bottom: 50px;
-    }
+/* --- Control Panel Styling (Screen Only) --- */
+#control-panel {
+    width: 100%;
+    background-color: #2c3e50;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+    z-index: 9999;
+}
+#control-panel input {
+    padding: 8px;
+    border-radius: 4px;
+    border: none;
+    margin: 0 5px;
+    width: 80px;
+    text-align: center;
+}
+#control-panel button {
+    padding: 8px 15px;
+    margin: 0 5px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.btn-gen { background-color: #e67e22; }
+.btn-gen:hover { background-color: #d35400; }
+.btn-excel { background-color: #27ae60; }
+.btn-excel:hover { background-color: #219150; }
 
-    /* Header Section */
-    .tys-header {
-        margin-bottom: 25px;
-        text-align: left;
-        border-bottom: 2px solid #f0f0f0;
-        padding-bottom: 15px;
-    }
-    .tys-header h2 {
-        color: #002347;
-        margin: 0;
-        font-size: 24px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
+.panel-group { display: inline-block; margin: 0 10px; }
 
-    /* Input Grid System */
-    .tys-input-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr; /* Side by Side */
-        gap: 20px;
-        margin-bottom: 20px;
-    }
-    
-    .input-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-    
-    .input-label {
-        font-size: 13px;
-        font-weight: 600;
-        color: #555;
-        text-transform: uppercase;
-    }
+/* --- Original Page Styling --- */
+.page {
+    width: 210mm;
+    height: 297mm;
+    background-color: #ffffff;
+    padding: 5mm 8mm;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #000;
+    position: relative;
+    z-index: 0;
+    overflow: hidden;
+    margin-bottom: 20px; /* Space between sheets on screen */
+}
 
-    /* Input Fields */
-    #tys-app-container .input-field {
-        width: 100%;
-        padding: 15px 18px;
-        background: #f8f9fa;
-        border: 2px solid #e9ecef;
-        border-radius: 8px;
-        font-size: 16px;
-        font-family: 'Poppins', sans-serif;
-        color: #333;
-        transition: all 0.3s ease;
-    }
-    #tys-app-container .input-field:focus {
-        outline: none;
-        background: #fff;
-        border-color: #002347;
-        box-shadow: 0 0 0 4px rgba(0, 35, 71, 0.1);
-    }
-    
-    /* Placeholders visible */
-    #tys-app-container .input-field::placeholder {
-        color: #888;
-        font-size: 14px;
-    }
+/* Background Watermark */
+.page::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgZD10cm2RDqNWP2IPsT01lVeki4FNEoS3Dj9YaXI2bygfF1RwxD4HAtno-APUK-k-CPD_Yj1mtBAQqNvsPjeCHPZnYQdotMvLfkHwrXkVqf2-_83-fYJLyaAfNVlrsQ5C764cv_McWsDdQKxscplGOmElge2u6EXlMNocUkZhyiPG2Cw/s1600/TYS-White.png');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 60%;
+    opacity: 0.10;
+    z-index: -1;
+}
 
-    /* Action Section */
-    .tys-actions {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
+@media print {
+    body { background: none; display: block; }
+    #control-panel { display: none !important; }
+    .page { 
+        border: 1px solid #000; 
+        margin: 0; 
+        box-shadow: none; 
+        page-break-after: always; /* Forces new page for each OMR */
     }
+    @page { size: A4; margin: 0; }
+}
 
-    #tys-app-container .btn-verify {
-        background: linear-gradient(135deg, #002347 0%, #003366 100%);
-        color: white;
-        border: none;
-        padding: 16px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 700;
-        cursor: pointer;
-        width: 100%;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        box-shadow: 0 4px 15px rgba(0, 35, 71, 0.2);
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    #tys-app-container .btn-verify:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 35, 71, 0.3);
-    }
-    #tys-app-container .btn-verify:active {
-        transform: translateY(0);
-    }
+/* Machine readable marks */
+.timing-mark { position: absolute; background: #000; }
+.tm-top, .tm-bottom { width: 10px; height: 4px; }
+.tm-left, .tm-right { width: 4px; height: 10px; }
 
-    #tys-status {
-        text-align: center;
-        font-size: 15px;
-        font-weight: 600;
-        min-height: 24px;
-        padding: 10px;
-        background: #f8f9fa;
-        border-radius: 6px;
-    }
+/* Header */
+.header {
+    text-align: center;
+    border: 2px solid #FF9933;
+    background-color: #fffaf5;
+    padding: 4px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    position: relative;
+}
+.header h1 { margin: 0; font-size: 16pt; color: #e67e22; }
+.header h2 { margin: 2px 0 0; font-size: 11pt; color: #333; }
 
-    /* Mobile Responsiveness for UI */
-    @media (max-width: 768px) {
-        .tys-input-grid {
-            grid-template-columns: 1fr; /* Stack vertically on mobile */
-        }
-        #tys-app-container .controls-box {
-            padding: 20px;
-        }
-    }
+/* QR Code Style */
+.qr-code-img {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 45px;
+    height: 45px;
+    border: 1px solid #ddd;
+    background: #fff;
+}
 
-    /* === GRID RESULT STYLES === */
-    #tys-grid { display: flex; flex-direction: column; gap: 40px; align-items: center; width: 100%; }
-    .card-row {
-        display: flex; flex-wrap: wrap; gap: 40px; justify-content: center;
-        background: #ffffff; padding: 40px; border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        border: 1px solid #eee; width: 100%; max-width: 1100px;
-    }
-    .btn-print-wrap { width: 100%; display: flex; justify-content: center; margin-top: 20px; }
-    .btn-print { 
-        background: #d62d20; color: white; padding: 14px 30px; border: none; 
-        border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 700;
-        display: inline-flex; align-items: center; gap: 10px;
-        box-shadow: 0 4px 10px rgba(214, 45, 32, 0.3);
-    }
+/* Info Section */
+.info-section {
+    display: grid;
+    grid-template-columns: 2.1fr 1fr;
+    gap: 10px;
+    margin-bottom: 2px;
+}
 
-    /* === ID CARD CSS === */
-    .id-card-wrapper {
-        width: 85.6mm; height: 54mm;
-        position: relative; margin: 0 auto;
-        border-radius: 0; /* Square */
-        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-    }
+.field {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    font-size: 8.5pt;
+    font-weight: bold;
+    white-space: nowrap;
+}
 
-    .id-card-inner {
-        width: 85.6mm; height: 54mm;
-        background-color: #ffffff;
-        background-image: radial-gradient(#002347 0.5px, transparent 0.5px), radial-gradient(#002347 0.5px, #ffffff 0.5px);
-        background-size: 20px 20px; background-position: 0 0, 10px 10px; background-blend-mode: overlay;
-        position: relative; overflow: hidden;
-        border: 1px solid #aaa; border-radius: 0; /* Square */
-        font-family: 'Noto Sans Devanagari', sans-serif;
-        display: flex; flex-direction: column; color: #000; line-height: normal;
-    }
+/* Box Styles */
+.box-wrap { display: flex; margin-left: 5px; }
 
-    /* HEADER */
-    .h-header { 
-        height: 14mm; 
-        background: #002347; 
-        display: flex; align-items: center; justify-content: space-between; 
-        padding: 0 2mm; position: relative; z-index: 5;
-        border-bottom: 1.8mm solid #d62d20; 
-    }
-    /* INCREASED SIZE to 13mm */
-    .h-logo, .h-cow { width: 13mm; height: 13mm; object-fit: contain; display: block; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); }
-    /* Added object-fit: cover for perfect circle */
-    .h-cow { border-radius: 50%; border: 1px solid white; background:white; object-fit: cover; }
-    
-    .h-titles { flex: 1; text-align: center; padding-top: 3.5mm; } 
-    .h-main-title { 
-        font-family: 'Rozha One', serif; font-size: 12.5pt; color: #ffffff; 
-        line-height: 0.9; margin-top: 0; white-space: nowrap; 
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    }
-    .h-sub-title { 
-        font-family: 'Noto Sans Devanagari', sans-serif; font-size: 5pt; 
-        font-weight: 700; color: #ffeb3b; line-height: 1.2; margin-top: 0.5mm; 
-    }
-    
-    .h-tag { 
-        position: absolute; top: 0; left: 50%; transform: translateX(-50%); 
-        font-size: 3.5pt; background: #d62d20; color: white; padding: 1px 8px; 
-        border-radius: 0; /* Square */
-        text-transform: uppercase; font-weight: 800; 
-        z-index: 10;
-    }
+.box {
+    width: 17px;
+    height: 21px;
+    border: 1px solid #000;
+    margin-right: -1px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #555;
+}
 
-    /* BODY */
-    .h-body { 
-        flex: 1; display: flex; flex-direction: column; /* Changed to Column for Top/Bottom split */
-        padding: 1.5mm 3mm; 
-        position: relative; background: rgba(255,255,255,0.94); 
-    }
-    
-    /* === UPDATED WATERMARK (POSITION FIXED AS REQUESTED) === */
-    .bg-wm { 
-        position: absolute; 
-        top: 40%;  /* CHANGED: Moved up to 40% */
-        left: 50%; 
-        transform: translate(-50%, -50%); 
-        width: 26mm; /* Reduced size */
-        opacity: 0.08; 
-        pointer-events: none; 
-        z-index: 0; 
-        filter: grayscale(100%); 
-    }
+/* Secret Key Center */
+.secret-key {
+    margin: 4px 0;
+    display: flex;
+    justify-content: center;
+}
+.secret-key .field { margin-bottom: 0; }
 
-    /* CONTENT ROW (Photo + Details) */
-    .h-content-row { display: flex; width: 100%; flex: 1; }
+/* Instructions Bar */
+.instructions-bar {
+    border: 1px solid #333;
+    background-color: #eee;
+    padding: 4px 10px;
+    margin-bottom: 5px;
+    font-size: 7.5pt;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.inst-list {
+    margin: 0; padding: 0; list-style: none;
+    display: flex; gap: 15px; font-weight: bold;
+}
+.inst-title {
+    background: #333; color: #fff; padding: 2px 6px;
+    border-radius: 3px; margin-right: 10px; font-weight: bold;
+}
+.visual-guide { display: flex; align-items: center; gap: 6px; font-weight: bold; }
+.bubble-guide {
+    width: 11px; height: 11px;
+    border: 1px solid #000; border-radius: 50%; display: inline-block;
+}
 
-    /* LEFT COLUMN: Large Photo + Signature */
-    .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
-    
-    .h-p-box { 
-        width: 100%; height: 26mm; /* ENLARGED PHOTO */
-        background: #fff; 
-        position: relative; border: 1.5px solid #002347; border-radius: 0; /* Square */ overflow: hidden;
-    }
-    .h-p-img { width: 100%; height: 100%; object-fit: cover; }
-    
-    /* STAMP HIDDEN HERE */
-    .h-stamp { 
-        position: absolute; bottom: 0; right: 0; width: 14mm; 
-        opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10;
-        display: none !important; /* Hidden as requested */
-    }
+/* OMR Grid - Tight fit */
+.omr-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 25px;
+    flex-grow: 1;
+    border-top: 1px solid #ccc;
+    padding-top: 5px;
+}
 
-    .h-sign-box { width: 100%; text-align: center; margin-top: 1mm; flex-shrink: 0; }
-    .h-sign-img { height: 6mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
-    .h-sign-lbl { 
-        font-size: 3.5pt; color: #002347; font-weight: 700; 
-        border-top: 0.5px solid #000; padding-top: 0.5px; display: block; width: 100%;
-    }
+.q-column { display: flex; flex-direction: column; }
 
-    /* RIGHT COLUMN: Details */
-    .h-right { flex: 1; padding-left: 4mm; display: flex; flex-direction: column; position: relative; }
-    
-    .h-row-id { 
-        font-size: 9pt; font-weight: 800; color: #d62d20; 
-        border-bottom: 1px dashed #002347; margin-bottom: 1.5mm; padding-bottom: 0.5mm;
-        display: block; width: 100%; text-align: center; font-family: 'Poppins', sans-serif;
-    }
-    
-    /* CHANGED: Increased row-gap to 2.5mm for better line height/spacing */
-    .h-grid { display: grid; grid-template-columns: 18mm 1fr; row-gap: 1.2mm; font-size: 6.2pt; }
-    .hl { color: #002347; font-weight: 800; margin: 0; padding: 0; }
-    .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; padding: 0; line-height: 1.3; }
+.q-row {
+    display: flex;
+    align-items: center;
+    height: 19.5px;
+    border-bottom: 1px solid #eee;
+}
 
-    /* BOTTOM ROW: Barcode */
-    .h-barcode-row {
-        width: 100%; height: 8mm; /* Fixed Height for Barcode */
-        display: flex; justify-content: center; align-items: center;
-        margin-top: 1mm; padding-top: 1mm;
-        border-top: 0.5px dotted #ccc; /* Subtle separation */
-    }
-    .h-bar-wrap { width: 95%; height: 100%; display: flex; justify-content: center; }
-    .h-bar-wrap svg { width: 100%; height: 100%; }
+.q-num {
+    width: 24px;
+    font-size: 8.5pt;
+    font-weight: bold;
+    color: #e67e22;
+}
 
-    /* FOOTER */
-    .h-footer { 
-        height: 4mm; background: #002347; color: white; 
-        display: flex; align-items: center; justify-content: center; 
-        font-size: 3pt; font-weight: 600; text-align: center; line-height: 1.1; 
-        letter-spacing: 0px; border-top: 1px solid #d62d20; white-space: nowrap;
-    }
+.options {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    padding-right: 2px;
+}
 
-    /* BACK SIDE */
-    /* Increased bottom padding for gap before footer */
-    .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 2mm 3mm 6mm 3mm; text-align: center; background: rgba(255,255,255,0.95); }
-    .h-header-back-title { margin-top: 2mm; color: white; font-family: 'Noto Sans Devanagari'; font-size: 10pt; font-weight: 700; }
-    
-    /* Back Contact */
-    .vb-contact {
-        margin-bottom: 1.5mm; font-size: 4pt; color: #002347; font-weight: 800; 
-        border-bottom: 1px dashed #d62d20; padding-bottom: 1px; width: 95%; white-space: nowrap; overflow: hidden;
-    }
+.opt-item {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 7.5pt;
+    font-weight: bold;
+}
 
-    .vb-qr { width: 23mm; height: 23mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 1mm; background: white; border-radius: 0; /* Square */ }
-    .vb-qr img { width: 100%; height: 100%; display: block; }
-    .vb-t { font-size: 8pt; font-weight: 800; color: #002347; margin-bottom: 1mm; text-transform: uppercase; }
-    .vb-s { font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; }
+.bubble {
+    width: 13.5px;
+    height: 13.5px;
+    border: 1.1pt solid #000;
+    border-radius: 50%;
+}
+
+/* Subject row */
+.subject-row {
+    text-align: center;
+    font-size: 8pt;
+    font-weight: bold;
+    padding: 2px 0;
+    border-top: 1px dashed #999;
+    border-bottom: 1px dashed #999;
+    background: #fff;
+    margin-bottom: 1px;
+}
+
+/* Official Use */
+.official-use {
+    margin-top: 8px;
+    border: 2px solid #138808;
+    border-radius: 4px;
+    padding: 6px;
+    background-color: #f4faf4;
+}
+
+.official-header {
+    text-align: center;
+    font-weight: bold;
+    color: #138808;
+    font-size: 9pt;
+    margin-bottom: 4px;
+    border-bottom: 1px solid #138808;
+}
+
+.score-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.score-label { font-size: 7.5pt; font-weight: bold; }
+.score-value { height: 22px; border: 1px solid #333; background: #fff; }
+.total-score { background: #e8f5e9; border: 1.5px solid #138808; }
+
+/* Footer */
+.footer {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: 1fr 100px 1fr;
+    gap: 15px;
+}
+
+.sign-box { height: 45px; border: 1.2pt solid #000; }
+.box-label { font-size: 8pt; font-weight: bold; text-align: center; margin-top: 2px;}
+.stamp-box {
+    border: 2px dashed #FF9933;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 7pt; color: #FF9933;
+}
 </style>
+</head>
 
-<div id="tys-app-container">
-    <div class="controls-box">
-        <div class="tys-header">
-            <h2><i class="fa-solid fa-address-card"></i> आईडी कार्ड सत्यापन</h2>
-        </div>
+<body>
 
-        <div class="tys-input-grid">
-            <div class="input-group">
-                <label class="input-label">सदस्यता आईडी (Member ID)</label>
-                <input type="text" id="tysInputId" class="input-field" placeholder="e.g. TYS-GRD-TYM-121">
-            </div>
-            <div class="input-group">
-                <label class="input-label">मोबाइल नंबर (Phone)</label>
-                <input type="text" id="tysInputPhone" class="input-field" placeholder="e.g. 9053575169">
-            </div>
-        </div>
-
-        <div class="tys-actions">
-            <button class="btn-verify" onclick="tysVerify()">
-                <i class="fa-solid fa-shield-check"></i> विवरण सत्यापित करें (Verify)
-            </button>
-            <div id="tys-status"><i class="fa-solid fa-server"></i> सिस्टम तैयार है...</div>
-        </div>
+<div id="control-panel">
+    <div class="panel-group">
+        <label>Total Sheets:</label>
+        <input type="number" id="sheetCount" value="1" min="1" max="500">
     </div>
-
-    <div id="tys-grid"></div>
+    <div class="panel-group">
+        <button class="btn-gen" onclick="generateAndPrint()">Generate & Print</button>
+        <button class="btn-excel" onclick="downloadExcel()">Download ID List (Excel)</button>
+    </div>
+    <div style="margin-top:5px; font-size: 0.8em; color: #aaa;">
+        Generates 6-digit random numbers after TYSYGM2026.
+    </div>
 </div>
 
+<div id="print-container"></div>
+
 <script>
-    // === CONFIGURATION ===
-    const EXCEL_URL = "https://docs.google.com/spreadsheets/d/1ehEiwGskDIHwUHJMSWrbjpSsaA8fTSkJ6hfuFLV3jhI/export?format=csv";
-    const SIGN_URL = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj72nNAiChUf9ROOPiYDrwg4RSatVygGQEt7yW1lOmQosfBW9MB2V3qZAcYcOHH-0bAb_2QBZSUsL_9xdVIdpZdvVOha0czW1ssESptg8Mg3X6W8K1DuyPio_oh6X4DdNH2xUhRc2fX1AkpJh2RuPYl5b0a16nYSTgGrkQnKuwYvz3lsQ/s1600/Lokesh%20Stamp.jpg";
+// Store generated data for Excel export
+let generatedData = [];
 
-    const ASSETS = {
-        logo: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhCaJCRPLvQgi9REoAvb9b4H4Vvh6RhAmMRGwGEolXIqS2nxxCa9-jS7qexF2JL5puwPOEk-2q7ubDKeL-m-BM0_7_uHrI5EnBXue7deGtgta4UyCDnI43AkB1KBN8PV4G00fg1vW2La338AyzZkHvXpzt49papqeYLt9NDXMcTnvsceg/s1600/TYS-White.png",
-        cow: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj4jRFVp4bz-d45e1q-rgRwa4yOre7RBcKtS-dxVu9ayVmpGTs8rHNx6M8xnO5zLkvS7_MOU2_l6k5i6J56mN5FymgLK9IE5eIDdfp2aNEB3xmrAHp8YzzRJ-5OZeT0-uRI_eeo3gE-ZQNFK-FuHmr9Cl_gYVVeFE7bHljkejal8S2LBw/s1600/cow-calf-image.jpg",
-        stamp: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj72nNAiChUf9ROOPiYDrwg4RSatVygGQEt7yW1lOmQosfBW9MB2V3qZAcYcOHH-0bAb_2QBZSUsL_9xdVIdpZdvVOha0czW1ssESptg8Mg3X6W8K1DuyPio_oh6X4DdNH2xUhRc2fX1AkpJh2RuPYl5b0a16nYSTgGrkQnKuwYvz3lsQ/s1600/Lokesh%20Stamp.jpg"
-    };
+function generateRandomSuffix() {
+    // Generate a random number between 100000 and 999999
+    return Math.floor(100000 + Math.random() * 900000);
+}
 
-    const FIELDS = {
-        id: "id", first: "firstname", last: "lastname", father: "father_name",
-        phone: "phone", dob: "dob", blood: "blood_group", address: "address",
-        validity: "validity", photo: "photo_url", qr_data: "qr_url", designation: "designation"
-    };
+// Logic to generate QR code URL with unique ID
+function getQRUrl(uniqueID) {
+    const baseUrl = 'https://www.tirangayuvasamiti.org/omr-verify/?id=' + uniqueID;
+    return `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(baseUrl)}`;
+}
 
-    let TYS_DATA = [];
+// Function to build the internal grid logic
+function buildGrid(gridContainer) {
+    const cols = [document.createElement('div'), document.createElement('div'), document.createElement('div')];
+    cols.forEach(c => c.className = 'q-column');
 
-    document.addEventListener("DOMContentLoaded", function() {
-        loadTysData();
-    });
-
-    function getProxy(url) {
-        if(!url) return "https://via.placeholder.com/150";
-        return `https://wsrv.nl/?url=${encodeURIComponent(url)}&output=png`;
+    function subjectRow(text) {
+        const d = document.createElement('div');
+        d.className = 'subject-row';
+        d.textContent = text;
+        return d;
     }
 
-    async function loadTysData() {
-        const status = document.getElementById('tys-status');
-        if(!status) return;
-        status.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> डेटा लोड हो रहा है...';
-        try {
-            const resp = await fetch(EXCEL_URL + "&t=" + Date.now());
-            const buffer = await resp.arrayBuffer();
-            const decoder = new TextDecoder("utf-8");
-            const csvData = decoder.decode(buffer);
-            const workbook = XLSX.read(csvData, {type: 'string'});
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            TYS_DATA = XLSX.utils.sheet_to_json(sheet);
-            status.innerHTML = `<span style="color:green">✅ डेटाबेस कनेक्ट हो गया।</span>`;
-        } catch (e) {
-            console.error(e);
-            status.innerHTML = '<span style="color:red">❌ कनेक्शन विफल।</span>';
-        }
-    }
+    for (let i = 1; i <= 90; i++) {
+        if (i === 1) cols[0].appendChild(subjectRow('English (Q.1–15)'));
+        if (i === 16) cols[0].appendChild(subjectRow('Hindi (Q.16–30)'));
+        if (i === 31) cols[1].appendChild(subjectRow('Mental Ability (Q.31–45)'));
+        if (i === 46) cols[1].appendChild(subjectRow('Computer Science (Q.46–60)'));
+        if (i === 61) cols[2].appendChild(subjectRow('General Knowledge (Q.61–90)'));
 
-    function formatDate(val) {
-        if (!val) return "";
-        const d = new Date(val);
-        if (isNaN(d.getTime())) return val; 
-        return `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
-    }
-
-    function tysVerify() {
-        let inId = document.getElementById('tysInputId').value.trim().toLowerCase();
-        let inPhone = document.getElementById('tysInputPhone').value.trim();
-        const grid = document.getElementById('tys-grid');
-        const status = document.getElementById('tys-status');
-
-        if (!inId || !inPhone) {
-            status.innerText = "कृपया दोनों विवरण भरें।";
-            return;
-        }
-
-        const found = TYS_DATA.find(m => {
-            const mId = String(m[FIELDS.id]||'').trim().toLowerCase();
-            const mPh = String(m[FIELDS.phone]||'').trim();
-            return mId.includes(inId) && mPh.includes(inPhone);
-        });
-
-        if (!found) {
-            status.innerHTML = '<span style="color:red">❌ विवरण गलत है।</span>';
-            grid.innerHTML = '';
-            return;
-        }
-
-        status.innerHTML = '<span style="color:green">✅ सत्यापन सफल!</span>';
-        tysRender(found);
-    }
-
-    function tysRender(data) {
-        const grid = document.getElementById('tys-grid');
-        const fullID = data[FIELDS.id] || "000"; 
-        const name = `${data[FIELDS.first] || ''} ${data[FIELDS.last] || ''}`.trim();
-        const father = data[FIELDS.father] || "";
-        const phone = data[FIELDS.phone] || "";
-        const dob = formatDate(data[FIELDS.dob]) || "________";
-        const validityDate = formatDate(data[FIELDS.validity]) || "Lifetime";
-        const address = data[FIELDS.address] || "गांव खांडा";
-        const blood = data[FIELDS.blood] || "";
-        const designation = data[FIELDS.designation] || "सदस्य";
-        
-        let qrText = data[FIELDS.qr_data];
-        if (!qrText) qrText = `https://www.tirangayuvasamiti.org/verify?id=${fullID}`;
-
-        const photoUrl = getProxy(data[FIELDS.photo]);
-        const logoUrl = getProxy(ASSETS.logo);
-        const cowUrl = getProxy(ASSETS.cow);
-        const stampUrl = getProxy(ASSETS.stamp);
-        const signatureUrl = getProxy(SIGN_URL);
-
-        const safeId = fullID.replace(/[^a-zA-Z0-9]/g, ''); 
-        const frontId = `cf-${safeId}`;
-        const backId = `cb-${safeId}`;
-
-        grid.innerHTML = `
-            <div class="card-row">
-                <div>
-                    <div style="text-align:center; font-weight:bold; color:#002347; margin-bottom:5px;">FRONT SIDE</div>
-                    <div class="id-card-wrapper">
-                        <div class="id-card-inner" id="${frontId}">
-                            <div class="h-header">
-                                <div class="h-tag">पहचान पत्र</div>
-                                <img src="${logoUrl}" class="h-logo" crossorigin="anonymous">
-                                <div class="h-titles">
-                                    <div class="h-main-title">गो रक्षा दल (हरियाणा)</div>
-                                    <div class="h-sub-title">तिरंगा युवा समिति (पंजी. सं. 01820)<br>गांव खांडा, तहसील खरखौदा, सोनीपत (हरियाणा)</div>
-                                </div>
-                                <img src="${cowUrl}" class="h-cow" crossorigin="anonymous">
-                            </div>
-                            <div class="h-body">
-                                <img src="${logoUrl}" class="bg-wm" crossorigin="anonymous">
-                                
-                                <div class="h-content-row">
-                                    <div class="h-left">
-                                        <div class="h-p-box">
-                                            <img src="${photoUrl}" class="h-p-img" crossorigin="anonymous">
-                                            <img src="${stampUrl}" class="h-stamp" crossorigin="anonymous">
-                                        </div>
-                                        <div class="h-sign-box">
-                                            <img src="${signatureUrl}" class="h-sign-img" crossorigin="anonymous"> 
-                                            <span class="h-sign-lbl">(अधिकृत हस्ताक्षर)</span>
-                                        </div>
-                                    </div>
-                                    <div class="h-right">
-                                        <div class="h-row-id">क्रमांक: ${fullID}</div>
-                                        <div class="h-grid">
-                                            <div class="hl">नाम:</div><div class="hv" style="font-size:8pt; color:#002347;">${name}</div>
-                                            <div class="hl">पिता का नाम:</div><div class="hv">${father}</div>
-                                            <div class="hl">जन्म तिथि:</div><div class="hv">${dob}</div>
-                                            <div class="hl">पद:</div><div class="hv"><span style="background:#d62d20; color:white; padding:1px 5px; border-radius:0; display:inline-block; font-size:6pt; line-height:1.2;">${designation}</span></div>
-                                            <div class="hl">मोबाइल:</div><div class="hv">${phone}</div>
-                                            <div class="hl">पता:</div><div class="hv" style="font-size:5pt; line-height:1.2; white-space:normal;">${address}</div>
-                                            <div class="hl">वैधता:</div>
-                                            <div class="hv" style="display:flex; justify-content:space-between;">
-                                                <span>${validityDate}</span>
-                                                <span style="font-size:5.5pt; color:#d62d20; font-weight:800;">रक्त समूह: <span style="color:black;">${blood}</span></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="h-barcode-row">
-                                    <div class="h-bar-wrap"><svg id="bar-${safeId}"></svg></div>
-                                </div>
-
-                            </div>
-                            <div class="h-footer">संपर्क सूत्र: +91 90535 75169 | info@tirangayuvasamiti.org | www.tirangayuvasamiti.org</div>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div style="text-align:center; font-weight:bold; color:#002347; margin-bottom:5px;">BACK SIDE</div>
-                    <div class="id-card-wrapper">
-                        <div class="id-card-inner" id="${backId}">
-                            <div class="h-header" style="justify-content:center; background:#002347; border-bottom: 2mm solid #d62d20;">
-                                <div class="h-header-back-title">सत्यापन और नियम</div>
-                            </div>
-                            <div class="h-body vb-c">
-                                <div class="vb-contact">संपर्क सूत्र: +91 90535 75169 | info@tirangayuvasamiti.org | www.tirangayuvasamiti.org</div>
-                                <div class="vb-t">सदस्यता सत्यापित करने के लिए स्कैन करें</div>
-                                <div id="qr-${safeId}" class="vb-qr"></div>
-                                <div class="vb-s">यह कार्ड तिरंगा युवा समिति की संपत्ति है।<br>गुम होने पर कृपया उपरोक्त पते पर लौटाएं।</div>
-                                <div style="margin-top:2mm; font-weight:800; color:#d62d20; font-size: 6.5pt; white-space: nowrap;">जय हिंद - जय भारत - जय गौ माता</div>
-                            </div>
-                            <div class="h-footer">Together We Serve • Go Raksha Dal Haryana</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="btn-print-wrap">
-                <button class="btn-print" onclick="tysPrintNew('${frontId}', '${backId}')"><i class="fa-solid fa-print"></i> प्रिंट आईडी कार्ड</button>
+        const row = document.createElement('div');
+        row.className = 'q-row';
+        row.innerHTML = `
+            <div class="q-num">${i}.</div>
+            <div class="options">
+                <div class="opt-item">A<div class="bubble"></div></div>
+                <div class="opt-item">B<div class="bubble"></div></div>
+                <div class="opt-item">C<div class="bubble"></div></div>
+                <div class="opt-item">D<div class="bubble"></div></div>
             </div>
         `;
 
-        setTimeout(() => {
-            JsBarcode(`#bar-${safeId}`, fullID, { format: "CODE128", displayValue: false, height: 35, width: 1.2, margin: 0, background: "transparent" });
-            new QRCode(document.getElementById(`qr-${safeId}`), { text: qrText, width: 90, height: 90, correctLevel: QRCode.CorrectLevel.M });
-        }, 100);
+        if (i <= 30) cols[0].appendChild(row);
+        else if (i <= 60) cols[1].appendChild(row);
+        else cols[2].appendChild(row);
     }
+    cols.forEach(c => gridContainer.appendChild(c));
+}
 
-    // === PRINT LOGIC (FIXED FOR MOBILE BARCODE VISIBILITY) ===
-    function tysPrintNew(fid, bid) {
-        // --- HELPER TO CONVERT SVG/CANVAS TO IMAGE DATA ---
-        function nodeToDataURL(element) {
-            const serializer = new XMLSerializer();
-            const str = serializer.serializeToString(element);
-            // Convert to Base64 Image
-            return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(str)));
-        }
+// Function to generate full pages
+function generateAndPrint() {
+    const container = document.getElementById('print-container');
+    const count = parseInt(document.getElementById('sheetCount').value);
+    
+    // Clear previous data
+    container.innerHTML = '';
+    generatedData = [];
+    
+    // Set for collision detection in this batch
+    const batchIds = new Set();
 
-        // --- 1. PREPARE FRONT (FIX BARCODE) ---
-        // Clone the element to not disturb the visible page
-        const frontClone = document.getElementById(fid).cloneNode(true);
-        const barcodeSvg = frontClone.querySelector('svg');
+    for (let i = 0; i < count; i++) {
+        let suffix;
+        let uniqueID;
         
-        if (barcodeSvg) {
-            const img = document.createElement('img');
-            img.src = nodeToDataURL(barcodeSvg);
-            // Force strict styling for the image replacement
-            img.style.width = "100%";
-            img.style.height = "100%";
-            img.style.display = "block";
-            barcodeSvg.parentNode.replaceChild(img, barcodeSvg);
-        }
-        const frontHTML = frontClone.outerHTML;
-
-        // --- 2. PREPARE BACK (FIX QR CODE IF CANVAS) ---
-        const backClone = document.getElementById(bid).cloneNode(true);
-        // Check if QR code rendered as Canvas (common in mobile browsers)
-        const qrCanvas = document.getElementById(bid).querySelector('.vb-qr canvas'); 
-        if (qrCanvas) {
-            const qrImg = document.createElement('img');
-            qrImg.src = qrCanvas.toDataURL("image/png");
-            qrImg.style.width = "100%";
-            qrImg.style.height = "100%";
-            qrImg.style.display = "block";
-            
-            const qrContainer = backClone.querySelector('.vb-qr');
-            qrContainer.innerHTML = ''; // Clear canvas from clone
-            qrContainer.appendChild(qrImg);
-        }
-        const backHTML = backClone.outerHTML;
-
-        // --- 3. GENERATE PRINT WINDOW ---
-        const win = window.open('', '_blank', 'width=900,height=800');
+        // Ensure uniqueness
+        do {
+            suffix = generateRandomSuffix();
+            uniqueID = 'TYSYGM2026' + suffix;
+        } while (batchIds.has(uniqueID));
         
-        win.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Print ID Card</title>
-                <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Rozha+One&display=swap" rel="stylesheet">
-                <style>
-                    @page { size: A4; margin: 10mm; }
-                    html, body { margin: 0; padding: 20px; background: #fff; font-family: 'Noto Sans Devanagari', sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                    
-                    .print-container { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10mm; }
-                    .cut-wrapper { border: 1px dashed #999; padding: 1px; display: inline-block; }
+        batchIds.add(uniqueID);
+        
+        // Save to global data for Excel
+        generatedData.push({
+            id: uniqueID,
+            url: 'https://www.tirangayuvasamiti.org/omr-verify/?id=' + uniqueID
+        });
 
-                    .id-card-inner { 
-                        width: 85.6mm; height: 54mm; 
-                        background: white; position: relative; overflow: hidden; 
-                        border: 1px solid #aaa; border-radius: 0; 
-                        display: flex; flex-direction: column; line-height: normal;
-                    }
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'page';
+        
+        // Construct the HTML Structure
+        pageDiv.innerHTML = `
+            <div class="timing-mark tm-top" style="top:4mm; left:50%;"></div>
+            <div class="timing-mark tm-bottom" style="bottom:4mm; left:50%;"></div>
+            <div class="timing-mark tm-left" style="left:4mm; top:50%;"></div>
+            <div class="timing-mark tm-right" style="right:4mm; top:50%;"></div>
 
-                    .h-header { height: 14mm; background: #002347; display: flex; align-items: center; justify-content: space-between; padding: 0 2mm; position: relative; z-index: 5; border-bottom: 1.8mm solid #d62d20; }
-                    /* INCREASED SIZE to 13mm for print view as well */
-                    .h-logo, .h-cow { width: 13mm; height: 13mm; object-fit: contain; } 
-                    /* Added object-fit: cover for print view */
-                    .h-cow { border-radius: 50%; border: 1px solid white; object-fit: cover; }
-                    .h-titles { flex: 1; text-align: center; padding-top: 3.5mm; }
-                    .h-main-title { font-family: 'Rozha One', serif; font-size: 12.5pt; color: white; line-height: 0.9; margin:0; white-space: nowrap; }
-                    .h-sub-title { font-size: 5pt; font-weight: 700; color: #ffeb3b; line-height: 1.2; margin-top: 0.5mm; }
-                    .h-tag { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 3.5pt; background: #d62d20; color: white; padding: 1px 8px; border-radius: 0; text-transform: uppercase; font-weight: 800; z-index:10; }
-                    
-                    .h-body { flex: 1; display: flex; flex-direction: column; padding: 2mm 3mm; position: relative; background: rgba(255,255,255,0.94); }
-                    
-                    /* UPDATED PRINT WATERMARK SIZE */
-                    .bg-wm { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 26mm; opacity: 0.08; z-index: 0; }
-                    
-                    .h-content-row { display: flex; width: 100%; flex: 1; }
-                    .h-left { width: 22mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
-                    .h-p-box { width: 19mm; height: 21mm; background: #fff; position: relative; border: 1.5px solid #002347; border-radius: 0; overflow: hidden; }
-                    .h-p-img { width: 100%; height: 100%; object-fit: cover; }
-                    /* STAMP HIDDEN IN PRINT VIEW */
-                    .h-stamp { position: absolute; bottom: 0; right: 0; width: 14mm; opacity: 0.9; mix-blend-mode: multiply; transform: rotate(-15deg); z-index: 10; display: none !important; }
-                    
-                    .h-sign-box { width: 100%; text-align: center; margin-top: 1mm; flex-shrink: 0; }
-                    .h-sign-img { height: 6mm; width: auto; max-width: 100%; display: block; margin: 0 auto; mix-blend-mode: multiply; }
-                    .h-sign-lbl { font-size: 3.5pt; color: #002347; font-weight: 700; border-top: 0.5px solid #000; padding-top: 0.5px; display: block; width: 100%; }
-                    
-                    .h-right { flex: 1; padding-left: 4mm; display: flex; flex-direction: column; position: relative; }
-                    .h-row-id { font-size: 9pt; font-weight: 800; color: #d62d20; border-bottom: 1px dashed #002347; margin-bottom: 1.5mm; padding-bottom: 0.5mm; display: block; width: 100%; text-align: center; }
-                    
-                    .h-grid { display: grid; grid-template-columns: 18mm 1fr; row-gap: 2.5mm; font-size: 6.2pt; }
-                    .hl { color: #002347; font-weight: 800; } .hv { color: #000; font-weight: 700; white-space: nowrap; overflow: hidden; line-height: 1.3; }
-                    
-                    .h-barcode-row { width: 100%; height: 8mm; display: flex; justify-content: center; align-items: center; margin-top: 1mm; border-top: 0.5px dotted #ccc; }
-                    .h-bar-wrap { width: 95%; height: 100%; display:flex; justify-content:center; } 
-                    /* Ensuring both SVG and converted IMG fill the space */
-                    .h-bar-wrap svg, .h-bar-wrap img { width:100%; height:100%; object-fit: contain; }
-                    
-                    .h-footer { height: 4mm; background: #002347; color: white; display: flex; align-items: center; justify-content: center; font-size: 3pt; font-weight: 600; text-align: center; line-height: 1.1; border-top: 1px solid #d62d20; white-space: nowrap; }
-                    
-                    .h-header-back-title { margin-top: 2mm; color: white; font-family: 'Noto Sans Devanagari'; font-size: 10pt; font-weight: 700; }
-                    /* Increased bottom padding for gap before footer in Print view */
-                    .vb-c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 2mm 3mm 6mm 3mm; text-align: center; }
-                    .vb-qr { width: 23mm; height: 23mm; border: 1.5px solid #002347; padding: 1px; margin-bottom: 1mm; border-radius: 0; } .vb-qr img { width: 100%; height: 100%; }
-                    .vb-t { font-size: 8pt; font-weight: 800; color: #002347; margin-bottom: 1mm; text-transform: uppercase; }
-                    .vb-s { font-size: 5.5pt; color: #444; width: 85%; font-weight: 600; line-height: 1.3; }
-                    .vb-contact { margin-bottom: 1.5mm; font-size: 4pt; color: #002347; font-weight: 800; border-bottom: 1px dashed #d62d20; padding-bottom: 1px; width: 95%; white-space: nowrap; overflow: hidden; }
-                </style>
-            </head>
-            <body>
-                <div class="print-container">
-                    <div class="cut-wrapper">${frontHTML}</div>
-                    <div class="cut-wrapper">${backHTML}</div>
+            <div> <div class="header">
+                <h1>TIRANGA YUVA SAMITI (GYAN SETU)</h1>
+                <h2>YUVA GYAN MAHOTSAV 2026</h2>
+                <img src="${getQRUrl(uniqueID)}" alt="QR Code" class="qr-code-img">
+            </div>
+
+            <div class="info-section">
+                <div>
+                    <div class="field">NAME:
+                        <div class="box-wrap">
+                            <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+                            <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+                            <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+                            <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+                        </div>
+                    </div>
+                    <div class="field">FATHER'S NAME:
+                        <div class="box-wrap">
+                            <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+                            <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+                            <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+                            <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+                        </div>
+                    </div>
+                    <div class="field">ROLL NO:
+                        <div class="box-wrap">
+                            <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+                            <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+                        </div>
+                    </div>
                 </div>
-            </body>
-            </html>
-        `);
-        win.document.close();
+
+                <div>
+                    <div class="field">GROUP:
+                        <div class="box-wrap">
+                            <div class="box"></div><div class="box"></div>
+                        </div>
+                    </div>
+                    <div class="field">CLASS:
+                        <div class="box-wrap">
+                            <div class="box"></div><div class="box"></div>
+                        </div>
+                    </div>
+                    <div class="field">DATE:
+                        <div class="box-wrap">
+                            <div class="box">D</div><div class="box">D</div>
+                            <div class="box">M</div><div class="box">M</div>
+                            <div class="box">Y</div><div class="box">Y</div><div class="box">Y</div><div class="box">Y</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="secret-key">
+                <div class="field">SECRET KEY:
+                    <div class="box-wrap">
+                        <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+                        <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+                        <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="instructions-bar">
+                <div style="display:flex; align-items:center;">
+                    <span class="inst-title">INSTRUCTIONS</span>
+                    <ul class="inst-list">
+                        <li>1. Use Blue/Black Ball Pen.</li>
+                        <li>2. Darken circle completely.</li>
+                        <li>3. No White Fluid.</li>
+                    </ul>
+                </div>
+                <div class="visual-guide">
+                    <span>Correct:</span><div class="bubble-guide" style="background:#000;"></div>
+                    <span style="margin-left:8px;">Wrong:</span><div class="bubble-guide"></div>
+                </div>
+            </div>
+
+            </div>
+
+            <div class="omr-grid"></div>
+
+            <div> <div class="official-use">
+                <div class="official-header">For Official Use Only</div>
+                <div class="score-grid">
+                    <div><span class="score-label">CORRECT</span><div class="score-value"></div></div>
+                    <div><span class="score-label">INCORRECT</span><div class="score-value"></div></div>
+                    <div><span class="score-label">UNATTEMPTED</span><div class="score-value"></div></div>
+                    <div><span class="score-label">POS. SCORE (+)</span><div class="score-value"></div></div>
+                    <div><span class="score-label">NEG. SCORE (-)</span><div class="score-value"></div></div>
+                </div>
+                <div style="margin-top:6px;display:flex;justify-content:center;gap:10px;">
+                    <strong>TOTAL OBTAINED SCORE:</strong>
+                    <div class="score-value total-score" style="width:140px;"></div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div>
+                    <div class="sign-box"></div>
+                    <div class="box-label">Candidate Signature</div>
+                </div>
+                <div>
+                    <div class="sign-box stamp-box">OFFICIAL<br>STAMP</div>
+                </div>
+                <div>
+                    <div class="sign-box"></div>
+                    <div class="box-label">Invigilator Signature</div>
+                </div>
+            </div>
+            </div>
+        `;
+
+        // Inject the grid questions into the newly created grid div
+        const gridContainer = pageDiv.querySelector('.omr-grid');
+        buildGrid(gridContainer);
         
-        win.onload = function() {
-            setTimeout(() => {
-                win.focus();
-                win.print();
-            }, 1000);
-        };
+        container.appendChild(pageDiv);
     }
+
+    // Trigger Print
+    setTimeout(() => {
+        window.print();
+    }, 500);
+}
+
+// Function to generate CSV file for Excel
+function downloadExcel() {
+    if (generatedData.length === 0) {
+        alert("Please generate some OMR sheets first!");
+        return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Sheet ID,Verification URL\n"; // Header row
+
+    generatedData.forEach(function(row) {
+        csvContent += row.id + "," + row.url + "\n";
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "omr_sheet_ids.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Generate 1 sheet on initial load
+window.onload = function() {
+    generateAndPrint();
+};
 </script>
 
+</body>
+</html>
