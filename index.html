@@ -98,10 +98,11 @@ body {
     @page { size: A4; margin: 0; }
 }
 
-/* Machine readable marks */
-.timing-mark { position: absolute; background: #000; }
-.tm-top, .tm-bottom { width: 10px; height: 4px; }
-.tm-left, .tm-right { width: 4px; height: 10px; }
+/* Machine readable marks (Absolutely positioned in margins) */
+.timing-mark { position: absolute; background: #000; z-index: 100; }
+.tm-corner { width: 12px; height: 12px; } /* Anchor squares */
+.tm-top, .tm-bottom { width: 16px; height: 4px; } /* Horizontal bars */
+.tm-left, .tm-right { width: 4px; height: 16px; } /* Vertical bars */
 
 /* Header */
 .header {
@@ -190,7 +191,7 @@ body {
 }
 .visual-guide { display: flex; align-items: center; gap: 6px; font-weight: bold; }
 .bubble-guide {
-    width: 11px; height: 11px;
+    width: 13px; height: 13px; /* Slightly adjusted to fit symbols */
     border: 1px solid #000; border-radius: 50%; display: inline-block;
 }
 
@@ -209,13 +210,13 @@ body {
 .q-row {
     display: flex;
     align-items: center;
-    height: 19.5px;
+    height: 28.5px; 
     border-bottom: 1px solid #eee;
 }
 
 .q-num {
-    width: 24px;
-    font-size: 8.5pt;
+    width: 26px; 
+    font-size: 9.5pt; 
     font-weight: bold;
     color: #e67e22;
 }
@@ -230,14 +231,14 @@ body {
 .opt-item {
     display: flex;
     align-items: center;
-    gap: 3px;
-    font-size: 7.5pt;
+    gap: 4px;
+    font-size: 8.5pt; 
     font-weight: bold;
 }
 
 .bubble {
-    width: 13.5px;
-    height: 13.5px;
+    width: 15px; 
+    height: 15px; 
     border: 1.1pt solid #000;
     border-radius: 50%;
 }
@@ -245,9 +246,9 @@ body {
 /* Subject row */
 .subject-row {
     text-align: center;
-    font-size: 8pt;
+    font-size: 9pt; 
     font-weight: bold;
-    padding: 2px 0;
+    padding: 4px 0; 
     border-top: 1px dashed #999;
     border-bottom: 1px dashed #999;
     background: #fff;
@@ -360,12 +361,25 @@ function buildGrid(gridContainer) {
         return d;
     }
 
-    for (let i = 1; i <= 90; i++) {
-        if (i === 1) cols[0].appendChild(subjectRow('English (Q.1–15)'));
-        if (i === 16) cols[0].appendChild(subjectRow('Hindi (Q.16–30)'));
-        if (i === 31) cols[1].appendChild(subjectRow('Mental Ability (Q.31–45)'));
-        if (i === 46) cols[1].appendChild(subjectRow('Computer Science (Q.46–60)'));
-        if (i === 61) cols[2].appendChild(subjectRow('General Knowledge (Q.61–90)'));
+    for (let i = 1; i <= 60; i++) {
+        let targetCol;
+        if (i <= 20) targetCol = cols[0];
+        else if (i <= 40) targetCol = cols[1];
+        else targetCol = cols[2];
+
+        // Subject Headers Map
+        if (i === 1) targetCol.appendChild(subjectRow('English (Q.1–7)'));
+        if (i === 8) targetCol.appendChild(subjectRow('Hindi (Q.8–14)'));
+        if (i === 15) targetCol.appendChild(subjectRow('Mental Ability (Q.15–22)'));
+        
+        if (i === 21) targetCol.appendChild(subjectRow('Mental Ability (Cont.)')); 
+        
+        if (i === 23) targetCol.appendChild(subjectRow('Computer Science (Q.23–30)'));
+        if (i === 31) targetCol.appendChild(subjectRow('General Knowledge (Q.31–55)'));
+        
+        if (i === 41) targetCol.appendChild(subjectRow('General Knowledge (Cont.)'));
+        
+        if (i === 56) targetCol.appendChild(subjectRow('Youth Awareness (Q.56–60)'));
 
         const row = document.createElement('div');
         row.className = 'q-row';
@@ -379,9 +393,7 @@ function buildGrid(gridContainer) {
             </div>
         `;
 
-        if (i <= 30) cols[0].appendChild(row);
-        else if (i <= 60) cols[1].appendChild(row);
-        else cols[2].appendChild(row);
+        targetCol.appendChild(row);
     }
     cols.forEach(c => gridContainer.appendChild(c));
 }
@@ -403,7 +415,6 @@ function generateAndPrint() {
         let uniqueID;
         let isUnique = false;
 
-        // Try to find a unique ID
         while (!isUnique) {
             attempts++;
             if (attempts > maxAttempts) {
@@ -414,14 +425,12 @@ function generateAndPrint() {
             suffix = generateRandomSuffix();
             uniqueID = 'TYSYGM2026' + suffix;
             
-            // Check against GLOBAL history
             if (!usedIdsGlobal.has(uniqueID)) {
                 isUnique = true;
                 usedIdsGlobal.add(uniqueID);
             }
         }
         
-        // Save to global data for Excel
         excelDataGlobal.push({
             id: uniqueID,
             url: 'https://www.tirangayuvasamiti.org/omr-verify/?id=' + uniqueID
@@ -430,16 +439,32 @@ function generateAndPrint() {
         const pageDiv = document.createElement('div');
         pageDiv.className = 'page';
         
-        // Construct the HTML Structure
+        // Construct the HTML Structure including 16 precision timing marks
         pageDiv.innerHTML = `
-            <div class="timing-mark tm-top" style="top:4mm; left:50%;"></div>
-            <div class="timing-mark tm-bottom" style="bottom:4mm; left:50%;"></div>
-            <div class="timing-mark tm-left" style="left:4mm; top:50%;"></div>
-            <div class="timing-mark tm-right" style="right:4mm; top:50%;"></div>
+            <div class="timing-mark tm-corner" style="top:2.5mm; left:2.5mm;"></div>
+            <div class="timing-mark tm-corner" style="top:2.5mm; right:2.5mm;"></div>
+            <div class="timing-mark tm-corner" style="bottom:2.5mm; left:2.5mm;"></div>
+            <div class="timing-mark tm-corner" style="bottom:2.5mm; right:2.5mm;"></div>
+
+            <div class="timing-mark tm-top" style="top:2.5mm; left:25%;"></div>
+            <div class="timing-mark tm-top" style="top:2.5mm; left:calc(50% - 8px);"></div>
+            <div class="timing-mark tm-top" style="top:2.5mm; left:75%;"></div>
+
+            <div class="timing-mark tm-bottom" style="bottom:2.5mm; left:25%;"></div>
+            <div class="timing-mark tm-bottom" style="bottom:2.5mm; left:calc(50% - 8px);"></div>
+            <div class="timing-mark tm-bottom" style="bottom:2.5mm; left:75%;"></div>
+
+            <div class="timing-mark tm-left" style="top:25%; left:2.5mm;"></div>
+            <div class="timing-mark tm-left" style="top:calc(50% - 8px); left:2.5mm;"></div>
+            <div class="timing-mark tm-left" style="top:75%; left:2.5mm;"></div>
+
+            <div class="timing-mark tm-right" style="top:25%; right:2.5mm;"></div>
+            <div class="timing-mark tm-right" style="top:calc(50% - 8px); right:2.5mm;"></div>
+            <div class="timing-mark tm-right" style="top:75%; right:2.5mm;"></div>
 
             <div> <div class="header">
-                <h1>TIRANGA YUVA SAMITI (GYAN SETU)</h1>
-                <h2>YUVA GYAN MAHOTSAV 2026</h2>
+                <h1>YUVA GYAN MAHOTSAV 2026</h1>
+                <h2>OMR Answer Sheet</h2>
                 <img src="${getQRUrl(uniqueID)}" alt="QR Code" class="qr-code-img">
             </div>
 
@@ -482,9 +507,9 @@ function generateAndPrint() {
                     </div>
                     <div class="field">DATE:
                         <div class="box-wrap">
-                            <div class="box">D</div><div class="box">D</div>
-                            <div class="box">M</div><div class="box">M</div>
-                            <div class="box">Y</div><div class="box">Y</div><div class="box">Y</div><div class="box">Y</div>
+                            <div class="box"></div><div class="box"></div>
+                            <div class="box"></div><div class="box"></div>
+                            <div class="box">2</div><div class="box">0</div><div class="box">2</div><div class="box">6</div>
                         </div>
                     </div>
                 </div>
@@ -510,8 +535,13 @@ function generateAndPrint() {
                     </ul>
                 </div>
                 <div class="visual-guide">
-                    <span>Correct:</span><div class="bubble-guide" style="background:#000;"></div>
-                    <span style="margin-left:8px;">Wrong:</span><div class="bubble-guide"></div>
+                    <span style="color: #138808;">Correct:</span>
+                    <div class="bubble-guide" style="background:#000;"></div>
+                    
+                    <span style="margin-left:10px; color: #c0392b;">Wrong:</span>
+                    <div class="bubble-guide" style="display:flex; align-items:center; justify-content:center; font-size:10px;">&#10007;</div>
+                    <div class="bubble-guide" style="display:flex; align-items:center; justify-content:center; font-size:10px;">&#10003;</div>
+                    <div class="bubble-guide" style="display:flex; align-items:center; justify-content:center;"><div style="width:5px; height:5px; background:#000; border-radius:50%;"></div></div>
                 </div>
             </div>
 
