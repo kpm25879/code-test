@@ -67,6 +67,31 @@
           </label>
         </div>
 
+        <!-- Manual Overrides -->
+        <div class="manual-overrides">
+          <div class="override-field">
+            <label class="override-label" for="manualSlug">
+              <span class="override-icon">🔗</span> Custom Slug
+              <span class="override-hint">leave empty to auto-generate</span>
+            </label>
+            <div class="override-input-wrap">
+              <input type="text" id="manualSlug" class="override-input" placeholder="e.g. meri-pehli-mohabbat-ki-kahani" spellcheck="false" />
+              <button class="override-clear" data-target="manualSlug" title="Clear">✕</button>
+            </div>
+          </div>
+          <div class="override-field">
+            <label class="override-label" for="manualDesc">
+              <span class="override-icon">📝</span> Custom Description
+              <span class="override-hint">leave empty to auto-generate</span>
+            </label>
+            <div class="override-input-wrap desc-wrap">
+              <textarea id="manualDesc" class="override-textarea" placeholder="Write a custom SEO description (150-200 chars recommended)..." spellcheck="false" rows="2"></textarea>
+              <button class="override-clear desc-clear" data-target="manualDesc" title="Clear">✕</button>
+            </div>
+            <div class="desc-counter"><span id="descCharCount">0</span> / 200 chars</div>
+          </div>
+        </div>
+
         <!-- Category Selector -->
         <div class="category-section">
           <div class="category-label-row">

@@ -1,5 +1,5 @@
 /* ============================================================
-   MARKFORGE — script.js  (v2 — fixed tags + category selector)
+   MARKFORGE — script.js  (v3 — manual slug/desc + no double quotes in output)
    ============================================================ */
 "use strict";
 
@@ -15,7 +15,7 @@ const wordCountEl    = document.getElementById("wordCount");
 const charCountEl    = document.getElementById("charCount");
 const outputOverlay  = document.getElementById("outputOverlay");
 const loadingOverlay = document.getElementById("loadingOverlay");
-const loadingText    = document.getElementById("loadingText");
+const loadingTextEl  = document.getElementById("loadingText");
 const statsBar       = document.getElementById("statsBar");
 const statCategoryVal= document.getElementById("statCategoryVal");
 const statReadTimeVal= document.getElementById("statReadTimeVal");
@@ -25,14 +25,17 @@ const statSlugVal    = document.getElementById("statSlugVal");
 const outputStats    = document.getElementById("outputStats");
 const optFeatured    = document.getElementById("optFeatured");
 const authorInput    = document.getElementById("authorInput");
-const autoBadge      = document.getElementById("autoBadge");
 const categoryGrid   = document.getElementById("categoryGrid");
+const autoBadge      = document.getElementById("autoBadge");
+const manualSlug     = document.getElementById("manualSlug");
+const manualDesc     = document.getElementById("manualDesc");
+const descCharCount  = document.getElementById("descCharCount");
 
 // ── STATE ─────────────────────────────────────────────────────
 let lastProcessedData = null;
 let selectedCategory  = "auto";
 
-// ── FIXED TAGS (applied to every post) ───────────────────────
+// ── FIXED TAGS ────────────────────────────────────────────────
 const FIXED_TAGS = [
   "free sex kahani",
   "indian sex stories",
@@ -62,11 +65,11 @@ const CATEGORY_SLUGS = {
   "रंडी की चुदाई"            : "randi-ki-chudai",
   "पड़ोस में चुदाई"          : "pados-mein-chudai",
   "सील तोड़ चुदाई"           : "seal-tod-chudai",
-  "लड़कियों की गांड़ चुदाई"   : "ladkiyon-ki-gaand-chudai",
+  "लड़कियों की गांड़ चुदाई"  : "ladkiyon-ki-gaand-chudai",
   "गे चुदाई"                 : "gay-chudai",
   "बुआ की चुदाई"             : "bua-ki-chudai",
   "ग्रुप में चुदाई"          : "group-mein-chudai",
-  "नजदीकी रिश्तों में चुदाई" : "najdeeki-rishton-mein-chudai",
+  "नजदीकी रिश्तों में चुदाई": "najdeeki-rishton-mein-chudai",
   "अदला बदली"                : "adla-badli",
   "लेस्बियन चुदाई"           : "lesbian-chudai",
   "नौकर नौकरानी चुदाई"       : "naukar-naukrani-chudai",
@@ -76,16 +79,32 @@ const CATEGORY_SLUGS = {
   "मामी की चुदाई"            : "mami-ki-chudai",
   "मौसी की चुदाई"            : "mausi-ki-chudai",
   "आंटी की चुदाई"            : "aunty-ki-chudai",
-  "भाई बहन की चुदाई"         : "bhai-behen-ki-chudai",
+  "भाई बहन की चुदाई"         : "bhai-bahan-ki-chudai",
   "ससुर बहू की चुदाई"        : "sasur-bahu-ki-chudai",
-  "बाप बेटी की चुदाई"         : "baap-beti-ki-chudai",
+  "बाप बेटी की चुदाई"        : "baap-beti-ki-chudai",
   "माँ की चुदाई"             : "maa-ki-chudai",
   "बीवी की चुदाई"            : "biwi-ki-chudai",
-  "चुदाई की कहानी"          : "chudai-ki-kahani",
+  "चुदाई की कहानी"           : "chudai-ki-kahani",
   "जीजा साली की चुदाई"       : "jija-sali-ki-chudai",
   "गर्लफ्रेंड की चुदाई"      : "girlfriend-ki-chudai",
-  "हॉट सेक्स स्टोरी"         : "hot-sex-story"
+  "हॉट सेक्स स्टोरी"         : "hot-sex-story",
 };
+
+// ── DESC CHAR COUNTER ─────────────────────────────────────────
+manualDesc.addEventListener("input", () => {
+  const len = manualDesc.value.length;
+  descCharCount.textContent = len;
+  const row = descCharCount.closest(".desc-counter");
+  row.className = "desc-counter" + (len > 200 ? " over" : len > 160 ? " warn" : "");
+});
+
+// ── OVERRIDE CLEAR BUTTONS ────────────────────────────────────
+document.querySelectorAll(".override-clear").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const target = document.getElementById(btn.dataset.target);
+    if (target) { target.value = ""; target.focus(); target.dispatchEvent(new Event("input")); }
+  });
+});
 
 // ── CATEGORY BUTTONS ─────────────────────────────────────────
 categoryGrid.addEventListener("click", (e) => {
@@ -96,18 +115,16 @@ categoryGrid.addEventListener("click", (e) => {
   selectedCategory = btn.dataset.cat;
   if (selectedCategory === "auto") {
     autoBadge.textContent = "AUTO";
-    autoBadge.style.display = "";
+    autoBadge.style.cssText = "";
   } else {
     autoBadge.textContent = "MANUAL";
-    autoBadge.style.background = "rgba(0,229,160,0.1)";
-    autoBadge.style.color = "var(--accent3)";
-    autoBadge.style.borderColor = "rgba(0,229,160,0.3)";
+    autoBadge.style.cssText = "background:rgba(0,229,160,0.1);color:var(--accent3);border-color:rgba(0,229,160,0.3)";
   }
 });
 
 // ── WORD / CHAR COUNTER ───────────────────────────────────────
 inputText.addEventListener("input", () => {
-  const text = inputText.value;
+  const text  = inputText.value;
   const words = text.trim() ? text.trim().split(/\s+/).length : 0;
   wordCountEl.textContent = words.toLocaleString();
   charCountEl.textContent = text.length.toLocaleString();
@@ -125,8 +142,8 @@ clearBtn.addEventListener("click", () => {
 // ── GENERATE ──────────────────────────────────────────────────
 generateBtn.addEventListener("click", async () => {
   const raw = inputText.value.trim();
-  if (!raw) { showToast("Please paste some text first!", "error"); inputText.focus(); return; }
-  if (raw.split(/\s+/).length < 5) { showToast("Text is too short — paste more content!", "error"); return; }
+  if (!raw)                          { showToast("Please paste some text first!", "error"); inputText.focus(); return; }
+  if (raw.split(/\s+/).length < 5)   { showToast("Text is too short — paste more content!", "error"); return; }
   await runGeneration(raw);
 });
 
@@ -144,12 +161,12 @@ copyBtn.addEventListener("click", async () => {
   if (!outputText.value) return;
   try {
     await navigator.clipboard.writeText(outputText.value);
-    showToast("✓ Copied to clipboard!", "success");
-    copyBtn.querySelector("span").textContent = "✓ Copied!";
-    setTimeout(() => { copyBtn.querySelector("span").textContent = "⎘ Copy"; }, 2000);
+    showToast("Copied to clipboard!", "success");
+    copyBtn.querySelector("span").textContent = "Copied!";
+    setTimeout(() => { copyBtn.querySelector("span").textContent = "Copy"; }, 2000);
   } catch {
     outputText.select(); document.execCommand("copy");
-    showToast("✓ Copied!", "success");
+    showToast("Copied!", "success");
   }
 });
 
@@ -160,40 +177,44 @@ downloadBtn.addEventListener("click", () => {
   const blob = new Blob([outputText.value], { type: "text/markdown;charset=utf-8" });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement("a");
-  a.href = url; a.download = `${slug}.md`;
+  a.href = url; a.download = slug + ".md";
   document.body.appendChild(a); a.click();
   document.body.removeChild(a); URL.revokeObjectURL(url);
-  showToast(`↓ Downloaded: ${slug}.md`, "success");
+  showToast("Downloaded: " + slug + ".md", "success");
 });
 
 // ── MAIN GENERATION FLOW ──────────────────────────────────────
 async function runGeneration(raw) {
-  setLoading(true, "Analyzing content…");
+  setLoading(true, "Analyzing content...");
   await delay(150);
   const cleaned = cleanText(raw);
 
-  setLoading(true, "Extracting title & structure…");
+  setLoading(true, "Extracting title and structure...");
   await delay(200);
   const title = generateTitle(cleaned);
 
-  setLoading(true, "Generating SEO slug…");
+  setLoading(true, "Generating SEO slug...");
   await delay(150);
-  const slug = generateSlug(title);
 
-  setLoading(true, "Detecting category…");
+  // Manual slug override
+  const slugRaw   = manualSlug.value.trim();
+  const slug      = slugRaw ? sanitizeSlug(slugRaw) : generateSlug(title);
+
+  // Manual description override
+  const descRaw   = manualDesc.value.trim();
+  const description = descRaw ? stripQuotes(descRaw) : generateDescription(cleaned);
+
+  setLoading(true, "Detecting category...");
   await delay(150);
-  const category = (selectedCategory !== "auto")
-    ? selectedCategory
-    : detectCategory(cleaned);
+  const category = (selectedCategory !== "auto") ? selectedCategory : detectCategory(cleaned);
 
-  const description = generateDescription(cleaned);
   const readTime    = calculateReadTime(cleaned);
   const views       = generateRandomViews();
-  const author      = authorInput.value.trim() || "Admin";
+  const author      = stripQuotes(authorInput.value.trim() || "Admin");
   const featured    = optFeatured.checked;
   const publishDate = getTodayDate();
 
-  setLoading(true, "Formatting markdown…");
+  setLoading(true, "Formatting markdown...");
   await delay(150);
 
   const data = {
@@ -210,28 +231,27 @@ async function runGeneration(raw) {
   outputText.value = md;
   copyBtn.disabled = downloadBtn.disabled = regenerateBtn.disabled = false;
 
-  // Stats
   statCategoryVal.textContent = category;
   statReadTimeVal.textContent = readTime;
-  statTagsVal.textContent     = "10 fixed tags";
+  statTagsVal.textContent     = "20 fixed tags";
   statViewsVal.textContent    = views.toLocaleString();
   statSlugVal.textContent     = slug;
   statsBar.classList.add("visible");
 
   const wc = cleaned.trim().split(/\s+/).length;
-  outputStats.textContent = `${wc.toLocaleString()} words`;
+  outputStats.textContent = wc.toLocaleString() + " words";
 
   outputText.scrollTop = 0;
   outputText.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  showToast("✓ Markdown generated successfully!", "success");
+  showToast("Markdown generated successfully!", "success");
 }
 
 // ── UTILS ─────────────────────────────────────────────────────
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-function setLoading(show, message = "") {
+function setLoading(show, message) {
   if (show) {
-    loadingText.textContent = message;
+    loadingTextEl.textContent = message || "Processing...";
     loadingOverlay.classList.add("visible");
     generateBtn.classList.add("loading");
     generateBtn.disabled = true;
@@ -246,11 +266,16 @@ function getTodayDate() {
   return new Date().toISOString().split("T")[0];
 }
 
+// Remove all double and single quotes from a string
+function stripQuotes(str) {
+  return String(str).replace(/["']/g, "");
+}
+
 let toastTimer = null;
 const toastEl  = document.getElementById("toast");
-function showToast(msg, type = "info") {
+function showToast(msg, type) {
   toastEl.textContent = msg;
-  toastEl.className   = `toast ${type} show`;
+  toastEl.className   = "toast " + (type||"info") + " show";
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toastEl.classList.remove("show"), 3000);
 }
@@ -262,60 +287,54 @@ function showToast(msg, type = "info") {
 function cleanText(text) {
   let t = text
     .replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">")
-    .replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&nbsp;/g," ");
+    .replace(/&quot;/g,"").replace(/&#39;/g,"").replace(/&nbsp;/g," ");
   t = t.replace(/\r\n/g,"\n").replace(/\r/g,"\n");
   t = t.replace(/[\u200B-\u200D\uFEFF]/g,"");
   t = t.replace(/[^\S\n]+/g," ");
   t = t.replace(/\n{3,}/g,"\n\n");
-  t = t.split("\n").map(l=>l.trim()).join("\n");
+  t = t.split("\n").map(l => l.trim()).join("\n");
   return t.trim();
 }
 
 function generateTitle(text) {
-  const lines = text.split("\n").map(l=>l.trim()).filter(Boolean);
+  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
   for (const line of lines.slice(0,5)) {
     const clean = line.replace(/^[#\-*>\s]+/,"").trim();
-    if (clean.length>3 && clean.length<90 && !clean.endsWith("."))
-      return capitaliseTitle(clean);
+    if (clean.length > 3 && clean.length < 90 && !clean.endsWith("."))
+      return capitaliseTitle(stripQuotes(clean));
   }
-  const first = lines[0]||"";
+  const first = lines[0] || "";
   const s = (first.match(/[^.!?]+[.!?]*/)||[])[0];
-  if (s && s.length>5 && s.length<90) return capitaliseTitle(s.replace(/[.!?]+$/,""));
-  return capitaliseTitle(lines[0].substring(0,60));
+  if (s && s.length > 5 && s.length < 90) return capitaliseTitle(stripQuotes(s.replace(/[.!?]+$/,"")));
+  return capitaliseTitle(stripQuotes(lines[0].substring(0,60)));
 }
 
 function capitaliseTitle(str) {
   const minor = new Set(["a","an","the","and","but","or","for","nor","on","at",
     "to","by","in","of","up","as","ka","ki","ke","ne","se","ko","hai","tha","thi",
     "aur","ya","jo","jab","tab","ek"]);
-  return str.replace(/[_\-]+/g," ").split(" ").map((w,i)=>{
-    const lower=w.toLowerCase();
-    return (i===0||!minor.has(lower)) ? w.charAt(0).toUpperCase()+w.slice(1) : lower;
+  return str.replace(/[_\-]+/g," ").split(" ").map((w,i) => {
+    const lower = w.toLowerCase();
+    return (i === 0 || !minor.has(lower)) ? w.charAt(0).toUpperCase() + w.slice(1) : lower;
   }).join(" ").trim();
 }
 
-// ── HINDI TRANSLITERATION ──────────────────────────────────────
+// ── HINDI TRANSLITERATION ─────────────────────────────────────
 const HINDI_WORDS = {
   "शादी":"shaadi","प्यार":"pyaar","लड़की":"ladki","लड़का":"ladka",
   "मोहब्बत":"mohabbat","दिल":"dil","जिंदगी":"zindagi","यार":"yaar",
   "दोस्त":"dost","घर":"ghar","परिवार":"parivaar","माँ":"maa",
   "बाप":"baap","भाई":"bhai","बहन":"behen","पति":"pati","पत्नी":"patni",
   "कहानी":"kahani","किस्सा":"kissa","बात":"baat","रात":"raat",
-  "दिन":"din","सच":"sach","झूठ":"jhooth","सपना":"sapna",
-  "ख्वाब":"khwaab","इश्क":"ishq","दर्द":"dard","खुशी":"khushi",
-  "गम":"gham","आँखें":"aankhein","हाथ":"haath","याद":"yaad",
-  "नई":"nayi","पुरानी":"purani","पहली":"pahli","आखिरी":"aakhiri",
-  "एक":"ek","औरत":"aurat","मर्द":"mard","रिश्ता":"rishta",
-  "देश":"desh","गाँव":"gaanv","शहर":"sheher","सफर":"safar",
-  "मंजिल":"manzil","जासूस":"jasoos","रहस्य":"rahasya",
-  "भूत":"bhoot","डर":"dar","हँसी":"hansi","मजेदार":"mazedar",
-  "बच्चा":"bachcha","बच्चे":"bachche","स्कूल":"school",
-  "प्रेरणा":"prerna","सफलता":"safalta","जीत":"jeet",
+  "दिन":"din","सच":"sach","सपना":"sapna","इश्क":"ishq","दर्द":"dard",
+  "खुशी":"khushi","याद":"yaad","रिश्ता":"rishta","देश":"desh",
+  "गाँव":"gaanv","शहर":"sheher","सफर":"safar","मंजिल":"manzil",
 };
 
 const HINDI_MAP = {
   "अ":"a","आ":"aa","इ":"i","ई":"ee","उ":"u","ऊ":"oo","ए":"e","ऐ":"ai","ओ":"o","औ":"au",
-  "ा":"aa","ि":"i","ी":"ee","ु":"u","ू":"oo","े":"e","ै":"ai","ो":"o","ौ":"au","ं":"n","ः":"h","्":"",
+  "ा":"aa","ि":"i","ी":"ee","ु":"u","ू":"oo","े":"e","ै":"ai","ो":"o","ौ":"au",
+  "ं":"n","ः":"h","्":"",
   "क":"k","ख":"kh","ग":"g","घ":"gh","च":"ch","छ":"chh","ज":"j","झ":"jh",
   "ट":"t","ठ":"th","ड":"d","ढ":"dh","ण":"n","त":"t","थ":"th","द":"d","ध":"dh","न":"n",
   "प":"p","फ":"f","ब":"b","भ":"bh","म":"m","य":"y","र":"r","ल":"l","व":"v",
@@ -328,139 +347,166 @@ const HINDI_MAP = {
 function transliterateHindi(text) {
   if (!text) return text;
   let r = text;
-  for (const [h,e] of Object.entries(HINDI_WORDS)) r = r.replace(new RegExp(h,"g"),e);
+  for (const [h,e] of Object.entries(HINDI_WORDS)) r = r.replace(new RegExp(h,"g"), e);
   let out = "";
-  for (const ch of r) out += (HINDI_MAP[ch]!==undefined) ? HINDI_MAP[ch] : ch;
+  for (const ch of r) out += (HINDI_MAP[ch] !== undefined) ? HINDI_MAP[ch] : ch;
   return out;
 }
 
-function generateSlug(title) {
-  let s = transliterateHindi(title).toLowerCase()
-    .replace(/&/g,"and").replace(/[^\w\s-]/g,"")
-    .replace(/[\s_]+/g,"-").replace(/-{2,}/g,"-")
+function sanitizeSlug(raw) {
+  let s = raw.toLowerCase()
+    .replace(/&/g,"and")
+    .replace(/[^\w\s-]/g,"")
+    .replace(/[\s_]+/g,"-")
+    .replace(/-{2,}/g,"-")
     .replace(/^-+|-+$/g,"");
-  if (s.length>70) s = s.substring(0,70).replace(/-[^-]*$/,"");
+  if (s.length > 70) s = s.substring(0,70).replace(/-[^-]*$/,"");
   return s || "untitled-post";
+}
+
+function generateSlug(title) {
+  let s = transliterateHindi(title);
+  return sanitizeSlug(s);
 }
 
 function generateDescription(text) {
   let plain = text.replace(/[#*_`>~\-]+/g," ").replace(/\s+/g," ").trim();
-  const paras = plain.split(/\n+/).map(p=>p.trim()).filter(p=>p.length>40);
-  const source = (paras[0]||plain).replace(/\s+/g," ");
+  const paras = plain.split(/\n+/).map(p => p.trim()).filter(p => p.length > 40);
+  const source = (paras[0] || plain).replace(/\s+/g," ");
   let desc = source.substring(0,190);
-  const lp = Math.max(desc.lastIndexOf("."),desc.lastIndexOf("!"),desc.lastIndexOf("?"),desc.lastIndexOf("।"));
-  if (lp>100) desc = desc.substring(0,lp+1);
-  else if (desc.length>160) desc = desc.substring(0,160).replace(/\s+\S*$/,"")+"\u2026";
+  const lp = Math.max(
+    desc.lastIndexOf("."), desc.lastIndexOf("!"),
+    desc.lastIndexOf("?"), desc.lastIndexOf("।")
+  );
+  if (lp > 100) desc = desc.substring(0, lp + 1);
+  else if (desc.length > 160) desc = desc.substring(0,160).replace(/\s+\S*$/,"") + "...";
   desc = transliterateHindi(desc).trim();
-  return desc.charAt(0).toUpperCase()+desc.slice(1);
+  // Strip all quotes from auto-generated description
+  desc = stripQuotes(desc);
+  return desc.charAt(0).toUpperCase() + desc.slice(1);
 }
 
-// ── AUTO CATEGORY DETECTION ───────────────────────────────────
 function detectCategory(text) {
   const t = text.toLowerCase();
   const signals = {
-    "रोमांटिक कहानी"    : ["love","pyaar","ishq","romance","mohabbat","dil","romantic","teri aankhein","first love"],
-    "दिल की बात"        : ["dil","feelings","baat","emotions","heart","feeling","emotional","dard","aansu"],
-    "सच्ची कहानी"       : ["true story","sach","real","happened","incident","meri zindagi","mera anubhav","sacchi"],
-    "जिंदगी के किस्से"  : ["zindagi","life","safar","manzil","duniya","din","raat","waqt","pal"],
-    "रिश्तों की कहानी"  : ["rishta","relation","husband","wife","pati","patni","breakup","marriage","shaadi","parivaar"],
-    "दोस्ती की कहानी"   : ["dost","friend","yaar","dosti","friendship","saath","bachpan"],
-    "परिवार की कहानी"   : ["parivaar","family","maa","baap","bhai","behen","ghar","gharwale"],
-    "गाँव की कहानी"     : ["gaon","village","khet","dehaat","gramin","ghar ka","aam aadmi"],
-    "शहर की कहानी"      : ["sheher","city","mumbai","delhi","office","naukri","metro","urban"],
-    "भूत की कहानी"      : ["bhoot","ghost","darr","raat","andhere","haunt","supernatural","darawni","aatma"],
-    "रहस्य कहानी"       : ["rahasya","mystery","crime","jasoos","shushan","khoon","murder","secret","chhupaana"],
-    "मजेदार किस्से"     : ["hansi","mazaak","funny","joke","hasna","comedy","mazedar","haha","lol"],
-    "प्रेरणादायक कहानी" : ["prerna","inspire","safalta","success","jeet","motivation","sikh","seekh","parishram"],
-    "जासूसी कहानी"      : ["jasoos","detective","clue","case","investigation","police","crime","inquiry"],
-    "बच्चों की कहानी"   : ["bachcha","bachche","school","teacher","pariksha","khel","cartoon","moral","seekh"],
+    "ऑफिस में चुदाई"          : ["office","boss","colleague","secretary","meeting","cabin","staff","naukri","company"],
+    "रंडी की चुदाई"            : ["randi","tawaif","paisa","rate","customer","call girl","price","bazaar"],
+    "पड़ोस में चुदाई"          : ["padosi","neighbour","neighbor","pados","colony","door","flat","building","gali"],
+    "सील तोड़ चुदाई"           : ["pahli","first time","virgin","seal","pehli baar","new","shuru","innocent"],
+    "लड़कियों की गांड़ चुदाई"  : ["gaand","anal","peeche","behind","gand"],
+    "गे चुदाई"                 : ["gay","homosexual","ladka ladka","mard","man","he","him","dono ladke"],
+    "बुआ की चुदाई"             : ["bua","buaji","father sister","papa ki behen"],
+    "ग्रुप में चुदाई"          : ["group","gang","sab ne","teen","char","multiple","party","milke"],
+    "नजदीकी रिश्तों में चुदाई": ["rishtedar","relative","family","incest","ghar ke","khoon"],
+    "अदला बदली"                : ["exchange","swap","adla badli","wife swap","partner exchange","badal"],
+    "लेस्बियन चुदाई"           : ["lesbian","ladki ladki","dono ladkiyan","girl girl","saheli","friend girl"],
+    "नौकर नौकरानी चुदाई"       : ["naukar","naukrani","servant","maid","kaam wali","bai","driver","cook"],
+    "अजनबी की चुदाई"           : ["ajnabi","stranger","unknown","pehli mulakat","train","bus","travel"],
+    "भाभी की चुदाई"            : ["bhabhi","bhai ki biwi","bhaiya ki wife","bhabhiji"],
+    "चाची की चुदाई"            : ["chachi","chacha ki biwi","uncle wife","chachiji"],
+    "मामी की चुदाई"            : ["mami","mama ki biwi","mamiji","mama ki wife"],
+    "मौसी की चुदाई"            : ["mausi","mausiji","mom sister","mausa ki wife"],
+    "आंटी की चुदाई"            : ["aunty","auntie","aanti","anti","older woman","mature woman"],
+    "भाई बहन की चुदाई"         : ["bhai bahan","brother sister","sibling"],
+    "ससुर बहू की चुदाई"        : ["sasur","father-in-law","bahu","daughter-in-law","sasurji"],
+    "बाप बेटी की चुदाई"        : ["baap beti","father daughter","papa beti","pitaji"],
+    "माँ की चुदाई"             : ["maa","mummy","mom","mother","mata"],
+    "बीवी की चुदाई"            : ["biwi","wife","ghar wali","patni","married"],
+    "जीजा साली की चुदाई"       : ["jija","sali","jijaji","wife sister","sala"],
+    "गर्लफ्रेंड की चुदाई"      : ["girlfriend","gf","lover","pyar","dating","couple","relationship"],
+    "हॉट सेक्स स्टोरी"         : ["hot","sexy","romance","passionate","wild","intense","hard"],
+    "चुदाई की कहानी"           : ["kahani","story","kissa","tale","anubhav","experience"],
   };
   const scores = {};
   for (const [cat,words] of Object.entries(signals))
-    scores[cat] = words.reduce((s,w)=>s+(t.includes(w)?1:0),0);
-  if (/[\u0900-\u097F]/.test(text)) scores["गाँव की कहानी"] = (scores["गाँव की कहानी"]||0)+1;
-  const best = Object.entries(scores).sort((a,b)=>b[1]-a[1])[0];
-  return (best&&best[1]>0) ? best[0] : "सच्ची कहानी";
+    scores[cat] = words.reduce((s,w) => s + (t.includes(w) ? 1 : 0), 0);
+  const best = Object.entries(scores).sort((a,b) => b[1]-a[1])[0];
+  return (best && best[1] > 0) ? best[0] : "चुदाई की कहानी";
 }
 
 function calculateReadTime(text) {
   const words = text.trim().split(/\s+/).length;
-  return `${Math.max(1,Math.round(words/200))} min read`;
+  return Math.max(1, Math.round(words / 200)) + " min read";
 }
 
 function generateRandomViews() {
   const rand = Math.random();
   let v;
-  if (rand<0.5)       v = Math.floor(Math.random()*(300000-150000+1))+150000;
-  else if (rand<0.8)  v = Math.floor(Math.random()*(550000-300001+1))+300001;
-  else                v = Math.floor(Math.random()*(900000-550001+1))+550001;
+  if (rand < 0.5)      v = Math.floor(Math.random()*(300000-150000+1))+150000;
+  else if (rand < 0.8) v = Math.floor(Math.random()*(550000-300001+1))+300001;
+  else                 v = Math.floor(Math.random()*(900000-550001+1))+550001;
   return v + Math.floor(Math.random()*999);
 }
 
-// ── FORMAT MARKDOWN ───────────────────────────────────────────
+// ── FORMAT MARKDOWN — NO DOUBLE QUOTES ANYWHERE IN VALUES ────
 function formatMarkdown(data) {
   const { title, slug, description, author, category,
           tags, publishDate, readTime, featured, views, content } = data;
 
-  const tagsYaml = tags.map(t=>`  - "${t}"`).join("\n");
-  const body     = formatContent(content, title);
+  // Strip all double quotes from every string value
+  const safeTitle   = stripQuotes(title);
+  const safeSlug    = stripQuotes(slug);
+  const safeDesc    = stripQuotes(description);
+  const safeAuthor  = stripQuotes(author);
+  const safeCategory= stripQuotes(category);
+  const safeRead    = stripQuotes(readTime);
+  const safeDate    = stripQuotes(publishDate);
 
-  return `---
-title: "${escapeYaml(title)}"
-slug: "${slug}"
-description: "${escapeYaml(description)}"
-author: "${escapeYaml(author)}"
-category: "${escapeYaml(category)}"
-tags:
-${tagsYaml}
-publishDate: "${publishDate}"
-readTime: "${readTime}"
-featured: ${featured?"true":"false"}
-views: ${views}
----
+  // Tags: strip quotes, wrap in single quotes for YAML
+  const tagsYaml = tags.map(t => "  - " + stripQuotes(t)).join("\n");
 
-${body}`;
+  const body = formatContent(content, title);
+
+  return "---\n" +
+    "title: " + safeTitle + "\n" +
+    "slug: " + safeSlug + "\n" +
+    "description: " + safeDesc + "\n" +
+    "author: " + safeAuthor + "\n" +
+    "category: " + safeCategory + "\n" +
+    "tags:\n" + tagsYaml + "\n" +
+    "publishDate: " + safeDate + "\n" +
+    "readTime: " + safeRead + "\n" +
+    "featured: " + (featured ? "true" : "false") + "\n" +
+    "views: " + views + "\n" +
+    "---\n\n" +
+    body;
 }
 
 function formatContent(text, title) {
   const lines = text.split("\n");
   const out   = [];
-  let inPara  = false;
+  let inPara   = false;
   let startIdx = 0;
 
   const fl = (lines[0]||"").trim().replace(/^[#\s]+/,"");
-  if (fl && title.toLowerCase().includes(fl.toLowerCase().substring(0,20))) startIdx=1;
+  if (fl && title.toLowerCase().includes(fl.toLowerCase().substring(0,20))) startIdx = 1;
 
-  for (let i=startIdx; i<lines.length; i++) {
+  for (let i = startIdx; i < lines.length; i++) {
     const line = lines[i];
-    if (!line.trim()) { if(inPara) out.push(""); inPara=false; continue; }
-    if (/^#{1,6}\s/.test(line)) { if(inPara) out.push(""); out.push(line,""); inPara=false; continue; }
+    if (!line.trim()) { if (inPara) out.push(""); inPara = false; continue; }
+    if (/^#{1,6}\s/.test(line)) { if (inPara) out.push(""); out.push(line, ""); inPara = false; continue; }
     const t = line.trim();
-    if (t.length<55 && t.length>4 && !t.endsWith(",") && !t.endsWith(".") && !t.endsWith("।")
-        && t.split(/\s+/).length<=8 && !inPara && i>startIdx+2) {
-      if(inPara) out.push("");
-      out.push(`## ${t.replace(/:$/,"")}`,"");
-      inPara=false; continue;
+    if (t.length < 55 && t.length > 4 && !t.endsWith(",") && !t.endsWith(".") &&
+        !t.endsWith("।") && t.split(/\s+/).length <= 8 && !inPara && i > startIdx + 2) {
+      if (inPara) out.push("");
+      out.push("## " + t.replace(/:$/,""), "");
+      inPara = false; continue;
     }
-    out.push(t); inPara=true;
+    out.push(t); inPara = true;
   }
   return out.join("\n").replace(/\n{3,}/g,"\n\n").trim();
 }
 
-function escapeYaml(s) {
-  return String(s).replace(/"/g,'\\"').replace(/\n/g," ");
-}
-
 // ── KEYBOARD SHORTCUTS ────────────────────────────────────────
-document.addEventListener("keydown",(e)=>{
-  if ((e.ctrlKey||e.metaKey)&&e.key==="Enter") { e.preventDefault(); generateBtn.click(); }
-  if ((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key==="C") { e.preventDefault(); if(!copyBtn.disabled) copyBtn.click(); }
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey||e.metaKey) && e.key === "Enter") { e.preventDefault(); generateBtn.click(); }
+  if ((e.ctrlKey||e.metaKey) && e.shiftKey && e.key === "C") { e.preventDefault(); if (!copyBtn.disabled) copyBtn.click(); }
 });
 
 // ── INIT ──────────────────────────────────────────────────────
-(function init(){
+(function init() {
   inputText.dispatchEvent(new Event("input"));
-  inputText.addEventListener("focus",()=>{
-    setTimeout(()=>showToast("Tip: Ctrl+Enter to generate","info"),800);
-  },{once:true});
+  inputText.addEventListener("focus", () => {
+    setTimeout(() => showToast("Tip: Ctrl+Enter to generate", "info"), 800);
+  }, { once: true });
 })();
