@@ -447,3 +447,17 @@ textarea { resize: vertical; min-height: 130px; }
   .output-actions { width: 100%; }
   .output-actions .btn { flex: 1; text-align: center; }
 }
+
+/* ── Loader inner layout ─────────────────────────────────────── */
+.loader-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.loader-sub {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text3);
+  letter-spacing: 0.02em;
+}
