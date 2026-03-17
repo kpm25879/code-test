@@ -637,7 +637,120 @@ textarea::placeholder {
   min-width: 200px;
 }
 
-/* ── FOOTER ── */
+/* ── CATEGORY SECTION ── */
+.category-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.category-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.auto-badge {
+  background: rgba(255,184,0,0.15);
+  color: var(--accent2);
+  border: 1px solid rgba(255,184,0,0.3);
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+}
+
+.auto-toggle {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  transition: color 0.2s;
+}
+
+.auto-toggle:hover { color: var(--accent2); }
+
+.category-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.cat-btn {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  background: var(--bg3);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.3rem 0.65rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.cat-btn:hover {
+  color: var(--text);
+  border-color: #3a3a4a;
+  background: #1e1e26;
+}
+
+.cat-btn.active {
+  color: var(--accent2);
+  border-color: rgba(255,184,0,0.5);
+  background: rgba(255,184,0,0.08);
+}
+
+/* ── TAGS PREVIEW ── */
+.tags-preview-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.tag-count-badge {
+  color: var(--accent3);
+  font-size: 0.6rem;
+  background: rgba(0,229,160,0.08);
+  border: 1px solid rgba(0,229,160,0.2);
+  padding: 0.1rem 0.45rem;
+  border-radius: 3px;
+}
+
+.tags-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag-chip {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--accent3);
+  background: rgba(0,229,160,0.06);
+  border: 1px solid rgba(0,229,160,0.2);
+  padding: 0.25rem 0.6rem;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+
 .footer {
   padding: 1.2rem 2rem;
   border-top: 1px solid var(--border);
