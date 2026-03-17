@@ -472,29 +472,200 @@ function formatMarkdown(data) {
     body;
 }
 
+// ── SMART PARAGRAPH FORMATTER ────────────────────────────────
+// Handles all messy input cases:
+// 1. Wall of text (no newlines) → split every ~4-6 sentences
+// 2. Every sentence on its own line → group into paragraphs
+// 3. Already has paragraph breaks → preserve and clean
+// 4. Mixed Hindi/English sentence endings (। . ! ?)
+// 5. Auto-detects short heading-like lines → ## heading
 function formatContent(text, title) {
-  const lines = text.split("\n");
-  const out   = [];
-  let inPara   = false;
-  let startIdx = 0;
 
-  const fl = (lines[0]||"").trim().replace(/^[#\s]+/,"");
-  if (fl && title.toLowerCase().includes(fl.toLowerCase().substring(0,20))) startIdx = 1;
-
-  for (let i = startIdx; i < lines.length; i++) {
-    const line = lines[i];
-    if (!line.trim()) { if (inPara) out.push(""); inPara = false; continue; }
-    if (/^#{1,6}\s/.test(line)) { if (inPara) out.push(""); out.push(line, ""); inPara = false; continue; }
-    const t = line.trim();
-    if (t.length < 55 && t.length > 4 && !t.endsWith(",") && !t.endsWith(".") &&
-        !t.endsWith("।") && t.split(/\s+/).length <= 8 && !inPara && i > startIdx + 2) {
-      if (inPara) out.push("");
-      out.push("## " + t.replace(/:$/,""), "");
-      inPara = false; continue;
-    }
-    out.push(t); inPara = true;
+  // ── STEP 1: Remove title line if duplicated at top ──────────
+  let body = text.trim();
+  const firstLine = body.split("\n")[0].trim().replace(/^[#\s]+/, "");
+  if (firstLine && title.toLowerCase().startsWith(firstLine.toLowerCase().substring(0, 15))) {
+    body = body.split("\n").slice(1).join("\n").trim();
   }
-  return out.join("\n").replace(/\n{3,}/g,"\n\n").trim();
+
+  // ── STEP 2: Normalise line endings ──────────────────────────
+  body = body.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
+  // ── STEP 3: Detect input structure ──────────────────────────
+  const rawLines   = body.split("\n");
+  const nonEmpty   = rawLines.filter(l => l.trim().length > 0);
+  const totalLines = nonEmpty.length;
+
+  // How many lines end with a sentence terminator?
+  const sentenceEnders = /[.!?।…]$/;
+  const enderCount = nonEmpty.filter(l => sentenceEnders.test(l.trim())).length;
+  const enderRatio = totalLines > 0 ? enderCount / totalLines : 0;
+
+  // Average line word count
+  const avgWords = nonEmpty.reduce((s,l) => s + l.trim().split(/\s+/).length, 0) / Math.max(totalLines,1);
+
+  // Decide strategy:
+  // "wall"   → entire text is one or few long lines (no para breaks)
+  // "dense"  → every sentence is its own line (needs grouping)
+  // "normal" → already has paragraph structure
+  let strategy;
+  if (totalLines <= 3 && avgWords > 30) {
+    strategy = "wall";
+  } else if (enderRatio > 0.55 && avgWords < 22) {
+    strategy = "dense";
+  } else {
+    strategy = "normal";
+  }
+
+  // ── STEP 4: Apply strategy ───────────────────────────────────
+  let paragraphs = [];
+
+  if (strategy === "wall") {
+    // Split wall of text into sentences, then group every 4-5 sentences
+    paragraphs = splitWallIntoParagraphs(body);
+
+  } else if (strategy === "dense") {
+    // Group individual sentence-lines into paragraph blocks of 3-5 sentences
+    paragraphs = groupDenseLines(rawLines);
+
+  } else {
+    // Normal: respect existing blank-line paragraph breaks, clean each block
+    paragraphs = parseNormalParagraphs(rawLines);
+  }
+
+  // ── STEP 5: Post-process each paragraph ─────────────────────
+  const output = [];
+  paragraphs.forEach((para, idx) => {
+    para = para.trim();
+    if (!para) return;
+
+    // Detect heading-like lines: short, no period, few words, not first para
+    if (
+      idx > 0 &&
+      para.split("\n").length === 1 &&
+      para.length < 60 &&
+      para.split(/\s+/).length <= 9 &&
+      !sentenceEnders.test(para) &&
+      !/^#{1,6}\s/.test(para)
+    ) {
+      output.push("## " + para.replace(/:$/, ""));
+    } else if (/^#{1,6}\s/.test(para)) {
+      output.push(para);
+    } else {
+      // Wrap paragraph text — join its internal lines smoothly
+      const joined = para.split("\n").map(l => l.trim()).filter(Boolean).join(" ");
+      output.push(joined);
+    }
+  });
+
+  return output.join("\n\n").trim();
+}
+
+// ── Wall splitter: one big blob → sentence groups ─────────────
+function splitWallIntoParagraphs(text) {
+  // Split on sentence boundaries (supports Hindi । and English . ! ?)
+  const sentenceRegex = /(?<=[.!?।…]\s+)(?=[A-Z\u0900-\u097F])/g;
+  let sentences = text
+    .replace(/([.!?।])([^\s"\n])/g, "$1 $2") // ensure space after terminator
+    .split(sentenceRegex)
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  // If regex split didn't work well, fallback to splitting on ". " patterns
+  if (sentences.length < 3) {
+    sentences = text
+      .replace(/([.!?।])\s+/g, "$1\n")
+      .split("\n")
+      .map(s => s.trim())
+      .filter(Boolean);
+  }
+
+  // Group every PARA_SIZE sentences into one paragraph
+  const PARA_SIZE = 4;
+  const groups = [];
+  for (let i = 0; i < sentences.length; i += PARA_SIZE) {
+    groups.push(sentences.slice(i, i + PARA_SIZE).join(" "));
+  }
+  return groups;
+}
+
+// ── Dense grouper: one sentence per line → paragraphs ─────────
+function groupDenseLines(lines) {
+  const PARA_SIZE = 4; // sentences per paragraph
+  const sentences = [];
+  let buffer = "";
+
+  lines.forEach(line => {
+    const t = line.trim();
+    if (!t) {
+      // blank line = forced paragraph break — flush buffer first
+      if (buffer) { sentences.push({ text: buffer.trim(), forceBreak: true }); buffer = ""; }
+      return;
+    }
+    if (/^#{1,6}\s/.test(t)) {
+      if (buffer) { sentences.push({ text: buffer.trim(), forceBreak: false }); buffer = ""; }
+      sentences.push({ text: t, heading: true });
+      return;
+    }
+    buffer += (buffer ? " " : "") + t;
+    // If line ends sentence, flush
+    if (/[.!?।…]$/.test(t)) {
+      sentences.push({ text: buffer.trim(), forceBreak: false });
+      buffer = "";
+    }
+  });
+  if (buffer) sentences.push({ text: buffer.trim(), forceBreak: false });
+
+  // Now group non-heading sentences into paragraphs of PARA_SIZE
+  const paragraphs = [];
+  let group = [];
+
+  sentences.forEach(item => {
+    if (item.heading) {
+      if (group.length) { paragraphs.push(group.join(" ")); group = []; }
+      paragraphs.push(item.text);
+      return;
+    }
+    if (item.forceBreak) {
+      if (group.length) { paragraphs.push(group.join(" ")); group = []; }
+      if (item.text) group.push(item.text);
+      return;
+    }
+    group.push(item.text);
+    if (group.length >= PARA_SIZE) {
+      paragraphs.push(group.join(" "));
+      group = [];
+    }
+  });
+  if (group.length) paragraphs.push(group.join(" "));
+  return paragraphs;
+}
+
+// ── Normal parser: respect blank-line breaks ──────────────────
+function parseNormalParagraphs(lines) {
+  const paragraphs = [];
+  let current = [];
+
+  lines.forEach(line => {
+    if (!line.trim()) {
+      if (current.length) {
+        paragraphs.push(current.join("\n"));
+        current = [];
+      }
+    } else {
+      current.push(line.trim());
+    }
+  });
+  if (current.length) paragraphs.push(current.join("\n"));
+
+  // If we got very few paragraphs but lots of lines, re-split by sentence count
+  const totalSentences = paragraphs.join(" ").split(/[.!?।]/).length;
+  if (paragraphs.length < 3 && totalSentences > 10) {
+    // Flatten and re-split
+    return splitWallIntoParagraphs(paragraphs.join(" "));
+  }
+
+  return paragraphs;
 }
 
 // ── KEYBOARD SHORTCUTS ────────────────────────────────────────
