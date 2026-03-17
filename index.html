@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MarkForge — SEO Markdown Generator</title>
+  <meta name="description" content="Convert messy text into clean, SEO-optimized Markdown with structured frontmatter. Free static tool." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- Toast -->
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-mark">⬡</span>
+        <span class="logo-text">Mark<strong>Forge</strong></span>
+      </div>
+      <p class="tagline">Messy Text → Clean SEO Markdown</p>
+    </div>
+    <div class="header-grid-lines" aria-hidden="true"></div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="grid-container">
+
+      <!-- INPUT PANEL -->
+      <section class="panel panel--input">
+        <div class="panel-header">
+          <span class="panel-label">01 / INPUT</span>
+          <h2 class="panel-title">Paste Your Raw Text</h2>
+          <div class="word-counter-wrapper">
+            <span class="word-badge">
+              <span id="wordCount">0</span> words
+            </span>
+            <span class="char-badge">
+              <span id="charCount">0</span> chars
+            </span>
+          </div>
+        </div>
+
+        <div class="textarea-wrapper">
+          <textarea
+            id="inputText"
+            placeholder="Paste your raw, messy text here...&#10;&#10;• Blog posts, stories, notes, articles&#10;• Hindi / Hinglish / English — all supported&#10;• The messier, the better — we'll clean it up"
+            spellcheck="false"
+            aria-label="Input text"
+          ></textarea>
+          <button class="clear-btn" id="clearBtn" title="Clear input" aria-label="Clear input">✕</button>
+        </div>
+
+        <!-- Options Row -->
+        <div class="options-row">
+          <label class="option-item">
+            <input type="checkbox" id="optFeatured" />
+            <span>Featured Post</span>
+          </label>
+          <label class="option-item">
+            <span>Author</span>
+            <input type="text" id="authorInput" value="Admin" class="inline-input" placeholder="Author name" />
+          </label>
+        </div>
+
+        <button class="btn btn--generate" id="generateBtn" aria-label="Generate Markdown">
+          <span class="btn-icon">⚙</span>
+          <span class="btn-text">Generate Markdown</span>
+          <span class="btn-loader" aria-hidden="true"></span>
+        </button>
+      </section>
+
+      <!-- DIVIDER -->
+      <div class="divider" aria-hidden="true">
+        <div class="divider-line"></div>
+        <div class="divider-icon">→</div>
+        <div class="divider-line"></div>
+      </div>
+
+      <!-- OUTPUT PANEL -->
+      <section class="panel panel--output">
+        <div class="panel-header">
+          <span class="panel-label">02 / OUTPUT</span>
+          <h2 class="panel-title">SEO Markdown</h2>
+          <div class="output-stats" id="outputStats" aria-live="polite"></div>
+        </div>
+
+        <div class="textarea-wrapper">
+          <textarea
+            id="outputText"
+            placeholder="Your clean, SEO-optimized Markdown will appear here..."
+            readonly
+            spellcheck="false"
+            aria-label="Generated Markdown output"
+          ></textarea>
+          <div class="output-overlay" id="outputOverlay" aria-hidden="true">
+            <div class="overlay-content">
+              <div class="overlay-icon">⬡</div>
+              <p>Output appears here</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button class="btn btn--copy" id="copyBtn" disabled aria-label="Copy to clipboard">
+            <span>⎘ Copy</span>
+          </button>
+          <button class="btn btn--download" id="downloadBtn" disabled aria-label="Download .md file">
+            <span>↓ Download .md</span>
+          </button>
+          <button class="btn btn--regenerate" id="regenerateBtn" disabled aria-label="Regenerate with new views">
+            <span>↺ New Views</span>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar" id="statsBar" aria-live="polite">
+      <div class="stat-item" id="statCategory"><span class="stat-key">Category</span><span class="stat-val" id="statCategoryVal">—</span></div>
+      <div class="stat-item" id="statReadTime"><span class="stat-key">Read Time</span><span class="stat-val" id="statReadTimeVal">—</span></div>
+      <div class="stat-item" id="statTags"><span class="stat-key">Tags</span><span class="stat-val" id="statTagsVal">—</span></div>
+      <div class="stat-item" id="statViews"><span class="stat-key">Views</span><span class="stat-val" id="statViewsVal">—</span></div>
+      <div class="stat-item" id="statSlug"><span class="stat-key">Slug</span><span class="stat-val" id="statSlugVal">—</span></div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>MarkForge — Static tool. No backend. No data sent. 100% client-side.</p>
+  </footer>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay" aria-hidden="true">
+    <div class="loading-box">
+      <div class="loading-spinner"></div>
+      <p class="loading-text" id="loadingText">Analyzing content…</p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
