@@ -327,18 +327,44 @@ function createZip() {
 // ================================================================
 // UTILITIES
 // ================================================================
+// CORS proxy list — tried in order on failure
+const CORS_PROXIES = [
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+];
+
 async function safeFetch(url, customErr) {
-  let res;
+  // 1. Try direct request first
   try {
-    res = await fetch(url, { headers: { Accept: "application/json" } });
-  } catch {
-    throw new Error(customErr || `Network error fetching: ${url}`);
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    if (res.ok) return res;
+    if (res.status === 404) throw new Error(customErr || `Post not found (404): ${url}`);
+    // Non-404 server error — fall through to proxies
+  } catch (e) {
+    // If it's our own 404 error, rethrow immediately
+    if (e.message.includes("404") || e.message.includes("not found")) throw e;
+    // Otherwise it's likely a CORS/network error — try proxies
   }
-  if (!res.ok) {
-    if (res.status === 404) throw new Error(customErr || `Not found (404): ${url}`);
-    throw new Error(customErr || `API returned ${res.status} for ${url}`);
+
+  // 2. Try each CORS proxy in sequence
+  for (const makeProxy of CORS_PROXIES) {
+    const proxyURL = makeProxy(url);
+    try {
+      const res = await fetch(proxyURL, { headers: { Accept: "application/json" } });
+      if (res.ok) return res;
+    } catch {
+      // Try next proxy
+    }
   }
-  return res;
+
+  // 3. All attempts failed
+  throw new Error(
+    customErr ||
+    `Cannot reach the WordPress API at this URL.\n` +
+    `• The site may not have the REST API enabled\n` +
+    `• The post slug may be incorrect\n` +
+    `• CORS proxies may be temporarily unavailable`
+  );
 }
 
 function stripHTML(html) {

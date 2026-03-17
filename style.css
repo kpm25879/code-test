@@ -299,6 +299,7 @@ textarea { resize: vertical; min-height: 130px; }
   color: var(--red);
   font-family: var(--mono);
   line-height: 1.5;
+  white-space: pre-line;
 }
 
 /* ── Batch Progress ──────────────────────────────────────────── */
