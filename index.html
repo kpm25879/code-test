@@ -179,18 +179,22 @@
           <div class="output-stats" id="outputStats" aria-live="polite"></div>
         </div>
 
-        <div class="textarea-wrapper">
+        <div class="textarea-wrapper output-wrapper">
+          <!-- Hidden textarea for copy/download -->
           <textarea
             id="outputText"
-            placeholder="Your clean, SEO-optimized Markdown will appear here..."
+            style="display:none"
             readonly
             spellcheck="false"
             aria-label="Generated Markdown output"
           ></textarea>
-          <div class="output-overlay" id="outputOverlay" aria-hidden="true">
-            <div class="overlay-content">
-              <div class="overlay-icon">⬡</div>
-              <p>Output appears here</p>
+          <!-- Rendered output display -->
+          <div id="outputDisplay" class="output-display" aria-live="polite">
+            <div class="output-overlay" id="outputOverlay" aria-hidden="true">
+              <div class="overlay-content">
+                <div class="overlay-icon">⬡</div>
+                <p>Output appears here</p>
+              </div>
             </div>
           </div>
         </div>
