@@ -308,9 +308,14 @@ function cleanText(text) {
     .replace(/&quot;/g,"").replace(/&#39;/g,"").replace(/&nbsp;/g," ");
   t = t.replace(/\r\n/g,"\n").replace(/\r/g,"\n");
   t = t.replace(/[\u200B-\u200D\uFEFF]/g,"");
+  // Fix spaces within lines but NOT newlines
   t = t.replace(/[^\S\n]+/g," ");
+  // Normalise 3+ newlines to exactly 2 (paragraph break)
   t = t.replace(/\n{3,}/g,"\n\n");
+  // Trim each line but KEEP the newline structure intact
   t = t.split("\n").map(l => l.trim()).join("\n");
+  // Re-ensure paragraph breaks are double newlines (in case trim collapsed them)
+  t = t.replace(/\n{3,}/g,"\n\n");
   return t.trim();
 }
 
@@ -452,18 +457,31 @@ function formatContent(text, title) {
 
   const rawLines = body.split("\n");
   const nonEmpty = rawLines.filter(l=>l.trim());
-  const avgWords = nonEmpty.reduce((s,l)=>s+l.trim().split(/\s+/).length,0) / Math.max(nonEmpty.length,1);
+  const totalWords = nonEmpty.reduce((s,l)=>s+l.trim().split(/\s+/).length,0);
+  const avgWords = totalWords / Math.max(nonEmpty.length,1);
   const enderRatio = nonEmpty.filter(l=>/[.!?।…]$/.test(l.trim())).length / Math.max(nonEmpty.length,1);
+  // Count existing blank lines (paragraph separators)
+  const blankLines = rawLines.filter(l=>!l.trim()).length;
+  const hasParagraphBreaks = blankLines >= 1;
 
   let paragraphs;
-  if (nonEmpty.length <= 3 && avgWords > 30) {
+  if (!hasParagraphBreaks && nonEmpty.length <= 3 && avgWords > 30) {
+    // True wall of text — one big blob
     paragraphs = splitWall(body);
-  } else if (enderRatio > 0.55 && avgWords < 22) {
+  } else if (!hasParagraphBreaks && enderRatio > 0.55 && avgWords < 22) {
+    // Every sentence on its own line, no breaks
     paragraphs = groupDense(rawLines);
-  } else {
+  } else if (hasParagraphBreaks) {
+    // Already has paragraph breaks — respect them
     paragraphs = parseNormal(rawLines);
-    if (paragraphs.length < 3 && body.split(/[.!?।]/).length > 10)
-      paragraphs = splitWall(body);
+  } else {
+    // No breaks detected — force split by sentences
+    paragraphs = splitWall(body);
+  }
+
+  // If still just 1 paragraph and text is long, force-split it
+  if (paragraphs.length < 2 && totalWords > 80) {
+    paragraphs = splitWall(body);
   }
 
   const ENDERS = /[.!?।…]$/;
