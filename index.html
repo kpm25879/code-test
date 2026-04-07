@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Thumbnail Studio - Digital Bundle</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Premium Light Theme Colors */
+            --bg-base: #f1f5f9;
+            --header-bg: #ffffff;
+            --panel-bg: #ffffff;
+            --border-light: #e2e8f0;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --input-bg: #f8fafc;
+            --input-border: #cbd5e1;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius-md: 12px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-dark);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Clean Website Header */
+        header {
+            background: var(--header-bg);
+            padding: 16px 40px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            z-index: 10;
+        }
+
+        header .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        header h1 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+        }
+
+        header h1 span { color: var(--primary); }
+
+        .export-badge {
+            background: #eef2ff;
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            border: 1px solid #c7d2fe;
+            letter-spacing: 0.5px;
+        }
+
+        .main-layout {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 70px);
+        }
+
+        /* Card-based Sidebar */
+        .sidebar {
+            width: 420px;
+            background: var(--bg-base);
+            border-right: 1px solid var(--border-light);
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 5;
+        }
+
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .settings-card {
+            background: var(--panel-bg);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            font-weight: 800;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .control-group:last-child { margin-bottom: 0; }
+
+        .control-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        input[type="text"], select, input[type="file"] {
+            width: 100%;
+            padding: 12px 14px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+            background-color: #ffffff;
+        }
+
+        input[type="file"] {
+            padding: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            background: white;
+        }
+        
+        input[type="file"]::file-selector-button {
+            background: var(--bg-base);
+            border: 1px solid var(--input-border);
+            color: var(--text-dark);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 12px;
+            font-weight: 700;
+            transition: background 0.2s;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            padding: 6px 12px;
+            gap: 12px;
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            background: none;
+            padding: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            padding: 6px 0;
+        }
+
+        .checkbox-label input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            font-size: 1.05rem;
+            padding: 16px;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Workspace */
+        .workspace {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background-color: #e2e8f0;
+            background-image: 
+                linear-gradient(45deg, #cbd5e1 25%, transparent 25%, transparent 75%, #cbd5e1 75%, #cbd5e1), 
+                linear-gradient(45deg, #cbd5e1 25%, transparent 25%, transparent 75%, #cbd5e1 75%, #cbd5e1);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            position: relative;
+        }
+
+        .canvas-container {
+            width: 100%;
+            max-width: 1100px;
+            aspect-ratio: 16 / 9;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg), 0 30px 60px -15px rgba(0,0,0,0.3);
+            overflow: hidden;
+            background: #fff;
+            position: relative;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        @media (max-width: 1100px) {
+            .main-layout { flex-direction: column; overflow-y: auto; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-light); }
+            .workspace { min-height: 60vh; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <h1>Creator <span>Assets</span></h1>
+        </div>
+        <div class="export-badge">YOUTUBE READY · 1280x720</div>
+    </header>
+
+    <div class="main-layout">
+        <div class="sidebar">
+            
+            <div class="settings-card">
+                <div class="section-title">Text Content</div>
+                <div class="control-group">
+                    <label>Main Headline (Open Sans)</label>
+                    <input type="text" id="titleInput" value="THE ULTIMATE STUDY GUIDE" placeholder="Enter main title...">
+                </div>
+                <div class="control-group">
+                    <label>Subtitle Description</label>
+                    <input type="text" id="subInput" value="Complete Material + Worksheets" placeholder="Enter subtitle...">
+                </div>
+                <div class="control-group">
+                    <label>Top Badge Text</label>
+                    <input type="text" id="badgeInput" value="100% FREE DOWNLOAD" placeholder="e.g. FREE PDF">
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <div class="section-title">Visual Styling</div>
+                
+                <div class="grid-2">
+                    <div class="control-group">
+                        <label>Background 1</label>
+                        <div class="color-picker-wrapper">
+                            <input type="color" id="bg1" value="#1e293b">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label>Background 2</label>
+                        <div class="color-picker-wrapper">
+                            <input type="color" id="bg2" value="#4f46e5">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label>Graphic Setup</label>
+                    <select id="iconSelect">
+                        <option value="bundle">Digital Bundle (Book + PDF + Download)</option>
+                        <option value="book_only">Premium Book Only</option>
+                        <option value="pdf_only">PDF Document Only</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Layout Alignment</label>
+                    <select id="layoutSelect">
+                        <option value="split-left">Text on Left, Graphics on Right</option>
+                        <option value="split-right">Graphics on Left, Text on Right</option>
+                    </select>
+                </div>
+                
+                <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="glassToggle" checked> Frosted Glass Text Box
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="particlesToggle" checked> Floating Premium Particles
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn btn-success" id="downloadBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Export HD Thumbnail
+            </button>
+        </div>
+
+        <div class="workspace">
+            <div class="canvas-container">
+                <canvas id="thumbCanvas" width="1280" height="720"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('thumbCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // State & DOM Elements
+        const state = {
+            title: document.getElementById('titleInput'),
+            subtitle: document.getElementById('subInput'),
+            badge: document.getElementById('badgeInput'),
+            bg1: document.getElementById('bg1'),
+            bg2: document.getElementById('bg2'),
+            icon: document.getElementById('iconSelect'),
+            layout: document.getElementById('layoutSelect'),
+            glass: document.getElementById('glassToggle'),
+            particles: document.getElementById('particlesToggle')
+        };
+
+        // Ensure fonts load
+        document.fonts.ready.then(() => {
+            render();
+            setTimeout(render, 150); // Double check for web fonts
+        });
+
+        // Event Listeners
+        Object.values(state).forEach(input => {
+            if (input && input.addEventListener) {
+                input.addEventListener('input', render);
+                input.addEventListener('change', render);
+            }
+        });
+
+        // Main Render Function
+        function render() {
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            // 1. Draw Gradient Background
+            const grad = ctx.createLinearGradient(0, 0, w, h);
+            grad.addColorStop(0, state.bg1.value);
+            grad.addColorStop(1, state.bg2.value);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+
+            // 2. Draw Vignette & Particles
+            drawVignette(w, h);
+            if (state.particles.checked) drawParticles(w, h);
+
+            // 3. Layout Calc
+            const layoutType = state.layout.value;
+            let textX, textY, iconX, iconY, align, maxWidth;
+
+            if (layoutType === 'split-left') {
+                textX = 80; textY = h / 2; align = 'left'; maxWidth = w * 0.45;
+                iconX = w * 0.72; iconY = h / 2;
+            } else { // split-right
+                textX = w - 80; textY = h / 2; align = 'right'; maxWidth = w * 0.45;
+                iconX = w * 0.28; iconY = h / 2;
+            }
+
+            // 4. Draw Typography (with optional glass box)
+            drawTextContent(textX, textY, align, maxWidth, layoutType);
+
+            // 5. Draw Graphic Selection (Bundle, Book, or PDF)
+            if (state.icon.value === 'bundle') {
+                drawBundleGraphic(iconX, iconY);
+            } else if (state.icon.value === 'book_only') {
+                drawBook(iconX, iconY, 1.2);
+            } else if (state.icon.value === 'pdf_only') {
+                drawPDF(iconX, iconY, 1.2);
+            }
+        }
+
+        // --- Background Enhancements ---
+        
+        function drawVignette(w, h) {
+            const grad = ctx.createRadialGradient(w/2, h/2, h*0.3, w/2, h/2, w*0.8);
+            grad.addColorStop(0, 'rgba(0,0,0,0)');
+            grad.addColorStop(1, 'rgba(0,0,0,0.7)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+        }
+
+        function drawParticles(w, h) {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 2;
+            
+            // Draw floating crosses (+)
+            const crosses = [
+                {x: 150, y: 100}, {x: w-200, y: 150}, {x: w/2, y: 80},
+                {x: 200, y: h-100}, {x: w-150, y: h-150}
+            ];
+            crosses.forEach(p => {
+                ctx.beginPath();
+                ctx.moveTo(p.x - 15, p.y); ctx.lineTo(p.x + 15, p.y);
+                ctx.moveTo(p.x, p.y - 15); ctx.lineTo(p.x, p.y + 15);
+                ctx.stroke();
+            });
+
+            // Draw floating rings (O)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 6;
+            const rings = [
+                {x: 80, y: h/2, r: 40}, {x: w-80, y: h/2, r: 60}, {x: w/2 + 100, y: h-80, r: 30}
+            ];
+            rings.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.stroke();
+            });
+            ctx.restore();
+        }
+
+        // --- Core Graphic Draw Functions ---
+
+        function drawBundleGraphic(x, y) {
+            ctx.save();
+            ctx.translate(x, y);
+
+            // Master Glow behind the entire bundle
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.2)';
+            ctx.shadowBlur = 80;
+            ctx.beginPath();
+            ctx.arc(0, 0, 150, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 1. Draw Book Symbol (Background Left)
+            ctx.save();
+            ctx.translate(-70, -40);
+            ctx.rotate(-0.05); // Slight tilt
+            drawBook(0, 0, 0.9);
+            ctx.restore();
+
+            // 2. Draw PDF Icon (Background Right, overlapping book)
+            ctx.save();
+            ctx.translate(80, -20);
+            ctx.rotate(0.08); // Slight tilt opposite
+            drawPDF(0, 0, 0.85);
+            ctx.restore();
+
+            // 3. Draw Download Button Logo (Foreground Center)
+            ctx.save();
+            ctx.translate(0, 160);
+            drawDownloadButton(0, 0, 1.1);
+            ctx.restore();
+
+            ctx.restore();
+        }
+
+        function drawBook(0, 0, scale = 1) {
+            ctx.save();
+            ctx.scale(scale, scale);
+            
+            // Drop Shadow
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+            ctx.shadowBlur = 25;
+            ctx.shadowOffsetY = 15;
+            ctx.shadowOffsetX = -10;
+
+            // Binder/Book Cover Base (Deep Blue/Dark)
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            ctx.roundRect(-100, -140, 200, 280, [10, 25, 25, 10]);
+            ctx.fill();
+
+            // Book Spine Highlight
+            ctx.shadowColor = 'transparent';
+            ctx.fillStyle = 'rgba(255,255,255,0.1)';
+            ctx.fillRect(-90, -140, 15, 280);
+
+            // Paper Edge Illusion (Right Side)
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(85, -130, 15, 260);
+            ctx.fillStyle = '#cbd5e1'; // lines on paper
+            for(let i= -120; i < 120; i+=10) { ctx.fillRect(85, i, 15, 2); }
+
+            // Accent Design on Cover
+            ctx.fillStyle = '#4f46e5'; // Primary accent
+            ctx.beginPath();
+            ctx.roundRect(-60, -90, 120, 80, 8);
+            ctx.fill();
+
+            // Book Symbol Text
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '800 24px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText('STUDY', 0, -55);
+            ctx.fillText('GUIDE', 0, -25);
+            
+            // Decorative lines
+            ctx.fillStyle = 'rgba(255,255,255,0.2)';
+            ctx.fillRect(-60, 20, 120, 6);
+            ctx.fillRect(-60, 40, 90, 6);
+            ctx.fillRect(-60, 60, 100, 6);
+
+            // Book Bookmark (Ribbon hanging out bottom)
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.moveTo(-30, 140);
+            ctx.lineTo(-10, 140);
+            ctx.lineTo(-10, 170);
+            ctx.lineTo(-20, 160);
+            ctx.lineTo(-30, 170);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawPDF(0, 0, scale = 1) {
+            ctx.save();
+            ctx.scale(scale, scale);
+            
+            // Drop Shadow
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.shadowBlur = 20;
+            ctx.shadowOffsetY = 10;
+            ctx.shadowOffsetX = 10;
+
+            // Document Base (White)
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.roundRect(-80, -110, 160, 220, 12);
+            ctx.fill();
+
+            // PDF Red Header Tab
+            ctx.shadowColor = 'transparent';
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.roundRect(-80, -110, 160, 65, [12, 12, 0, 0]);
+            ctx.fill();
+
+            // Folded Corner Illusion (Top Right)
+            ctx.fillStyle = '#f8fafc';
+            ctx.beginPath();
+            ctx.moveTo(80, -110);
+            ctx.lineTo(80, -70);
+            ctx.lineTo(40, -110);
+            ctx.fill();
+            ctx.fillStyle = '#dc2626'; // Darker red under fold
+            ctx.beginPath();
+            ctx.moveTo(40, -110);
+            ctx.lineTo(80, -70);
+            ctx.lineTo(40, -70);
+            ctx.fill();
+
+            // "PDF" Text Logo
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '900 36px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('PDF', -5, -75);
+
+            // Document Abstract Text Lines
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillRect(-50, -10, 100, 10);
+            ctx.fillRect(-50, 20, 100, 10);
+            ctx.fillRect(-50, 50, 70, 10);
+            
+            // Small Image block illusion
+            ctx.fillStyle = '#e2e8f0';
+            ctx.roundRect(-50, -35, 30, 30, 4);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawDownloadButton(0, 0, scale = 1) {
+            ctx.save();
+            ctx.scale(scale, scale);
+
+            const width = 280;
+            const height = 80;
+            const x = -width / 2;
+            const y = -height / 2;
+
+            // Pop Shadow
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+            ctx.shadowBlur = 30;
+            ctx.shadowOffsetY = 15;
+
+            // Green Gradient Pill Button
+            const grad = ctx.createLinearGradient(x, y, x, y + height);
+            grad.addColorStop(0, '#10b981'); // Emerald 500
+            grad.addColorStop(1, '#047857'); // Emerald 700
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.roundRect(x, y, width, height, height / 2);
+            ctx.fill();
+
+            // Inner Highlight for 3D effect
+            ctx.shadowColor = 'transparent';
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.roundRect(x + 4, y + 4, width - 8, height - 8, (height - 8) / 2);
+            ctx.stroke();
+
+            // Text "DOWNLOAD NOW"
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '800 24px Open Sans';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('DOWNLOAD NOW', 20, 2); // Offset to right to make room for icon
+
+            // Download Arrow Icon (Left side of pill)
+            ctx.translate(-90, 0);
+            
+            // Icon Circle Background
+            ctx.fillStyle = 'rgba(255,255,255,0.2)';
+            ctx.beginPath();
+            ctx.arc(0, 0, 25, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Arrow Path
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(-8, -10);
+            ctx.lineTo(8, -10);
+            ctx.lineTo(8, 2);
+            ctx.lineTo(16, 2);
+            ctx.lineTo(0, 15);
+            ctx.lineTo(-16, 2);
+            ctx.lineTo(-8, 2);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // --- Text Layout Engine ---
+
+        function drawTextContent(x, y, align, maxWidth, layout) {
+            ctx.save();
+            ctx.textAlign = align;
+            ctx.textBaseline = 'top';
+            
+            let currentY = y - 180; // Start high up
+
+            const badgeTxt = state.badge.value.toUpperCase();
+            const titleTxt = state.title.value.toUpperCase();
+            const subTxt = state.subtitle.value;
+
+            // Pre-calculate Title Lines to determine background box size
+            ctx.font = `800 85px "Open Sans"`;
+            let lines = wrapText(titleTxt, maxWidth);
+            let titleHeight = lines.length * 95;
+
+            // Subtitle Height
+            ctx.font = `600 32px "Open Sans"`;
+            let subLines = subTxt ? wrapText(subTxt, maxWidth) : [];
+            let subHeight = subLines.length * 45;
+
+            // Draw Frosted Glass Box behind text if enabled
+            if (state.glass.checked) {
+                ctx.save();
+                let boxPad = 40;
+                let boxW = maxWidth + (boxPad * 2);
+                let boxH = (badgeTxt ? 60 : 0) + titleHeight + subHeight + (boxPad * 2) + 20;
+                
+                let boxX = align === 'left' ? x - boxPad : x - maxWidth - boxPad;
+                let boxY = currentY - boxPad;
+
+                // Glass backdrop
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.lineWidth = 2;
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                ctx.shadowBlur = 40;
+                
+                ctx.beginPath();
+                ctx.roundRect(boxX, boxY, boxW, boxH, 24);
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            // 1. Draw Badge
+            if (badgeTxt) {
+                ctx.font = `800 22px "Open Sans"`;
+                const badgePadX = 20;
+                const bWidth = ctx.measureText(badgeTxt).width + (badgePadX * 2);
+                const bHeight = 44;
+                
+                let bX = align === 'left' ? x : x - bWidth;
+
+                // Premium Yellow Badge
+                ctx.fillStyle = '#fef08a';
+                ctx.shadowColor = 'rgba(0,0,0,0.15)';
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.roundRect(bX, currentY, bWidth, bHeight, 8);
+                ctx.fill();
+
+                // Text inside badge
+                ctx.shadowColor = 'transparent';
+                ctx.fillStyle = '#0f172a';
+                ctx.textBaseline = 'middle';
+                let textX = align === 'left' ? bX + badgePadX : bX + bWidth - badgePadX;
+                ctx.fillText(badgeTxt, textX, currentY + (bHeight / 2) + 2);
+                
+                currentY += bHeight + 25;
+            }
+
+            // Reset for main text
+            ctx.textBaseline = 'top';
+
+            // 2. Main Title Typography
+            ctx.font = `800 85px "Open Sans"`;
+            ctx.fillStyle = '#ffffff';
+            
+            // Sharp drop shadow for readability
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+            ctx.shadowBlur = 15;
+            ctx.shadowOffsetY = 6;
+            ctx.shadowOffsetX = 3;
+
+            for (let i = 0; i < lines.length; i++) {
+                ctx.fillText(lines[i], x, currentY);
+                currentY += 95; // Line height
+            }
+            
+            // 3. Subtitle Typography
+            if (subTxt) {
+                currentY += 15; 
+                ctx.font = `600 32px "Open Sans"`;
+                ctx.fillStyle = '#93c5fd'; // Soft blue highlight
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+                ctx.shadowBlur = 12;
+                ctx.shadowOffsetY = 4;
+                
+                for(let i = 0; i < subLines.length; i++) {
+                    ctx.fillText(subLines[i], x, currentY);
+                    currentY += 45;
+                }
+            }
+
+            ctx.restore();
+        }
+
+        function wrapText(text, maxWidth) {
+            if(!text) return [];
+            const words = text.split(' ');
+            let lines = [];
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                const word = words[i];
+                const width = ctx.measureText(currentLine + " " + word).width;
+                if (width < maxWidth) {
+                    currentLine += " " + word;
+                } else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        // Export Function
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            const link = document.createElement('a');
+            const randomString = Math.random().toString(36).substring(2, 17);
+            link.download = `bundle_thumb_${randomString}.png`;
+            link.href = canvas.toDataURL('image/png', 1.0);
+            link.click();
+        });
+
+    </script>
+</body>
+</html>
