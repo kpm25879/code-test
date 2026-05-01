@@ -32,11 +32,37 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
 .sec::after{content:'';flex:1;height:1px;background:var(--border);}
 .sec:first-child{margin-top:0;}
 
-.field{margin-bottom:10px;}
+.field{margin-bottom:10px; position:relative;}
 label{font-size:.72rem;font-weight:700;color:#64748b;display:block;margin-bottom:4px;}
-input[type=text],textarea,select{width:100%;padding:8px 10px;border-radius:6px;border:1px solid var(--border);background:#080c14;color:var(--text);font-size:.82rem;font-family:'Montserrat',sans-serif;font-weight:600;outline:none;transition:border .2s,box-shadow .2s;}
+input[type=text],textarea,select{width:100%;padding:8px 30px 8px 10px;border-radius:6px;border:1px solid var(--border);background:#080c14;color:var(--text);font-size:.82rem;font-family:'Montserrat',sans-serif;font-weight:600;outline:none;transition:border .2s,box-shadow .2s;}
 input[type=text]:focus,textarea:focus,select:focus{border-color:var(--a2);box-shadow:0 0 0 2px rgba(59,130,246,.15);}
 textarea{resize:vertical;min-height:70px;line-height:1.5;}
+
+/* DELETE BUTTONS */
+.del-btn {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+  border: none;
+  border-radius: 4px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 10;
+}
+.del-btn:hover {
+  background: var(--danger);
+  color: #fff;
+  transform: scale(1.1);
+}
 
 .rr{display:flex;align-items:center;gap:8px;}
 input[type=range]{flex:1;-webkit-appearance:none;height:3px;border-radius:3px;background:var(--border);cursor:pointer;}
@@ -126,12 +152,19 @@ canvas{width:100%;height:100%;display:block;}
     <div class="field">
       <textarea id="titleIn">MASTERING
 MATHEMATICS</textarea>
+      <button class="del-btn" onclick="clearField('titleIn', 'title')" title="Clear Title">✕</button>
     </div>
 
     <div class="sec">Subtitle / Number</div>
-    <div class="field" style="display:flex;gap:7px">
-      <input type="text" id="numIn" value="10" placeholder="#" style="width:56px;text-align:center;">
-      <input type="text" id="subIn" value="Proven Tricks" placeholder="Tagline...">
+    <div class="field" style="display:flex;gap:7px;">
+      <div style="position:relative; width:65px;">
+        <input type="text" id="numIn" value="10" placeholder="#" style="text-align:center; padding-right:20px;">
+        <button class="del-btn" style="right:4px; top:8px; padding:0; width:16px; height:16px; font-size:8px;" onclick="clearField('numIn', 'num')" title="Clear Number">✕</button>
+      </div>
+      <div style="position:relative; flex:1;">
+        <input type="text" id="subIn" value="Proven Tricks" placeholder="Tagline...">
+        <button class="del-btn" style="top:8px;" onclick="clearField('subIn', 'sub')" title="Clear Subtitle">✕</button>
+      </div>
     </div>
 
     <div class="sec">Fonts</div>
@@ -175,11 +208,11 @@ MATHEMATICS</textarea>
       <span class="rv" id="fsVal">AUTO</span>
     </div>
 
-    <div class="sec">Toggles</div>
-    <div class="tog-row"><span class="tog-lbl">Show Number Stamp</span><label class="tog"><input type="checkbox" id="showStamp" checked><span class="ts"></span></label></div>
-    <div class="tog-row"><span class="tog-lbl">Show Subtitle Bar</span><label class="tog"><input type="checkbox" id="showSub" checked><span class="ts"></span></label></div>
-    <div class="tog-row"><span class="tog-lbl">Show Particles / FX</span><label class="tog"><input type="checkbox" id="showFX" checked><span class="ts"></span></label></div>
-    <div class="tog-row"><span class="tog-lbl">Show Border Frame</span><label class="tog"><input type="checkbox" id="showBorder" checked><span class="ts"></span></label></div>
+    <div class="sec">Toggles (Delete Elements)</div>
+    <div class="tog-row"><span class="tog-lbl">Number Stamp</span><label class="tog"><input type="checkbox" id="showStamp" checked><span class="ts"></span></label></div>
+    <div class="tog-row"><span class="tog-lbl">Subtitle Bar</span><label class="tog"><input type="checkbox" id="showSub" checked><span class="ts"></span></label></div>
+    <div class="tog-row"><span class="tog-lbl">Particles / FX</span><label class="tog"><input type="checkbox" id="showFX" checked><span class="ts"></span></label></div>
+    <div class="tog-row"><span class="tog-lbl">Border Frame</span><label class="tog"><input type="checkbox" id="showBorder" checked><span class="ts"></span></label></div>
 
     <div class="sec">Quick Presets</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
@@ -273,24 +306,18 @@ function render(){
 }
 
 // ════════════════════════════════════════════════════════
-// TEMPLATE 0 — NEON STRIKE (electric, futuristic, glowing)
+// TEMPLATE 0 — NEON STRIKE
 // ════════════════════════════════════════════════════════
 function tpl_neonStrike(ctx, W, H){
-  // bg: deep dark with neon grid
   ctx.fillStyle='#030508'; ctx.fillRect(0,0,W,H);
-
-  // scan lines
   for(let y=0;y<H;y+=4){
     ctx.fillStyle='rgba(0,200,255,0.02)';
     ctx.fillRect(0,y,W,2);
   }
-
-  // neon grid
   ctx.strokeStyle='rgba(0,255,255,0.07)'; ctx.lineWidth=1;
   for(let x=0;x<=W;x+=60){ctx_line(ctx,x,0,x,H);}
   for(let y=0;y<=H;y+=60){ctx_line(ctx,0,y,W,y);}
 
-  // horizontal light beam
   const beamY=H*0.5;
   const beam=ctx.createLinearGradient(0,beamY-80,0,beamY+80);
   beam.addColorStop(0,'rgba(0,200,255,0)');
@@ -298,11 +325,9 @@ function tpl_neonStrike(ctx, W, H){
   beam.addColorStop(1,'rgba(0,200,255,0)');
   ctx.fillStyle=beam; ctx.fillRect(0,beamY-80,W,160);
 
-  // glowing circles
   if(S.showFX){
     drawGlow(ctx, W*.15, H*.5, 200, 'rgba(0,200,255,0.12)');
     drawGlow(ctx, W*.85, H*.5, 200, `rgba(${hexToRgb(S.ac)},0.15)`);
-    // sparkles
     for(let i=0;i<30;i++){
       const sx=W*(.05+.9*((i*137)%100/100));
       const sy=H*(.05+.9*((i*97)%100/100));
@@ -312,18 +337,14 @@ function tpl_neonStrike(ctx, W, H){
     }
   }
 
-  // left accent bar
   const barG=ctx.createLinearGradient(0,0,0,H);
   barG.addColorStop(0,`rgba(${hexToRgb(S.ac)},0)`);
   barG.addColorStop(.5,`rgba(${hexToRgb(S.ac)},1)`);
   barG.addColorStop(1,`rgba(${hexToRgb(S.ac)},0)`);
   ctx.fillStyle=barG; ctx.fillRect(55,0,6,H);
   ctx.fillStyle=`rgba(${hexToRgb(S.ac)},0.3)`; ctx.fillRect(65,0,2,H);
-
-  // right accent bar
   ctx.fillStyle=barG; ctx.fillRect(W-61,0,6,H);
 
-  // border
   if(S.showBorder){
     ctx.strokeStyle=`rgba(${hexToRgb(S.ac)},0.5)`; ctx.lineWidth=2;
     ctx.strokeRect(72,28,W-144,H-56);
@@ -331,31 +352,23 @@ function tpl_neonStrike(ctx, W, H){
     ctx.strokeRect(77,33,W-154,H-66);
   }
 
-  // stamp
-  if(S.showStamp) drawStampCircle(ctx, W-140,90,'rgba(0,200,255,0.15)','rgba(0,200,255,0.8)',S.num);
+  if(S.showStamp && S.num.trim() !== '') drawStampCircle(ctx, W-140,90,'rgba(0,200,255,0.15)','rgba(0,200,255,0.8)',S.num);
+  if(S.showSub && S.sub.trim() !== '') drawSubBar(ctx, W,90,S.sub,S.ac,'#000',false);
+  if(S.title.trim() !== '') drawAutoTitle(ctx, W,H,W-160,360,H*.42,'#000','rgba(0,200,255,0.8)',S.tc,true);
 
-  // subtitle top bar
-  if(S.showSub) drawSubBar(ctx, W,90,S.sub,S.ac,'#000',false);
-
-  // TITLE
-  drawAutoTitle(ctx, W,H,W-160,360,H*.42,'#000','rgba(0,200,255,0.8)',S.tc,true);
-
-  // bottom line
   ctx.fillStyle=S.ac; ctx.fillRect(80,H-55,W-160,3);
   ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.fillRect(80,H-50,W-160,1);
 }
 
 // ════════════════════════════════════════════════════════
-// TEMPLATE 1 — EXPLOSION (bold, orange, attention-grab)
+// TEMPLATE 1 — EXPLOSION 
 // ════════════════════════════════════════════════════════
 function tpl_explosion(ctx, W, H){
-  // bg: dark to dark orange
   const bg=ctx.createRadialGradient(W*.5,H*.5,60,W*.5,H*.5,W*.75);
   bg.addColorStop(0,'#1a0800'); bg.addColorStop(.5,'#2d0e00'); bg.addColorStop(1,'#0a0200');
   ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
 
   if(S.showFX){
-    // explosion rays
     ctx.save(); ctx.translate(W*.5,H*.45);
     for(let i=0;i<36;i++){
       const a=i*(Math.PI*2/36);
@@ -367,12 +380,8 @@ function tpl_explosion(ctx, W, H){
       ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(a)*len,Math.sin(a)*len); ctx.stroke();
     }
     ctx.restore();
-
-    // glow core
     drawGlow(ctx, W*.5,H*.45,260,'rgba(255,120,0,0.2)');
     drawGlow(ctx, W*.5,H*.45,120,'rgba(255,200,0,0.25)');
-
-    // particles
     for(let i=0;i<25;i++){
       const a=i*(Math.PI*2/25);
       const r=200+((i*53)%120);
@@ -381,7 +390,6 @@ function tpl_explosion(ctx, W, H){
     }
   }
 
-  // vignette
   const vg=ctx.createRadialGradient(W/2,H/2,H*.2,W/2,H/2,W*.75);
   vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.7)');
   ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
@@ -393,8 +401,7 @@ function tpl_explosion(ctx, W, H){
     ctx.strokeRect(36,36,W-72,H-72);
   }
 
-  if(S.showStamp){
-    // flame stamp
+  if(S.showStamp && S.num.trim() !== ''){
     ctx.save(); ctx.translate(W-120,H-120);
     ctx.font='60px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.shadowColor='rgba(255,150,0,0.8)'; ctx.shadowBlur=20;
@@ -403,24 +410,21 @@ function tpl_explosion(ctx, W, H){
     drawStampCircle(ctx, 140,100,'rgba(255,120,0,0.2)','rgba(255,200,0,0.9)',S.num);
   }
 
-  if(S.showSub) drawSubBar(ctx, W,H-100,S.sub,S.ac,'#000',true);
-
-  drawAutoTitle(ctx, W,H,W-160,400,H*.42,'rgba(255,80,0,0.9)','rgba(255,200,0,0.9)',S.tc,true);
+  if(S.showSub && S.sub.trim() !== '') drawSubBar(ctx, W,H-100,S.sub,S.ac,'#000',true);
+  if(S.title.trim() !== '') drawAutoTitle(ctx, W,H,W-160,400,H*.42,'rgba(255,80,0,0.9)','rgba(255,200,0,0.9)',S.tc,true);
 }
 
 // ════════════════════════════════════════════════════════
-// TEMPLATE 2 — DARK PREMIUM (sleek, luxury, minimal)
+// TEMPLATE 2 — DARK PREMIUM 
 // ════════════════════════════════════════════════════════
 function tpl_darkPremium(ctx, W, H){
   ctx.fillStyle='#050608'; ctx.fillRect(0,0,W,H);
 
-  // subtle noise-like pattern
   for(let i=0;i<300&&S.showFX;i++){
     ctx.fillStyle=`rgba(255,255,255,${.01+(.02*((i*37)%10)/10)})`;
     ctx.fillRect(((i*139)%W),((i*97)%H),1,1);
   }
 
-  // large diagonal gold stripe BG
   ctx.save();
   ctx.translate(W*.6,0);
   const dg=ctx.createLinearGradient(0,0,W*.5,H);
@@ -432,12 +436,10 @@ function tpl_darkPremium(ctx, W, H){
   ctx.closePath(); ctx.fill();
   ctx.restore();
 
-  // gold horizontal accent lines
   ctx.fillStyle=S.ac; ctx.fillRect(60,H*.5-1,W*.38,2);
   ctx.fillStyle=`rgba(${hexToRgb(S.ac)},0.3)`; ctx.fillRect(60,H*.5+3,W*.38,1);
   ctx.fillStyle=S.ac; ctx.fillRect(60,H*.5+10,W*.1,2);
 
-  // thin vertical gold bar on left
   const lg=ctx.createLinearGradient(0,0,0,H);
   lg.addColorStop(0,`rgba(${hexToRgb(S.ac)},0)`);
   lg.addColorStop(.5,S.ac);
@@ -451,8 +453,7 @@ function tpl_darkPremium(ctx, W, H){
     ctx.strokeRect(40,20,W-80,H-40);
   }
 
-  // diamond badge top right
-  if(S.showStamp){
+  if(S.showStamp && S.num.trim() !== ''){
     ctx.save();
     ctx.translate(W-100,70);
     ctx.rotate(Math.PI/4);
@@ -465,7 +466,7 @@ function tpl_darkPremium(ctx, W, H){
     ctx.fillText(S.num,W-100,70);
   }
 
-  if(S.showSub){
+  if(S.showSub && S.sub.trim() !== ''){
     ctx.font=`700 24px 'Montserrat',sans-serif`;
     ctx.textAlign='left'; ctx.textBaseline='middle';
     ctx.fillStyle=`rgba(${hexToRgb(S.ac)},0.9)`;
@@ -474,21 +475,18 @@ function tpl_darkPremium(ctx, W, H){
     ctx.letterSpacing='0px';
   }
 
-  // title — left aligned
-  drawAutoTitleAligned(ctx, W,H,'left',68,H*.41,W*.62,360,true,'left');
+  if(S.title.trim() !== '') drawAutoTitleAligned(ctx, W,H,'left',68,H*.41,W*.62,360,true,'left');
 }
 
 // ════════════════════════════════════════════════════════
-// TEMPLATE 3 — URGENCY RED (bold CTA, click-bait proven)
+// TEMPLATE 3 — URGENCY RED 
 // ════════════════════════════════════════════════════════
 function tpl_urgencyRed(ctx, W, H){
-  // explosive red bg
   const bg=ctx.createLinearGradient(0,0,W,H);
   bg.addColorStop(0,'#7f0000'); bg.addColorStop(.4,'#c0392b'); bg.addColorStop(1,'#4a0000');
   ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
 
   if(S.showFX){
-    // diagonal dark shapes
     ctx.fillStyle='rgba(0,0,0,0.2)';
     ctx.save(); ctx.beginPath();
     ctx.moveTo(0,H*.3); ctx.lineTo(W*.6,0); ctx.lineTo(W*.7,0); ctx.lineTo(W*.1,H*.4);
@@ -500,23 +498,20 @@ function tpl_urgencyRed(ctx, W, H){
       ctx.fillRect(i*120-200,-H,80,H*3);
       ctx.restore();
     }
-    // glow top
     drawGlow(ctx, W*.5,-50,400,'rgba(255,100,50,0.2)');
   }
 
-  // vignette
   const vg=ctx.createRadialGradient(W/2,H/2,H*.15,W/2,H/2,W*.7);
   vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.5)');
   ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
 
   if(S.showBorder){
-    ctx.strokeStyle='rgba(255,255,255,0.25)'; ctx.lineWidth=3;
+    ctx.strokeStyle='rgba(255,255,255,0.25)'; cx.lineWidth=3;
     ctx.strokeRect(26,26,W-52,H-52);
-    ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.lineWidth=1;
+    ctx.strokeStyle='rgba(255,255,255,0.08)'; cx.lineWidth=1;
     ctx.strokeRect(32,32,W-64,H-64);
   }
 
-  // WARNING/ALERT stamp top-left
   if(S.showStamp){
     ctx.save();
     ctx.fillStyle='#fff';
@@ -534,49 +529,42 @@ function tpl_urgencyRed(ctx, W, H){
     ctx.restore();
   }
 
-  if(S.showSub) drawSubBar(ctx, W,H-95,S.sub,'#fff','#c0392b',true);
+  if(S.showSub && S.sub.trim() !== '') drawSubBar(ctx, W,H-95,S.sub,'#fff','#c0392b',true);
+  if(S.title.trim() !== '') drawAutoTitle(ctx, W,H,W-120,420,H*.42,'rgba(0,0,0,0.8)','rgba(255,200,180,0.7)',S.tc,true);
 
-  // big centered title
-  drawAutoTitle(ctx, W,H,W-120,420,H*.42,'rgba(0,0,0,0.8)','rgba(255,200,180,0.7)',S.tc,true);
-
-  // bottom "MUST WATCH" bar
   const bh=56;
   ctx.fillStyle='rgba(0,0,0,0.7)'; ctx.fillRect(0,H-bh,W,bh);
   ctx.fillStyle=S.ac;
   ctx.font=`900 26px 'Bebas Neue',Impact,sans-serif`;
   ctx.textAlign='center'; ctx.textBaseline='middle';
   ctx.letterSpacing='6px';
-  ctx.fillText('★ MUST WATCH ★  '+S.num+' THINGS YOU NEED TO KNOW',W/2,H-bh/2+2);
+  const botText = S.num.trim() !== '' ? '★ MUST WATCH ★  '+S.num+' THINGS YOU NEED TO KNOW' : '★ MUST WATCH ★  THINGS YOU NEED TO KNOW';
+  ctx.fillText(botText,W/2,H-bh/2+2);
   ctx.letterSpacing='0px';
 }
 
 // ════════════════════════════════════════════════════════
-// TEMPLATE 4 — GOLD TROPHY (achievement, exam success)
+// TEMPLATE 4 — GOLD TROPHY
 // ════════════════════════════════════════════════════════
 function tpl_goldTrophy(ctx, W, H){
-  // deep navy bg
   const bg=ctx.createLinearGradient(0,0,W,H);
   bg.addColorStop(0,'#050d1a'); bg.addColorStop(1,'#0a1830');
   ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
 
-  // gold geometric BG shapes
   ctx.fillStyle='rgba(212,175,55,0.05)';
   ctx.beginPath(); ctx.moveTo(0,H*.6); ctx.lineTo(W*.5,0); ctx.lineTo(W*.6,0); ctx.lineTo(W*.1,H*.7); ctx.closePath(); ctx.fill();
   ctx.beginPath(); ctx.moveTo(W,0); ctx.lineTo(W,H*.7); ctx.lineTo(W*.6,H); ctx.lineTo(W*.5,H); ctx.closePath(); ctx.fill();
 
   if(S.showFX){
-    // star particles
     for(let i=0;i<40;i++){
       const x=((i*173)%W), y=((i*97)%H);
       const size=.5+((i*37)%3);
       ctx.fillStyle=i%3===0?'rgba(212,175,55,0.7)':'rgba(255,255,255,0.3)';
       ctx.beginPath(); ctx.arc(x,y,size,0,Math.PI*2); ctx.fill();
     }
-    // glow behind trophy
     drawGlow(ctx, W*.5,H*.45,300,'rgba(212,175,55,0.12)');
   }
 
-  // draw trophy emoji large
   ctx.save();
   ctx.font='160px serif';
   ctx.textAlign='center'; ctx.textBaseline='middle';
@@ -586,7 +574,6 @@ function tpl_goldTrophy(ctx, W, H){
   ctx.globalAlpha=1;
   ctx.restore();
 
-  // gold border
   if(S.showBorder){
     const gb=ctx.createLinearGradient(0,0,W,H);
     gb.addColorStop(0,'rgba(212,175,55,0.7)');
@@ -598,8 +585,7 @@ function tpl_goldTrophy(ctx, W, H){
     ctx.strokeRect(38,38,W-76,H-76);
   }
 
-  // TOP LABEL — gold ribbon style
-  if(S.showSub){
+  if(S.showSub && S.sub.trim() !== ''){
     const y=115,tw=480,th=54;
     ctx.fillStyle='rgba(212,175,55,0.15)';
     ctx.beginPath();
@@ -614,39 +600,31 @@ function tpl_goldTrophy(ctx, W, H){
     ctx.letterSpacing='0px';
   }
 
-  // stamp
-  if(S.showStamp) drawStampCircle(ctx, W-130,90,'rgba(212,175,55,0.15)','#D4AF37',S.num);
-
-  drawAutoTitle(ctx, W,H,W-160,380,H*.43,'rgba(0,0,0,0.7)','rgba(212,175,55,0.8)','#D4AF37',true);
+  if(S.showStamp && S.num.trim() !== '') drawStampCircle(ctx, W-130,90,'rgba(212,175,55,0.15)','#D4AF37',S.num);
+  if(S.title.trim() !== '') drawAutoTitle(ctx, W,H,W-160,380,H*.43,'rgba(0,0,0,0.7)','rgba(212,175,55,0.8)','#D4AF37',true);
 }
 
 // ════════════════════════════════════════════════════════
-// TEMPLATE 5 — SPLIT DIAGONAL (modern, dynamic, 2024)
+// TEMPLATE 5 — SPLIT DIAGONAL 
 // ════════════════════════════════════════════════════════
 function tpl_splitDiagonal(ctx, W, H){
-  // left half: accent color
   ctx.fillStyle=S.ac; ctx.fillRect(0,0,W,H);
-
-  // right half: dark
   ctx.fillStyle='#070a0f';
   ctx.beginPath();
   ctx.moveTo(W*.45,0); ctx.lineTo(W,0); ctx.lineTo(W,H); ctx.lineTo(W*.35,H);
   ctx.closePath(); ctx.fill();
 
   if(S.showFX){
-    // pattern on left
     ctx.strokeStyle='rgba(0,0,0,0.1)'; ctx.lineWidth=1;
     for(let i=0;i<W*.5;i+=30) ctx_line(ctx, i,0,i,H);
     for(let j=0;j<H;j+=30) ctx_line(ctx, 0,j,W*.5,j);
 
-    // dots pattern right
     ctx.fillStyle='rgba(255,255,255,0.05)';
     for(let i=0;i<8;i++)
       for(let j=0;j<6;j++)
         {ctx.beginPath();ctx.arc(W*.6+i*60,H*.15+j*100,3,0,Math.PI*2);ctx.fill();}
   }
 
-  // slash highlight
   ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=8;
   ctx_line(ctx, W*.45,0,W*.35,H);
   ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=3;
@@ -657,12 +635,9 @@ function tpl_splitDiagonal(ctx, W, H){
     ctx.strokeRect(22,22,W-44,H-44);
   }
 
-  if(S.showStamp){
-    // left side circle
-    drawStampCircle(ctx, W*.18,H*.75,'rgba(0,0,0,0.25)','#000',S.num);
-  }
+  if(S.showStamp && S.num.trim() !== '') drawStampCircle(ctx, W*.18,H*.75,'rgba(0,0,0,0.25)','#000',S.num);
 
-  if(S.showSub){
+  if(S.showSub && S.sub.trim() !== ''){
     ctx.fillStyle='rgba(0,0,0,0.8)';
     ctx.font=`800 22px 'Montserrat',sans-serif`;
     ctx.textAlign='left'; ctx.textBaseline='middle';
@@ -671,25 +646,20 @@ function tpl_splitDiagonal(ctx, W, H){
     ctx.letterSpacing='0px';
   }
 
-  // title on left (dark text on light)
-  drawAutoTitleAligned(ctx, W,H,'left',40,H*.42,W*.42,380,false,'left');
+  if(S.title.trim() !== '') drawAutoTitleAligned(ctx, W,H,'left',40,H*.42,W*.42,380,false,'left');
 }
 
 // ════════════════════════════════════════════════════════
-// TEMPLATE 6 — CINEMATIC (wide letterbox, epic scale)
+// TEMPLATE 6 — CINEMATIC 
 // ════════════════════════════════════════════════════════
 function tpl_cinematic(ctx, W, H){
-  // deep blue-grey gradient
   const bg=ctx.createLinearGradient(0,0,0,H);
   bg.addColorStop(0,'#060810'); bg.addColorStop(.5,'#0d1520'); bg.addColorStop(1,'#030508');
   ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
 
-  // wide panoramic glows
   if(S.showFX){
     drawGlow(ctx, W*.25,H*.5,350,`rgba(${hexToRgb(S.ac)},0.08)`);
     drawGlow(ctx, W*.75,H*.5,350,'rgba(40,80,180,0.08)');
-
-    // light ray from top-center
     ctx.save();
     ctx.translate(W*.5,0);
     const ray=ctx.createLinearGradient(0,0,0,H*.8);
@@ -700,17 +670,13 @@ function tpl_cinematic(ctx, W, H){
     ctx.restore();
   }
 
-  // letterbox bars
   const lbH=80;
   ctx.fillStyle='#000'; ctx.fillRect(0,0,W,lbH);
   ctx.fillStyle='#000'; ctx.fillRect(0,H-lbH,W,lbH);
-
-  // accent line on letterbox
   ctx.fillStyle=S.ac; ctx.fillRect(0,lbH,W,3);
   ctx.fillStyle=S.ac; ctx.fillRect(0,H-lbH-3,W,3);
 
-  // title inside
-  if(S.showSub){
+  if(S.showSub && S.sub.trim() !== ''){
     ctx.fillStyle='rgba(255,255,255,0.5)';
     ctx.font=`700 22px 'Montserrat',sans-serif`;
     ctx.textAlign='center'; ctx.textBaseline='middle';
@@ -719,8 +685,7 @@ function tpl_cinematic(ctx, W, H){
     ctx.letterSpacing='0px';
   }
 
-  // top label
-  if(S.showStamp){
+  if(S.showStamp && S.num.trim() !== ''){
     ctx.fillStyle=S.ac;
     ctx.font=`900 26px 'Montserrat',sans-serif`;
     ctx.textAlign='center'; ctx.textBaseline='middle';
@@ -729,30 +694,26 @@ function tpl_cinematic(ctx, W, H){
     ctx.letterSpacing='0px';
   }
 
-  // horizontal white line mid
   ctx.fillStyle='rgba(255,255,255,0.15)'; ctx.fillRect(80,H*.5-1,W-160,1);
 
-  drawAutoTitle(ctx, W,H,W-200,320,H*.48,'rgba(0,0,0,0.8)','rgba(255,255,255,0.15)',S.tc,false);
+  if(S.title.trim() !== '') drawAutoTitle(ctx, W,H,W-200,320,H*.48,'rgba(0,0,0,0.8)','rgba(255,255,255,0.15)',S.tc,false);
 }
 
 // ════════════════════════════════════════════════════════
-// TEMPLATE 7 — GRUNGE POWER (raw, YouTube shorts style)
+// TEMPLATE 7 — GRUNGE POWER
 // ════════════════════════════════════════════════════════
 function tpl_grungePower(ctx, W, H){
-  // base color
   const bg=ctx.createLinearGradient(0,0,W,H);
   bg.addColorStop(0,'#0a0505'); bg.addColorStop(.6,'#15080a'); bg.addColorStop(1,'#050208');
   ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
 
   if(S.showFX){
-    // rough grunge texture lines
     ctx.strokeStyle='rgba(255,255,255,0.03)'; ctx.lineWidth=1;
     for(let i=0;i<60;i++){
       const x1=((i*197)%W), y1=((i*113)%H);
       const x2=x1+((i*73)%200)-100, y2=y1+((i*37)%100)-50;
       ctx_line(ctx, x1,y1,x2,y2);
     }
-    // halftone dots
     for(let i=0;i<20;i++)
       for(let j=0;j<12;j++){
         const s=((i+j)%5)*.8;
@@ -762,17 +723,14 @@ function tpl_grungePower(ctx, W, H){
       }
   }
 
-  // massive diagonal stripe accent
   ctx.save();
   ctx.fillStyle=`rgba(${hexToRgb(S.ac)},0.12)`;
   ctx.beginPath();
   ctx.moveTo(W*.3,0); ctx.lineTo(W*.55,0); ctx.lineTo(W*.25,H); ctx.lineTo(0,H); ctx.closePath(); ctx.fill();
   ctx.restore();
 
-  // glow
   if(S.showFX) drawGlow(ctx, W*.4,H*.45,350,`rgba(${hexToRgb(S.ac)},0.1)`);
 
-  // bold accent border
   if(S.showBorder){
     ctx.strokeStyle=S.ac; ctx.lineWidth=6;
     ctx.strokeRect(20,20,W-40,H-40);
@@ -780,8 +738,7 @@ function tpl_grungePower(ctx, W, H){
     ctx.strokeRect(26,26,W-52,H-52);
   }
 
-  // top-left stamp block
-  if(S.showStamp){
+  if(S.showStamp && S.num.trim() !== ''){
     ctx.fillStyle=S.ac;
     ctx.fillRect(30,30,130,70);
     ctx.fillStyle='#000';
@@ -796,9 +753,8 @@ function tpl_grungePower(ctx, W, H){
     ctx.letterSpacing='0px';
   }
 
-  if(S.showSub) drawSubBar(ctx, W,H-90,S.sub,S.ac,'#000',true);
-
-  drawAutoTitle(ctx, W,H,W-160,420,H*.44,'rgba(0,0,0,0.9)','rgba(0,0,0,0.5)',S.tc,true);
+  if(S.showSub && S.sub.trim() !== '') drawSubBar(ctx, W,H-90,S.sub,S.ac,'#000',true);
+  if(S.title.trim() !== '') drawAutoTitle(ctx, W,H,W-160,420,H*.44,'rgba(0,0,0,0.9)','rgba(0,0,0,0.5)',S.tc,true);
 }
 
 // ═══ SHARED DRAWING UTILS ═══
@@ -860,7 +816,6 @@ function drawSubBar(ctx, W, y, text, bg, tc, centered){
   ctx.restore();
 }
 
-// CENTERED AUTO-FIT TITLE
 function drawAutoTitle(ctx, W, H, maxW, maxH, centerY, strokeColor, glowColor, fillColor, doGlow){
   ctx.save();
   ctx.textAlign='center'; ctx.textBaseline='middle';
@@ -884,25 +839,20 @@ function drawAutoTitle(ctx, W, H, maxW, maxH, centerY, strokeColor, glowColor, f
   for(let i=0;i<lines.length;i++){
     if(!lines[i]) continue;
     const y=sy+i*lh;
-    // glow
     if(doGlow){
       ctx.shadowColor=glowColor; ctx.shadowBlur=40; ctx.shadowOffsetY=0;
     }
-    // stroke
     ctx.lineWidth=fs*.09; ctx.strokeStyle=strokeColor;
     ctx.lineJoin='round';
     ctx.font=`900 ${fs}px ${S.font}`;
     ctx.strokeText(lines[i],W/2,y);
-    // fill
     ctx.shadowColor='transparent';
     ctx.fillStyle=fillColor; ctx.fillText(lines[i],W/2,y);
-    // shimmer
     ctx.fillStyle='rgba(255,255,255,0.1)'; ctx.fillText(lines[i],W/2,y-2);
   }
   ctx.restore();
 }
 
-// LEFT/RIGHT ALIGNED TITLE
 function drawAutoTitleAligned(ctx, W, H, fallback, x, centerY, maxW, maxH, light, align){
   ctx.save();
   ctx.textAlign=align; ctx.textBaseline='middle';
@@ -989,7 +939,6 @@ function renderPreviews(){
   document.querySelectorAll('.tpl canvas').forEach((mc,i)=>{
     const mctx=mc.getContext('2d');
     mctx.save();
-    // Scale context down so we can use standard 1280x720 drawing calls
     mctx.scale(320/1280, 180/720);
     mctx.clearRect(0,0,1280,720);
     TEMPLATES[i].render(mctx, 1280, 720);
@@ -1000,6 +949,13 @@ function renderPreviews(){
 // ═══ DOM WIRING ═══
 function $id(id){return document.getElementById(id);}
 function upd(k,v){pu();S[k]=v;render();queuePreviews();}
+
+// CLEAR BUTTON LOGIC
+function clearField(inputId, stateKey) {
+  const el = $id(inputId);
+  el.value = '';
+  upd(stateKey, '');
+}
 
 $id('titleIn').addEventListener('input',e=>upd('title',e.target.value));
 $id('subIn').addEventListener('input',e=>upd('sub',e.target.value));
